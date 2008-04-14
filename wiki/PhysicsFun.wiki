@@ -3,5 +3,12 @@
 = Introduction =
 http://img143.imageshack.us/img143/5047/seesawkj1.jpg
 
+in motion:
+http://www.youtube.com/watch?v=FPk3ARoXt0k
 
 = Details =
+uses ..
+  * StandardGame
+  * GameStates 
+  * jMEDesktopState for the GUI
+  * Shadow and Reflection RenderPasses (which is a bit buggy and a perfomance eater)
