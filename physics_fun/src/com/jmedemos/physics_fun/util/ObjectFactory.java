@@ -14,18 +14,28 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
+import com.jme.scene.shape.Cylinder;
+import com.jme.scene.shape.Disk;
+import com.jme.scene.shape.Dome;
+import com.jme.scene.shape.RoundedBox;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.shape.Teapot;
+import com.jme.scene.shape.Torus;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
+import com.jmex.physics.geometry.PhysicsMesh;
 
 public class ObjectFactory {
 	private ObjectType objectType = ObjectType.SPHERE;
@@ -50,8 +60,6 @@ public class ObjectFactory {
 	    ArrayList<RenderState> ts = rsTable.get(type);
 	    if (ts == null) {
 	        ts = createRenderStates(type);
-	    } else {
-	        System.out.println("reusing renderstates");
 	    }
 	    return ts;
 	}
@@ -84,9 +92,16 @@ public class ObjectFactory {
 	        break;
 	    case DEFAULT:
 	        ms.setDiffuse(new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
+	        
+	        ShadeState ss = renderer.createShadeState();
+	        ss.setShade(ShadeState.SM_FLAT);
+	        rsList.add(ss);
 	        break;
 	    case GHOST:
 	        ms.setDiffuse(new ColorRGBA(1, 1, 1, 0.5f));
+	        WireframeState ws = renderer.createWireframeState();
+	        ws.setLineWidth(2);
+	        rsList.add(ws);
 	        break;
 	    case GLASS:
 	        texture = "glass.jpg";
@@ -145,7 +160,6 @@ public class ObjectFactory {
 	    }
 	    
 	    rsList.add(ms);
-
 	    rsTable.put(type, rsList);
 	    
 	    return rsList;
@@ -181,36 +195,65 @@ public class ObjectFactory {
 	 */
 	public DynamicPhysicsNode createObject() {
 		DynamicPhysicsNode node = space.createDynamicNode();
-		Spatial visual = null;
+		TriMesh visual = null;
+		boolean isBasicShape = false;
 		
 		switch (objectType) {
 		case BOX:
 			visual = new Box("box", new Vector3f(), 0.5f, 0.5f, 0.5f);
 			visual.setModelBound(new BoundingBox());
+			isBasicShape = true;
 			break;
+		case ROUNDEDBOX:
+	        visual = new RoundedBox("box", new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.07f, 0.07f, 0.07f), new Vector3f(0.03f, 0.03f, 0.03f));
+	        visual.setModelBound(new BoundingBox());
+//		    visual = new RoundedBox("box", new Vector3f(0.5f, 0.5f, 0.5f));
+	        break;
 		case SPHERE:
 			visual = new Sphere("sphere", 30, 30, 1f );
 			visual.setModelBound(new BoundingSphere());
+			isBasicShape = true;
 			break;
 		case CAPSULE:
 			visual = new Capsule("capsule", 15, 10, 10, 0.5f, 2f);
 			visual.setModelBound(new BoundingCapsule());
+			isBasicShape = true;
 			break;
+		case CYLINDER:
+		    visual = new Cylinder("cylinder", 15, 10, 0.5f, 2f, true);
+		    visual.setModelBound(new BoundingSphere());
+		    break;
+		case TORUS:
+		    visual = new Torus("torus", 15, 10, 0.3f, 1);
+		    visual.setModelBound(new BoundingSphere());
+		    break;
+		case TEAPOT:
+		    visual = new Teapot("tea pot");
+		    visual.setModelBound(new BoundingSphere());
+		    break;
 		default:
 		    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).severe("OOps:" +objectType +" unknown");
 		    return null;
 		}
+
 		visual.updateModelBound();
-		node.setLocalScale(scale);
-		node.setName(objectType.toString());
-		node.setMaterial(material.getMaterial());
-		
-		for (RenderState rs : getRenderStates(material)) {
-		    visual.setRenderState(rs);
-		}
 		
 		node.attachChild(visual);
-	    node.generatePhysicsGeometry();
+		node.setLocalScale(scale);
+		node.setName("physics " +objectType.toString());
+		node.setMaterial(material.getMaterial());
+		applyRenderStates(visual, material);
+		
+		if (isBasicShape) {
+		    // create geometry automaticly
+		    node.generatePhysicsGeometry();
+		} else {
+		    // create a physical copy of the existing mesh
+		    PhysicsMesh mesh = node.createMesh("physics mesh");
+		    mesh.copyFrom(visual);
+		    node.attachChild(mesh);
+		}
+		
 		node.computeMass();
 		node.updateRenderState();
 		return node;
@@ -248,7 +291,6 @@ public class ObjectFactory {
 	    if (node.getChildren() == null) {
 	        return;
 	    }
-	    System.out.println("node: " +node +"has " +node.getChildren().size() +" children");
 	    for (int i = 0; i < node.getChildren().size(); i++) {
 	        if (node.getChild(i) instanceof Node) {
 	            unrestAll((Node)node.getChild(i));

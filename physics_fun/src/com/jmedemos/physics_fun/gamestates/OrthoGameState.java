@@ -14,7 +14,7 @@ import com.jmex.game.StandardGame;
 import com.jmex.game.state.BasicGameState;
 
 /**
- * This GameState displays some Text and a Crosshair in Ortho mode..
+ * This GameState displays some Text and a Crosshair in Ortho mode.
  */
 public class OrthoGameState extends BasicGameState {
 	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
@@ -58,6 +58,7 @@ public class OrthoGameState extends BasicGameState {
 		// add the text to display
 		addText("Press ESC to quit");
 		addText("Press TAB to enable/disable GUI");
+		addText("Press SPACE to create and release a new Object");
 		
 		// create a crosshair in the middle of the screen
 		setCrosshair();

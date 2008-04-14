@@ -25,11 +25,12 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.physics_fun.core.PhysicsGame;
+import com.jmedemos.physics_fun.objects.Seesaw;
+import com.jmedemos.physics_fun.objects.Swing;
+import com.jmedemos.physics_fun.objects.Wall;
 import com.jmedemos.physics_fun.util.MaterialType;
 import com.jmedemos.physics_fun.util.ObjectFactory;
 import com.jmedemos.physics_fun.util.SceneSettings;
-import com.jmedemos.physics_fun.util.Seesaw;
-import com.jmedemos.physics_fun.util.Wall;
 import com.jmex.game.state.GameStateManager;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsDebugger;
@@ -52,14 +53,6 @@ public class MainGameState extends PhysicsGameState {
 	
 	public MainGameState(String name) {
 		super(name);
-		AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-		as.setEnabled(true);
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-		rootNode.setRenderState(as);
-		rootNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-		rootNode.setLightCombineMode(LightState.REPLACE);
 		
 		ObjectFactory.createObjectFactory(getPhysicsSpace());
 		objectsNode = new Node("ball Node");
@@ -68,7 +61,8 @@ public class MainGameState extends PhysicsGameState {
 		wall = new Wall(getPhysicsSpace(), SceneSettings.get().getWallWidth(), 
 	                                   SceneSettings.get().getWallHeigth(),
 	                                   SceneSettings.get().getWallElementSize());
-		wall.setLocalTranslation(0, 0, SceneSettings.get().getWallElementSize());
+
+		wall.setLocalTranslation(0, 0, -3);
 		rootNode.attachChild(wall);
         
         createFloor();
@@ -81,8 +75,12 @@ public class MainGameState extends PhysicsGameState {
         picker.getInputHandler().setEnabled(false);
         
         Seesaw seesaw = new Seesaw(getPhysicsSpace());
-        seesaw.setLocalTranslation(-10, -1, 5);
+        seesaw.setLocalTranslation(-13, -1, 5);
         rootNode.attachChild(seesaw);
+        
+        Swing swing = new Swing(getPhysicsSpace());
+        swing.setLocalTranslation(15, 3f, 4);
+        rootNode.attachChild(swing);
         
         cam.setLocation(new Vector3f(2, 10, 15));
         rootNode.updateRenderState();
@@ -149,6 +147,15 @@ public class MainGameState extends PhysicsGameState {
 	}
 	
 	private void init() {
+	    AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+        as.setEnabled(true);
+        as.setBlendEnabled(true);
+        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        rootNode.setRenderState(as);
+        rootNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+        rootNode.setLightCombineMode(LightState.REPLACE);
+	    
 	    CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
 	    cs.setCullMode(CullState.CS_BACK);
 	    cs.setEnabled(true);
@@ -194,7 +201,7 @@ public class MainGameState extends PhysicsGameState {
 		    }
 		}, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_TAB, InputHandler.AXIS_NONE, false );
 	}
-	
+
 	private void setupLight() {
 		LightState ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
 
@@ -207,39 +214,41 @@ public class MainGameState extends PhysicsGameState {
 		
         ls.attach(dr1);
 		ls.setEnabled(true);
-//		ls.setGlobalAmbient(new ColorRGBA(0.6f, 0.6f, 0.6f, 1.0f));
+		
+		ls.setGlobalAmbient(new ColorRGBA(0.6f, 0.6f, 0.6f, 1.0f));
+		
 		ls.setTwoSidedLighting(false);
 		rootNode.setRenderState(ls);
 	}
-	
+
 	private void spawnObject() {
 		DynamicPhysicsNode node = ObjectFactory.get().createObject();
 		node.setName("physics node");
 		node.getLocalTranslation().set(cam.getLocation());
+		node.getLocalTranslation().addLocal(cam.getDirection().mult(new Vector3f(2,2,2).add(node.getLocalScale())));
 		node.addForce(cam.getDirection().mult(ObjectFactory.get().getForce()));
 		objectsNode.attachChild(node);
 		objectsNode.updateRenderState();
 	}
-	
+
 	@Override
 	public void update(float tpf) {
 		input.update(tpf);
-		
 		if (movementInput.isEnabled()) {
 			movementInput.update(tpf);
 		}
 		super.update(tpf);
 	}
-	
- 
+
 	@Override
 	public void render(float tpf) {
-		super.render(tpf);
-		
-		if (showPhysics) {
-			PhysicsDebugger.drawPhysics(getPhysicsSpace(), 
-				DisplaySystem.getDisplaySystem().getRenderer());
-		}
+	    super.render(tpf);
+	    if (showPhysics) {
+	        rootNode.updateGeometricState(0, false);
+	        PhysicsDebugger.drawPhysics(getPhysicsSpace(), 
+	                DisplaySystem.getDisplaySystem().getRenderer());
+	    }
+
 	}
 
 	public Wall getWall() {

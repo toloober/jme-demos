@@ -1,11 +1,12 @@
-package com.jmedemos.physics_fun.util;
+package com.jmedemos.physics_fun.objects;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.RenderState;
+import com.jmedemos.physics_fun.util.ObjectFactory;
+import com.jmedemos.physics_fun.util.SceneSettings;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 
@@ -24,16 +25,8 @@ public class Wall extends Node {
 		this.y = y;
 		this.bSize = bSize;
 		
-//		try {
-//			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
-//                    new SimpleResourceLocator(Main.class.getClassLoader().getResource("resources/")));
-//        } catch (URISyntaxException e1) {
-//        	PhysicsGame.get().getGame().finish();
-//        }
-		for (RenderState rs : ObjectFactory.get().getRenderStates(SceneSettings.get().getWallMaterial())) {
-		    System.out.println("applinging: " +rs);
-		    setRenderState(rs);
-		}
+		ObjectFactory.get().applyRenderStates(this, 
+						SceneSettings.get().getWallMaterial());
 	
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {

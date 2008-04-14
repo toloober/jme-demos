@@ -1,4 +1,4 @@
-package com.jmedemos.physics_fun.util;
+package com.jmedemos.physics_fun.objects;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.math.FastMath;
@@ -7,6 +7,8 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.RenderState;
+import com.jmedemos.physics_fun.util.MaterialType;
+import com.jmedemos.physics_fun.util.ObjectFactory;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.Joint;
 import com.jmex.physics.PhysicsSpace;
@@ -16,16 +18,14 @@ import com.jmex.physics.material.Material;
 
 public class Seesaw extends Node {
     private static final long serialVersionUID = 1L;
-    private PhysicsSpace space = null;
 	private Joint joint = null;
 	private StaticPhysicsNode staticBox = null;
 	private DynamicPhysicsNode dynamicBoard = null;
 	
 	public Seesaw(final PhysicsSpace space) {
 		super("Seesaw");
-		this.space = space;
 		
-		// cretae the base of the see-saw
+		// create the base of the see-saw
 		Box visualBox = new Box("visual box", new Vector3f(), 1, 1, 1);
 		visualBox.setModelBound(new BoundingBox());
 		visualBox.updateModelBound();

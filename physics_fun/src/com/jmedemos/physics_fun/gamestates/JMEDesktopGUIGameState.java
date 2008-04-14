@@ -24,12 +24,12 @@ import javax.swing.event.ChangeListener;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jmedemos.physics_fun.core.PhysicsGame;
+import com.jmedemos.physics_fun.objects.Wall;
 import com.jmedemos.physics_fun.util.JFloatSlider;
 import com.jmedemos.physics_fun.util.MaterialType;
 import com.jmedemos.physics_fun.util.ObjectFactory;
 import com.jmedemos.physics_fun.util.ObjectType;
 import com.jmedemos.physics_fun.util.SceneSettings;
-import com.jmedemos.physics_fun.util.Wall;
 import com.jmex.awt.swingui.JMEDesktopState;
 
 /**
@@ -38,7 +38,7 @@ import com.jmex.awt.swingui.JMEDesktopState;
  * 
  * @author Christoph Luder
  */
-public class GUIGameState extends JMEDesktopState {
+public class JMEDesktopGUIGameState extends JMEDesktopState {
     private Logger log = Logger.getLogger(this.getClass().getName());
     private MainGameState main = null;
     private JTextField txtWallWidth = null;
@@ -50,7 +50,7 @@ public class GUIGameState extends JMEDesktopState {
 	 * Constructs the GUI GameState.
 	 * @param name GameStates name.
 	 */
-	public GUIGameState(String name, MainGameState main) {
+	public JMEDesktopGUIGameState(String name, MainGameState main) {
 	    super(true);
 	    this.main = main;
 		setName(name);
