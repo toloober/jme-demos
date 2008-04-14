@@ -1,5 +1,5 @@
 #summary A Playground to experiment with jME Physics
-#labels jMEPhysics,Featured
+#labels Phase-Implementation,Featured
 
 = Introduction =
 http://img143.imageshack.us/img143/5047/seesawkj1.jpg
