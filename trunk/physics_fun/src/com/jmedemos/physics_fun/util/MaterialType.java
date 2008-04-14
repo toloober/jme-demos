@@ -3,18 +3,18 @@ package com.jmedemos.physics_fun.util;
 import com.jmex.physics.material.Material;
 
 public enum MaterialType {
-    IRON (Material.IRON),
-    WOOD (Material.WOOD),
     CONCRETE (Material.CONCRETE),
-    GRANITE (Material.GRANITE),
-    GLASS (Material.GLASS),
-    PLASTIC (Material.PLASTIC),
-    RUBBER (Material.RUBBER),
-    ICE (Material.ICE),
     DEFAULT (Material.DEFAULT),
     GHOST (Material.GHOST),
+    GLASS (Material.GLASS),
+    GRANITE (Material.GRANITE),
+    ICE (Material.ICE),
+    IRON (Material.IRON),
     OSMIUM (Material.OSMIUM),
-    SPONGE(Material.SPONGE);
+    PLASTIC (Material.PLASTIC),
+    RUBBER (Material.RUBBER),
+    SPONGE(Material.SPONGE),
+    WOOD (Material.WOOD);
     
     private Material material;
     

@@ -2,8 +2,10 @@ package com.jmedemos.physics_fun.util;
 
 public enum ObjectType {
     BOX,
+    ROUNDEDBOX,
+    CAPSULE,
+    CYLINDER,
     SPHERE,
-    CAPSULE
-    
-    //CYLINDER unsupported right now
+    TORUS,
+    TEAPOT,
 }
