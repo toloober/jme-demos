@@ -15,7 +15,6 @@ public class MyCollisionAction extends InputAction {
 	public MyCollisionAction() {
 	}
 
-	@Override
 	public void performAction(InputActionEvent evt) {
 		ContactInfo info = (ContactInfo) evt.getTriggerData();
         info.getContactVelocity( contactVelocity );
