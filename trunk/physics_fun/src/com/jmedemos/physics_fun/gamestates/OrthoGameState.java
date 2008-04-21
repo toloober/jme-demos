@@ -10,15 +10,12 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jmex.game.StandardGame;
 import com.jmex.game.state.BasicGameState;
 
 /**
  * This GameState displays some Text and a Crosshair in Ortho mode.
  */
 public class OrthoGameState extends BasicGameState {
-	private static final String FONT_LOCATION = "/com/jme/app/defaultfont.tga";
-	
 	private float locX = 20;
 	private float locY = DisplaySystem.getDisplaySystem().getHeight()-20;
 	private float lastLocY = locY;
@@ -49,9 +46,10 @@ public class OrthoGameState extends BasicGameState {
 		textAlphaState.setEnabled(true);
 		rootNode.setRenderState(textAlphaState);
 
-		// create a font 
+		// load the font texture for the ortho gamestate 
 		font = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-		font.setTexture(TextureManager.loadTexture(StandardGame.class.getResource(FONT_LOCATION),
+		font.setTexture(TextureManager.loadTexture(
+						ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "defaultfont.tga"),
 						Texture.MM_LINEAR, Texture.FM_LINEAR));
 		font.setEnabled(true);
 		
@@ -71,7 +69,7 @@ public class OrthoGameState extends BasicGameState {
 	}
 	
 	/**
-	 * create a crosshair.
+	 * create a crosshair to easely see the center of the screen.
 	 */
 	public void setCrosshair() {
 		AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
@@ -113,7 +111,7 @@ public class OrthoGameState extends BasicGameState {
 	}
 
 	/**
-	 * nothing to clean up.
+	 * not much  to clean up here.
 	 */
 	public void cleanup() {
 		this.textAlphaState = null;

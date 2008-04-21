@@ -1,5 +1,7 @@
 package com.jmedemos.physics_fun.objects;
 
+import java.util.ArrayList;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
@@ -7,12 +9,10 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
-import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.shape.Torus;
 import com.jmedemos.physics_fun.util.MaterialType;
 import com.jmedemos.physics_fun.util.ObjectFactory;
-import com.jmex.font3d.Font3D;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.Joint;
 import com.jmex.physics.PhysicsSpace;
@@ -21,24 +21,44 @@ import com.jmex.physics.StaticPhysicsNode;
 import com.jmex.physics.geometry.PhysicsMesh;
 import com.jmex.physics.material.Material;
 
+/**
+ * A physics Swing.
+ * The Swing is represented by a static Frame build with 4 Cylinders.
+ * On top of the frame lies a cross bar with a dynamic torus attached by joints.
+ * 
+ * @author Christoph Luder
+ */
 public class Swing extends Node {
     private static final long serialVersionUID = 1L;
-    private Joint joint = null;
+    /** static physics node for the frame */
     private StaticPhysicsNode staticNode = null;
+    /** dynamic node for the crossbar and torus */ 
     private DynamicPhysicsNode dynamicNode = null;
-    private int frameAngle = 60;
+    /** angle of the frame cylinders */
+    private int frameAngle = 70;
+    /** length of the frame bars */
+    private int frameLength = 10;
+    /** the joints which attach the torus to the top bar */
+    private ArrayList<Joint> joints = null;
 
+    public static float DEFAULT_SPRING = 70;
+    public static float DEFAULT_DAMPING = 10;
+    
     public Swing(PhysicsSpace space) {
         super("Swing");
+        
+        joints = new ArrayList<Joint>();
+        
         staticNode = space.createStaticNode();
         staticNode.setMaterial(Material.WOOD);
         ObjectFactory.get().applyRenderStates(staticNode, MaterialType.WOOD);
         
         for (int i = 0; i < 4; i++) {
-            Cylinder cyl = new Cylinder("cyl", 10, 10, 0.15f, 7, true);
+            Cylinder cyl = new Cylinder("cyl", 10, 10, 0.15f, frameLength, true);
             cyl.setModelBound(new BoundingBox());
             cyl.updateModelBound();
             Quaternion q = new Quaternion();
+            
             switch(i) {
             case 0:
                 q.fromAngleAxis(FastMath.DEG_TO_RAD * -frameAngle, Vector3f.UNIT_X);
@@ -68,7 +88,7 @@ public class Swing extends Node {
         topCylinderVisual.getLocalRotation().fromAngleAxis(FastMath.DEG_TO_RAD * 90, Vector3f.UNIT_Y);
 
         DynamicPhysicsNode topCylinderNode = space.createDynamicNode();
-        
+        topCylinderNode.setName("top cylinder");
         PhysicsMesh topCylinderMesh = topCylinderNode.createMesh("top cylinder");
         topCylinderMesh.copyFrom(topCylinderVisual);
         topCylinderNode.attachChild(topCylinderMesh);
@@ -84,7 +104,7 @@ public class Swing extends Node {
         topCylinderNode.computeMass();
         
         // let the top cylinder drop from above onto the static cylinders
-        topCylinderNode.setLocalTranslation(0, 3f, 0);
+        topCylinderNode.setLocalTranslation(0, frameLength/2, 0);
         
         staticNode.generatePhysicsGeometry();
         
@@ -110,10 +130,10 @@ public class Swing extends Node {
         
         for (int i = 0; i < 4; i++) {
             // create two joints to fix the torus to the top cylinder
-            joint = space.createJoint();
+            Joint joint = space.createJoint();
             
-//            joint.setSpring( 100, 0 );
-            joint.setBreakingLinearForce( 5000 );
+            joint.setSpring( DEFAULT_SPRING, 20 );
+            joint.setBreakingLinearForce( 10000 );
             
             // we want free rotation around the all Axis
             RotationalJointAxis axisX = joint.createRotationalAxis();
@@ -139,6 +159,34 @@ public class Swing extends Node {
             }
             
             joint.attach(dynamicNode, topCylinderNode);
+            joints.add(joint);
         }
+        
+        // draw ropes from the joint anchor to the top
+        
+    }
+    
+    public void reset() {
+    	DynamicPhysicsNode topCylinder = (DynamicPhysicsNode)this.getChild("top cylinder");
+    	topCylinder.clearDynamics();
+    	topCylinder.setLocalRotation(new Quaternion());
+    	topCylinder.setLocalTranslation(0, frameLength/2, 0);
+    }
+    
+    public void setSpring(float spring) {
+    	for (Joint j : joints) {
+    		j.setSpring(spring, j.getDampingCoefficient());
+    	}
+    }
+    public void setDamping(float damping) {
+    	for (Joint j : joints) {
+    		j.setSpring(j.getSpringConstant(), damping);
+    	}
+    }
+    
+    public void setBreakingForce(float force) {
+    	for (Joint j : joints) {
+    		j.setBreakingLinearForce(force);
+    	}
     }
 }

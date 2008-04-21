@@ -16,12 +16,26 @@ import com.jmex.physics.RotationalJointAxis;
 import com.jmex.physics.StaticPhysicsNode;
 import com.jmex.physics.material.Material;
 
+/**
+ * A physics seesaw.
+ * It consists of a simple Static Box with a Dynamic Board on top of it.
+ * 
+ * @author Christoph Luder
+ */
 public class Seesaw extends Node {
     private static final long serialVersionUID = 1L;
+    
+    /** the joint which keeps the Board in place. */
 	private Joint joint = null;
+	/** the base represented by a box */
 	private StaticPhysicsNode staticBox = null;
+	/** the dynamic board */
 	private DynamicPhysicsNode dynamicBoard = null;
 	
+	/**
+	 * construct the Seesaw.
+	 * @param space reference to a physics space.
+	 */
 	public Seesaw(final PhysicsSpace space) {
 		super("Seesaw");
 		

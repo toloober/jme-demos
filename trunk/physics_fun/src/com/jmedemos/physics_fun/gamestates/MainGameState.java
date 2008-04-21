@@ -8,6 +8,7 @@ import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.util.SyntheticButton;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -39,50 +40,86 @@ import com.jmex.physics.material.Material;
 import com.jmex.physics.util.PhysicsPicker;
 import com.jmex.physics.util.states.PhysicsGameState;
 
+/**
+ * The main GameState.
+ * Creates the Physics Playground.
+ * 
+ * @author Christoph Luder
+ */
 public class MainGameState extends PhysicsGameState {
 	private Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
 	private FirstPersonHandler movementInput = new FirstPersonHandler(cam, 15.0f, 0.5f);
 	private InputHandler input = new InputHandler();
-	private Wall wall = null;
 	private StaticPhysicsNode floor = null;
+	/**
+	 * This quad lies on top of the floor.
+	 * Its only used to display the floor's texture.
+	 */
 	private Quad carpet = null;
+	
+	/**
+	 * The Node where newly created objects are attached to.
+	 */
 	private Node objectsNode = null;
 	private boolean showPhysics = false;
 	private TextureState tsCarpet = null;
 	private PhysicsPicker picker = null;
+
+	/**
+	 * A Wall build with physics objects.
+	 */
+	private Wall wall = null;
 	
+	/**
+	 * a physics swing.
+	 */
+	private Swing swing = null;
+	
+	/**
+	 * a physics seesaw.
+	 */
+	private Seesaw seesaw = null;
+	
+	/**
+	 * Constructs the MainGameState.
+	 * Creates the scene and add the different objects to the Scenegraph.
+	 * 
+	 * @param name name of the GameState
+	 */
 	public MainGameState(String name) {
 		super(name);
 		
-		ObjectFactory.createObjectFactory(getPhysicsSpace());
-		objectsNode = new Node("ball Node");
+		objectsNode = new Node("object Node");
 		rootNode.attachChild(objectsNode);
 		
-		wall = new Wall(getPhysicsSpace(), SceneSettings.get().getWallWidth(), 
-	                                   SceneSettings.get().getWallHeigth(),
-	                                   SceneSettings.get().getWallElementSize());
-
-		wall.setLocalTranslation(0, 0, -3);
-		rootNode.attachChild(wall);
-        
-        createFloor();
-
+		// create the scene
+        picker = new PhysicsPicker( input, rootNode, getPhysicsSpace(), true);
+        picker.getInputHandler().setEnabled(false);
         init();
         setupInput();
         setupLight();
         
-        picker = new PhysicsPicker( input, rootNode, getPhysicsSpace(), true);
-        picker.getInputHandler().setEnabled(false);
+        // add a few obejcts to the scene
+        ObjectFactory.createObjectFactory(getPhysicsSpace());
         
-        Seesaw seesaw = new Seesaw(getPhysicsSpace());
+        createFloor();
+        
+        wall = new Wall(getPhysicsSpace(), SceneSettings.get().getWallWidth(), 
+        		SceneSettings.get().getWallHeigth(),
+        		SceneSettings.get().getWallElementSize());
+        
+        wall.setLocalTranslation(0, 0, -3);
+        rootNode.attachChild(wall);
+        
+        seesaw = new Seesaw(getPhysicsSpace());
         seesaw.setLocalTranslation(-13, -1, 5);
         rootNode.attachChild(seesaw);
         
-        Swing swing = new Swing(getPhysicsSpace());
+        swing = new Swing(getPhysicsSpace());
         swing.setLocalTranslation(15, 3f, 4);
         rootNode.attachChild(swing);
         
-        cam.setLocation(new Vector3f(2, 10, 15));
+        rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();
 	}
 	
@@ -161,7 +198,10 @@ public class MainGameState extends PhysicsGameState {
 	    cs.setEnabled(true);
 	    rootNode.setRenderState(cs);
 	    
-//	    final SyntheticButton collisionEventHandler = getPhysicsSpace().getCollisionEventHandler();
+	    cam.setLocation(new Vector3f(2, 10, 15));
+	    
+	    // add a global collision handler
+	    final SyntheticButton collisionEventHandler = getPhysicsSpace().getCollisionEventHandler();
 //	    input.addAction( new MyCollisionAction(), collisionEventHandler, false );
 	    
 	}
@@ -178,11 +218,19 @@ public class MainGameState extends PhysicsGameState {
 		input.addAction( new InputAction() {
 		    public void performAction( InputActionEvent evt ) {
 		        if ( evt.getTriggerPressed() ) {
-		        	try {
-                        spawnObject();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+		        	spawnObject();
+//		        	try {
+//		            	AudioTrack track = SoundUtil.get().getSound(MaterialType.DEFAULT);
+//		            	RangedAudioTracker tracker = new RangedAudioTracker(track);
+////		            	track.setVolume(Math.min(vel/100, 1));
+//		            	tracker.setAudioTrack(track);
+//		            	tracker.setToTrack(spawnObject());
+//		            	tracker.checkTrackAudible(DisplaySystem.getDisplaySystem().getRenderer().getCamera().getLocation());
+//		            	track.play();
+//                        
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
 		        }
 		    }
 		}, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_SPACE, InputHandler.AXIS_NONE, false );
@@ -282,5 +330,13 @@ public class MainGameState extends PhysicsGameState {
     public PhysicsPicker getPicker() {
         return picker;
     }
+
+	public Swing getSwing() {
+		return swing;
+	}
+
+	public Seesaw getSeesaw() {
+		return seesaw;
+	}
 
 }

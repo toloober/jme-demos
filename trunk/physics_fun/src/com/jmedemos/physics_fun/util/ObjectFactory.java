@@ -18,8 +18,6 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.shape.Cylinder;
-import com.jme.scene.shape.Disk;
-import com.jme.scene.shape.Dome;
 import com.jme.scene.shape.RoundedBox;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Teapot;
@@ -37,6 +35,11 @@ import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.geometry.PhysicsMesh;
 
+/**
+ * An obejct Factory which creates new simple physic objects
+ * like Boxes, Spheres, Cylinders etc. 
+ * @author Christoph Luder
+ */
 public class ObjectFactory {
 	private ObjectType objectType = ObjectType.SPHERE;
 	private static ObjectFactory instance = null;
@@ -245,8 +248,8 @@ public class ObjectFactory {
 		applyRenderStates(visual, material);
 		
 		if (isBasicShape) {
-		    // create geometry automaticly
-		    node.generatePhysicsGeometry();
+		    // create geometry automatically
+		    node.generatePhysicsGeometry(true);
 		} else {
 		    // create a physical copy of the existing mesh
 		    PhysicsMesh mesh = node.createMesh("physics mesh");

@@ -1,15 +1,15 @@
 package com.jmedemos.physics_fun.util;
 
+/**
+ * Singleton class to easely set and get some vales from.
+ * @author Christoph Luder
+ */
 public class SceneSettings {
     private MaterialType wallMaterial = MaterialType.WOOD; 
     private int wallWidth = 5;
     private int wallHeigth = 10;
     private float wallElementSize = 0.5f;
     private static SceneSettings instance = null;
-    
-    private SceneSettings() {
-        
-    }
     
     public static SceneSettings get() {
         if (instance == null) {

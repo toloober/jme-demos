@@ -10,6 +10,10 @@ import com.jmedemos.physics_fun.util.SceneSettings;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 
+/**
+ * A Wall built by dynamic physic boxes.
+ * @author Christoph Luder
+ */
 @SuppressWarnings("serial")
 public class Wall extends Node {
 	private DynamicPhysicsNode[][] boxes = null;
@@ -19,12 +23,20 @@ public class Wall extends Node {
 	
 	private final float OFFS = 0.001f;
 	
+	/**
+	 * Constructs the Wall with a specified width and heigth.
+	 * @param space reference to the physics space.
+	 * @param x width of the wall
+	 * @param y hegth of the wall
+	 * @param bSize scale of the elements.
+	 */
 	public Wall(final PhysicsSpace space, int x, int y, float bSize) {
 		boxes = new DynamicPhysicsNode[x][y];
 		this.x = x;
 		this.y = y;
 		this.bSize = bSize;
 		
+		// apply the renderstates for the specified material
 		ObjectFactory.get().applyRenderStates(this, 
 						SceneSettings.get().getWallMaterial());
 	
@@ -46,6 +58,9 @@ public class Wall extends Node {
 		}
 	}
 
+	/**
+	 * resets the single elements to form a Wall again.
+	 */
 	public void reset() {
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
@@ -56,6 +71,9 @@ public class Wall extends Node {
 		}
 	}
 	
+	/**
+	 * delete and free all objects.
+	 */
 	public void delete() {
 	    for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {

@@ -15,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -24,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jmedemos.physics_fun.core.PhysicsGame;
+import com.jmedemos.physics_fun.objects.Swing;
 import com.jmedemos.physics_fun.objects.Wall;
 import com.jmedemos.physics_fun.util.JFloatSlider;
 import com.jmedemos.physics_fun.util.MaterialType;
@@ -79,22 +81,93 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		}
 		SwingUtilities.updateComponentTreeUI(getDesktop().getJDesktop());
 		
-		getDesktop().getJDesktop().add(createProjectilePanel());
-		getDesktop().getJDesktop().add(createScenePanel());
+		int w = getDesktop().getJDesktop().getWidth();
+        int h = getDesktop().getJDesktop().getHeight();
+		
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
+		tabbedPane.add("Scene", createScenePanel());
+		tabbedPane.addTab("new Objects", createProjectilePanel());
+		tabbedPane.add("Swing", createSwingPanel());
+		
+		tabbedPane.setSize(tabbedPane.getPreferredSize());
+		tabbedPane.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+		
+		tabbedPane.setLocation(20, h - tabbedPane.getHeight()-20);
+		getDesktop().getJDesktop().add(tabbedPane);
 	}
 
+	/**
+	 * creates a JPanel for the Swing object.
+	 */
+	private JPanel createSwingPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
+		
+		GridBagConstraints gc = new GridBagConstraints();
+		gc.fill = GridBagConstraints.HORIZONTAL;
+		gc.gridx = 0;
+	    gc.gridy = 0;
+	    gc.gridwidth = 2;
+	    panel.add(new JLabel("Swing Settings"), gc);
+	    gc.gridwidth = 1;
+	    
+        gc.gridy++;
+        gc.gridx = 0;
+		JButton button = new JButton("Reset Swing");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				main.getSwing().reset();
+			}
+		});
+		panel.add(button, gc);
+        
+        gc.gridx = 0;
+        gc.gridy++;
+        gc.gridwidth = 1;
+        panel.add(new JLabel("Joint Spring"), gc);
+
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        JFloatSlider sld = new JFloatSlider(0.01f, 100, Swing.DEFAULT_SPRING);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getSwing().setSpring(((JFloatSlider)e.getSource()).getFloatValue());
+            }
+        });
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+
+        gc.gridx = 0;
+        gc.gridy++;
+        gc.gridwidth = 1;
+        panel.add(new JLabel("Joint Damping"), gc);
+
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(0.01f, 50, Swing.DEFAULT_DAMPING);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getSwing().setDamping(((JFloatSlider)e.getSource()).getFloatValue());
+            }
+        });
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        
+        panel.add(sld, gc);
+        
+		return panel;
+	}
+	
 	/**
 	 * create a panel to modify the scene.
 	 * @return JPanel 
 	 */
 	private JPanel createScenePanel() {
-	    int w = getDesktop().getJDesktop().getWidth();
-	    int h = getDesktop().getJDesktop().getHeight();
-
 	    GridBagConstraints gc = new GridBagConstraints();
 	    panel = new JPanel(new GridBagLayout());
 	    panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
-
+	    
 	    gc.gridx = 0;
 	    gc.gridy = 0;
 	    gc.gridwidth = 3;
@@ -286,7 +359,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		// set the panels size and location
 		// bottom right corner
 		panel.setSize(panel.getPreferredSize());
-		panel.setLocation(w-panel.getWidth()-10, h-panel.getHeight()-50);
+		
 		
 		return panel;
 	}
@@ -296,12 +369,10 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 	 * @return JPanel with projectile settings.
 	 */
 	private JPanel createProjectilePanel() {
-	    int w = getDesktop().getJDesktop().getWidth();
-	    int h = getDesktop().getJDesktop().getHeight();
-
 	    GridBagConstraints gc = new GridBagConstraints();
 	    panel = new JPanel(new GridBagLayout());
 	    panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+//	    panel.setLocation(10, h-panel.getHeight()-50);
 
 	    gc.gridx = 0;
 	    gc.gridy = 0;
@@ -387,7 +458,6 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		// set the panels size and location
         // bottom left corner
 		panel.setSize(panel.getPreferredSize());
-		panel.setLocation(10, h-panel.getHeight()-50);
         
         return panel;
 	}
