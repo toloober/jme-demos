@@ -13,12 +13,23 @@ import com.jmedemos.physics_fun.renderpass.ReflectRenderPass;
 import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
 
+/**
+ * A Renderpass  GameStates.
+ * This GameState containes a BasiPassManager which renders a
+ * Shadow and Refelction Pass.
+ *  
+ * @author Christoph Luder
+ */
 public class RenderPassGamestate extends GameState {
     private Renderer renderer = DisplaySystem.getDisplaySystem().getRenderer();
     private ShadowedRenderPass shadowPass = null;
     private BasicPassManager pManager = null;
     private ReflectRenderPass reflectRenderPass = null;
     
+    /**
+     * Construct the GameState.
+     * Initialize the PassManager and add a shadow and reflectionpass to it.
+     */
     public RenderPassGamestate() {
         setName("pass");
         Node scene = ((MainGameState)GameStateManager.getInstance().getChild("main")).getRootNode();
@@ -32,6 +43,7 @@ public class RenderPassGamestate extends GameState {
         shadowPass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
         shadowPass.setRenderShadows(true);
         
+        // create the reflection pass in the OpenGL thread
         try {
             GameTaskQueueManager.getManager().update(new Callable<Object>() {
                 public Object call() throws Exception {
@@ -43,6 +55,7 @@ public class RenderPassGamestate extends GameState {
             e.printStackTrace();
         }
 
+        
         reflectRenderPass.setReflectEffectOnSpatial(floor);
         reflectRenderPass.addReflectedScene(wall);
         reflectRenderPass.addReflectedScene(ballNode);
@@ -56,23 +69,19 @@ public class RenderPassGamestate extends GameState {
         
     }
     
+    /**
+     * render the passes.
+     */
     @Override
     public void render(float tpf) {
         pManager.renderPasses(renderer);
     }
     
+    /**
+     * update the passes.
+     */
     @Override
     public void update(float tpf) {
         pManager.updatePasses(tpf);
-    }
-    
-    @Override
-    public void setActive(boolean active) {
-        super.setActive(active);
-        
-        if (active) {
-        } else {
-//            ((MainGameState)GameStateManager.getInstance().getChild("main")).refreshCarpetTexture();
-        }
     }
 }

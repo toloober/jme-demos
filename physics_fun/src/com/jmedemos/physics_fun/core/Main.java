@@ -26,7 +26,7 @@ public class Main {
 		Logger.getLogger("com.jme").setLevel(Level.WARNING);
 		Logger.getLogger("com.jmex").setLevel(Level.WARNING);
 
-		
+		// create a StandardGame instance, set some settings and start it up 
 		PhysicsGame game = PhysicsGame.get();
 		game.getGame().getSettings().setFullscreen(false);
 		game.getGame().getSettings().setWidth(800);
@@ -36,12 +36,14 @@ public class Main {
 		game.getGame().getSettings().setStencilBits(4);
 		game.getGame().getSettings().setDepthBits(24);
 		game.getGame().getSettings().setSamples(4);
-		game.getGame().getSettings().setSFX(false);
+		game.getGame().getSettings().setSFX(true);
 		game.getGame().getSettings().setMusic(false);
 		game.getGame().start();
 		
 		// set up resource paths
 		try {
+			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_AUDIO,
+					new SimpleResourceLocator(Main.class.getClassLoader().getResource("com/jmedemos/physics_fun/resources/")));
 			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE,
 					new SimpleResourceLocator(Main.class.getClassLoader().getResource("com/jmedemos/physics_fun/resources/")));
 			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_SHADER,
@@ -50,8 +52,9 @@ public class Main {
 			PhysicsGame.get().getGame().finish();
 		}
 
+		// create and activate the GameStates
 		GameStateManager.getInstance().attachChild(new MainGameState("main"));
-		// deactivated for now
+		// deactivated for now, eats too much performance
 //		GameStateManager.getInstance().attachChild(new RenderPassGamestate());
 		GameStateManager.getInstance().attachChild(new OrthoGameState("txt"));
 		GameStateManager.getInstance().attachChild(new StatisticsGameState());
