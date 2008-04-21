@@ -282,6 +282,8 @@ public class MainGameState extends PhysicsGameState {
 	@Override
 	public void update(float tpf) {
 		input.update(tpf);
+		swing.update();
+		
 		if (movementInput.isEnabled()) {
 			movementInput.update(tpf);
 		}
