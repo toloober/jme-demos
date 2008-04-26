@@ -1,5 +1,7 @@
 package com.jmedemos.physics_fun.gamestates;
 
+import java.util.Random;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -29,12 +31,16 @@ import com.jmedemos.physics_fun.core.PhysicsGame;
 import com.jmedemos.physics_fun.objects.Seesaw;
 import com.jmedemos.physics_fun.objects.Swing;
 import com.jmedemos.physics_fun.objects.Wall;
+import com.jmedemos.physics_fun.physics.PhysicsWindCallback;
 import com.jmedemos.physics_fun.util.MaterialType;
 import com.jmedemos.physics_fun.util.ObjectFactory;
 import com.jmedemos.physics_fun.util.SceneSettings;
 import com.jmex.game.state.GameStateManager;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsDebugger;
+import com.jmex.physics.PhysicsNode;
+import com.jmex.physics.PhysicsSpace;
+import com.jmex.physics.PhysicsUpdateCallback;
 import com.jmex.physics.StaticPhysicsNode;
 import com.jmex.physics.material.Material;
 import com.jmex.physics.util.PhysicsPicker;
@@ -81,6 +87,11 @@ public class MainGameState extends PhysicsGameState {
 	private Seesaw seesaw = null;
 	
 	/**
+	 * The Wind.
+	 */
+	private PhysicsWindCallback wind = null;
+	
+	/**
 	 * Constructs the MainGameState.
 	 * Creates the scene and add the different objects to the Scenegraph.
 	 * 
@@ -95,11 +106,12 @@ public class MainGameState extends PhysicsGameState {
 		// create the scene
         picker = new PhysicsPicker( input, rootNode, getPhysicsSpace(), true);
         picker.getInputHandler().setEnabled(false);
+        
         init();
         setupInput();
         setupLight();
         
-        // add a few obejcts to the scene
+        // add a few objects to the scene
         ObjectFactory.createObjectFactory(getPhysicsSpace());
         
         createFloor();
@@ -203,7 +215,10 @@ public class MainGameState extends PhysicsGameState {
 	    // add a global collision handler
 	    final SyntheticButton collisionEventHandler = getPhysicsSpace().getCollisionEventHandler();
 //	    input.addAction( new MyCollisionAction(), collisionEventHandler, false );
-	    
+
+	    wind = new PhysicsWindCallback(SceneSettings.get().getWindVariation(),
+	                                    SceneSettings.get().getWindForce());
+	    getPhysicsSpace().addToUpdateCallbacks(wind);
 	}
 	
 	private void setupInput() {
@@ -340,5 +355,9 @@ public class MainGameState extends PhysicsGameState {
 	public Seesaw getSeesaw() {
 		return seesaw;
 	}
+
+    public PhysicsWindCallback getWind() {
+        return wind;
+    }
 
 }

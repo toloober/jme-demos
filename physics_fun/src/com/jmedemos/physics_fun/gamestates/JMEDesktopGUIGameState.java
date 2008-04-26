@@ -88,6 +88,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		tabbedPane.add("Scene", createScenePanel());
 		tabbedPane.addTab("new Objects", createProjectilePanel());
 		tabbedPane.add("Swing", createSwingPanel());
+		tabbedPane.add("Wind", createWindPanel());
 		
 		tabbedPane.setSize(tabbedPane.getPreferredSize());
 		tabbedPane.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
@@ -134,6 +135,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
                 main.getSwing().setSpring(((JFloatSlider)e.getSource()).getFloatValue());
             }
         });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
         sld.setPaintLabels(true);
         sld.setPaintTicks(true);
         panel.add(sld, gc);
@@ -151,6 +153,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
                 main.getSwing().setDamping(((JFloatSlider)e.getSource()).getFloatValue());
             }
         });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
         sld.setPaintLabels(true);
         sld.setPaintTicks(true);
         
@@ -159,6 +162,119 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		return panel;
 	}
 	
+	   /**
+     * creates a JPanel for the Swing object.
+     */
+    private JPanel createWindPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
+        
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.gridwidth = 2;
+        panel.add(new JLabel("Wind Settings"), gc);
+        gc.gridwidth = 1;
+        
+        gc.gridx = 0;
+        gc.gridy++;
+        gc.gridwidth = 1;
+        panel.add(new JLabel("Wind Force"), gc);
+
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        JFloatSlider sld = new JFloatSlider(-10f, 10f, SceneSettings.get().getWindForce().x);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getForce().x = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        sld.setSnapToTicks(true);
+        panel.add(sld, gc);
+
+        gc.gridy ++;
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(-10f, 10f, SceneSettings.get().getWindForce().y);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getForce().y = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+        
+        gc.gridy ++;
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(-10f, 10f, SceneSettings.get().getWindForce().z);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getForce().z = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+        
+        gc.gridx = 0;
+        gc.gridy++;
+        gc.gridwidth = 1;
+        panel.add(new JLabel("Wind Variation"), gc);
+
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(0f, 5, SceneSettings.get().getWindVariation().x);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getVariation().x = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+
+        gc.gridy ++;
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(-0f, 5f, SceneSettings.get().getWindVariation().y);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getVariation().y = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+        
+        gc.gridy ++;
+        gc.gridx = 1;
+        gc.gridwidth = 1;
+        sld = new JFloatSlider(0f, 5f, SceneSettings.get().getWindVariation().z);
+        sld.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                main.getWind().getVariation().z = ((JFloatSlider)e.getSource()).getFloatValue();
+            }
+        });
+        sld.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
+        sld.setPaintLabels(true);
+        sld.setPaintTicks(true);
+        panel.add(sld, gc);
+        
+        panel.add(sld, gc);
+        
+        return panel;
+    }
+	
 	/**
 	 * create a panel to modify the scene.
 	 * @return JPanel 
@@ -166,7 +282,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 	private JPanel createScenePanel() {
 	    GridBagConstraints gc = new GridBagConstraints();
 	    panel = new JPanel(new GridBagLayout());
-	    panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
+	    panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
 	    
 	    gc.gridx = 0;
 	    gc.gridy = 0;
