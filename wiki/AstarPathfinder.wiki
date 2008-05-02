@@ -1,4 +1,5 @@
 #summary Simple A* search algorithm demonstration in jME
+#labels Featured
 
 = A`*` Pathfinding with StandardGame =
 
