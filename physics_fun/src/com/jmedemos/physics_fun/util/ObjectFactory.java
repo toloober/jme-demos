@@ -22,6 +22,7 @@ import com.jme.scene.shape.RoundedBox;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Teapot;
 import com.jme.scene.shape.Torus;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
@@ -49,10 +50,18 @@ public class ObjectFactory {
 	private float force = 750;
 	private Hashtable<MaterialType, ArrayList<RenderState>> rsTable;
 	private Renderer renderer = DisplaySystem.getDisplaySystem().getRenderer();
+	private AlphaState as = null;
 	
 	private ObjectFactory(PhysicsSpace space) {
 	    rsTable = new Hashtable<MaterialType, ArrayList<RenderState>>(MaterialType.values().length);
 	    this.space = space;
+	    
+	    // create a AlphaState for transparent Objects
+        as = renderer.createAlphaState();
+        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setTestFunction(AlphaState.TF_GREATER);
+        as.setBlendEnabled(true);
 	}
 	
 	public static void createObjectFactory(PhysicsSpace space) {
@@ -111,6 +120,8 @@ public class ObjectFactory {
 	    	ms.setSpecular(ColorRGBA.white.clone());
 	        ms.setDiffuse(new ColorRGBA(0.7f, 0.7f, 0.99f, 0.25f));
 	        ms.setShininess(128);
+	        // glass is transparent
+	        rsList.add(as);
 	        break;
 	    case GRANITE:
 	        texture = "granite.jpg";
@@ -121,6 +132,8 @@ public class ObjectFactory {
 	        ms.setSpecular(ColorRGBA.gray.clone());
 	        ms.setDiffuse(new ColorRGBA(0.9f, 0.9f, 1f, 0.7f));
 	        ms.setShininess(100);
+	        // ice can be transparent
+	        rsList.add(as);
 	        break;
 	    case IRON:
 	        ms.setDiffuse(ColorRGBA.gray.clone());

@@ -67,6 +67,7 @@ public class Wall extends Node {
 				boxes[i][j].clearDynamics();
 				boxes[i][j].setLocalTranslation(2*i*bSize+(i*OFFS), 2*j*bSize+(j*OFFS), 0);
 				boxes[i][j].setLocalRotation(new Quaternion());
+				boxes[i][j].updateGeometricState(0, false);
 			}
 		}
 	}

@@ -166,7 +166,16 @@ public class Swing extends Node {
         cs.setCullMode(CullState.CS_NONE);
         bNode.setRenderState(cs);
         bNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-            
+        
+        // dosen't look right yet
+//        AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+//        as.setBlendEnabled(true);
+//        as.setTestEnabled(false);
+//        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+//        as.setDstFunction(AlphaState.DB_ONE);
+//        as.setEnabled(true);
+//        bNode.setRenderState(as);
+        
         for (int i = 0; i < 4; i++) {
             // create joints to fix the torus to the top cylinder
             Joint joint = space.createJoint();
@@ -203,7 +212,7 @@ public class Swing extends Node {
             Quad rope = new Quad("rope", 0.1f, topCylinderNode.getLocalTranslation().distance(joint.getAnchor(null).add(torusNode.getLocalTranslation())));
             rope.setModelBound(new BoundingBox());
             rope.updateModelBound();
-            
+
             Vector3f topLeft = topCylinderNode.getLocalTranslation().clone();
             topLeft.x -= ropeWidth;
             Vector3f topRight = topCylinderNode.getLocalTranslation().clone();
@@ -238,17 +247,27 @@ public class Swing extends Node {
     	torusNode.setLocalTranslation(0, 0, 0);
     }
     
+    /**
+     * @param spring new spring value
+     */
     public void setSpring(float spring) {
     	for (Joint j : joints) {
     		j.setSpring(spring, j.getDampingCoefficient());
     	}
     }
+    
+    /**
+     * @param damping new damping value
+     */
     public void setDamping(float damping) {
     	for (Joint j : joints) {
     		j.setSpring(j.getSpringConstant(), damping);
     	}
     }
     
+    /**
+     * @param force new breaking force value
+     */
     public void setBreakingForce(float force) {
     	for (Joint j : joints) {
     		j.setBreakingLinearForce(force);

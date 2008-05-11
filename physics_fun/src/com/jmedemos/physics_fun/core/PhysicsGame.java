@@ -4,8 +4,7 @@ import com.jmex.game.StandardGame;
 
 /**
  * Singleton wrapper for StandardGame.
- * This is needed to be able shutdown the Game when something unexcepted happens.
- * 
+ * This is needed to be able shutdown the Game when something unexpected happens.
  * @author Christoph Luder
  */
 public class PhysicsGame {
@@ -15,7 +14,9 @@ public class PhysicsGame {
 	private PhysicsGame() {
 		game = new StandardGame("physics fun");
 	}
-	
+	/**
+	 * @return the PhysicsGame instance.
+	 */
 	public static PhysicsGame get() {
 		if (instance == null) {
 			instance = new PhysicsGame();
@@ -23,6 +24,9 @@ public class PhysicsGame {
 		return instance;
 	}
 	
+	/**
+	 * @return the standardGame instance.
+	 */
 	public StandardGame getGame() {
 		return game;
 	}
