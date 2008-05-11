@@ -15,8 +15,8 @@ import com.jmex.game.state.GameStateManager;
 
 /**
  * A Renderpass  GameStates.
- * This GameState containes a BasiPassManager which renders a
- * Shadow and Refelction Pass.
+ * This GameState contains a BasiPassManager which renders a
+ * Shadow and Reflection Pass.
  *  
  * @author Christoph Luder
  */
@@ -36,9 +36,10 @@ public class RenderPassGamestate extends GameState {
         Quad floor = ((MainGameState)GameStateManager.getInstance().getChild("main")).getCarpet();
         Node wall = ((MainGameState)GameStateManager.getInstance().getChild("main")).getWall();
         Node ballNode = ((MainGameState)GameStateManager.getInstance().getChild("main")).getBallNode();
+        
         pManager = new BasicPassManager();
         shadowPass = new ShadowedRenderPass();
-        shadowPass.add(scene);
+        shadowPass.add(floor);
         shadowPass.addOccluder(scene);
         shadowPass.setLightingMethod(ShadowedRenderPass.MODULATIVE);
         shadowPass.setRenderShadows(true);
@@ -60,13 +61,12 @@ public class RenderPassGamestate extends GameState {
         reflectRenderPass.addReflectedScene(wall);
         reflectRenderPass.addReflectedScene(ballNode);
         
-        pManager.add(reflectRenderPass);
         pManager.add(shadowPass);
+        pManager.add(reflectRenderPass);
     }
     
     @Override
     public void cleanup() {
-        
     }
     
     /**

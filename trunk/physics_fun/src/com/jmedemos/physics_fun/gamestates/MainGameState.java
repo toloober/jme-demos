@@ -1,7 +1,5 @@
 package com.jmedemos.physics_fun.gamestates;
 
-import java.util.Random;
-
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -10,7 +8,6 @@ import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jme.input.util.SyntheticButton;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -20,12 +17,12 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.util.geom.Debugger;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.physics_fun.core.PhysicsGame;
 import com.jmedemos.physics_fun.objects.Seesaw;
@@ -38,9 +35,6 @@ import com.jmedemos.physics_fun.util.SceneSettings;
 import com.jmex.game.state.GameStateManager;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsDebugger;
-import com.jmex.physics.PhysicsNode;
-import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.PhysicsUpdateCallback;
 import com.jmex.physics.StaticPhysicsNode;
 import com.jmex.physics.material.Material;
 import com.jmex.physics.util.PhysicsPicker;
@@ -53,10 +47,15 @@ import com.jmex.physics.util.states.PhysicsGameState;
  * @author Christoph Luder
  */
 public class MainGameState extends PhysicsGameState {
+    /** reference to the camera */
 	private Camera cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
-	private FirstPersonHandler movementInput = new FirstPersonHandler(cam, 15.0f, 0.5f);
+	/** we want to move the camera first person style */
+	private FirstPersonHandler movementInput = null;
+	/** InputHandler for the physics picker and basic command */
 	private InputHandler input = new InputHandler();
+	/** the static floor */
 	private StaticPhysicsNode floor = null;
+	
 	/**
 	 * This quad lies on top of the floor.
 	 * Its only used to display the floor's texture.
@@ -68,6 +67,7 @@ public class MainGameState extends PhysicsGameState {
 	 */
 	private Node objectsNode = null;
 	private boolean showPhysics = false;
+	private boolean showBounds = false;
 	private TextureState tsCarpet = null;
 	private PhysicsPicker picker = null;
 
@@ -99,7 +99,6 @@ public class MainGameState extends PhysicsGameState {
 	 */
 	public MainGameState(String name) {
 		super(name);
-		
 		objectsNode = new Node("object Node");
 		rootNode.attachChild(objectsNode);
 		
@@ -114,7 +113,7 @@ public class MainGameState extends PhysicsGameState {
         // add a few objects to the scene
         ObjectFactory.createObjectFactory(getPhysicsSpace());
         
-        createFloor();
+        createFloor(50, 50);
         
         wall = new Wall(getPhysicsSpace(), SceneSettings.get().getWallWidth(), 
         		SceneSettings.get().getWallHeigth(),
@@ -131,6 +130,9 @@ public class MainGameState extends PhysicsGameState {
         swing.setLocalTranslation(15, 3f, 4);
         rootNode.attachChild(swing);
         
+//        Flag flag = new Flag(getPhysicsSpace(), new Vector3f(30, 0, -15), 10, 0.2f);
+//        rootNode.attachChild(flag);
+        
         rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();
 	}
@@ -140,7 +142,7 @@ public class MainGameState extends PhysicsGameState {
 	 * a large flat box is used as physical representation.
 	 * on top of that we lay a Quad with the floor Texture on it.
 	 */
-	private void createFloor() {
+	private void createFloor(float width, float length) {
 	    Texture tex = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"floor.png"),
                 Texture.MM_LINEAR, Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
@@ -148,8 +150,8 @@ public class MainGameState extends PhysicsGameState {
         tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
         TextureState tsCarpet = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsCarpet.setTexture(tex);
-        
-        Box f = new Box("vis floor", new Vector3f(), 25, 1.0f, 25);
+
+        Box f = new Box("vis floor", new Vector3f(), width, 1.0f, length);
         f.setModelBound(new BoundingBox());
         f.updateModelBound();
         floor = getPhysicsSpace().createStaticNode();
@@ -159,7 +161,7 @@ public class MainGameState extends PhysicsGameState {
         floor.setLocalTranslation(0, -1.5f, 0);
         rootNode.attachChild(floor);
 
-        carpet = new Quad("carpet", 50, 50);
+        carpet = new Quad("carpet", width*2, length*2);
         carpet.setModelBound(new BoundingBox());
         carpet.updateModelBound();
         carpet.getLocalRotation().fromAngleAxis(FastMath.DEG_TO_RAD * -90, Vector3f.UNIT_X);
@@ -169,24 +171,24 @@ public class MainGameState extends PhysicsGameState {
         carpet.setRenderState(tsCarpet);
         rootNode.attachChild(carpet);
         
-        Box backWall = new Box("back wall", new Vector3f(), 25, 5, 1);
+        Box backWall = new Box("back wall", new Vector3f(), width/2, 5, 1);
         backWall.setModelBound(new BoundingBox());
         backWall.updateModelBound();
         ObjectFactory.get().applyRenderStates(backWall, MaterialType.CONCRETE);
         final StaticPhysicsNode staticBackWall = getPhysicsSpace().createStaticNode();
         staticBackWall.attachChild(backWall);
         staticBackWall.generatePhysicsGeometry();
-        staticBackWall.setLocalTranslation(0, 5, -25);
+        staticBackWall.setLocalTranslation(0, 5, -width/2);
         rootNode.attachChild(staticBackWall);
         
-        Box leftWall = new Box("left wall", new Vector3f(), 1, 5, 25);
+        Box leftWall = new Box("left wall", new Vector3f(), 1, 5, width/2);
         leftWall.setModelBound(new BoundingBox());
         leftWall.updateModelBound();
         ObjectFactory.get().applyRenderStates(leftWall, MaterialType.CONCRETE);
         final StaticPhysicsNode staticLeftWall = getPhysicsSpace().createStaticNode();
         staticLeftWall.attachChild(leftWall);
         staticLeftWall.generatePhysicsGeometry();
-        staticLeftWall.setLocalTranslation(-25, 5, 0);
+        staticLeftWall.setLocalTranslation(-width/2, 5, 0);
         rootNode.attachChild(staticLeftWall);
 	}
 	
@@ -196,31 +198,32 @@ public class MainGameState extends PhysicsGameState {
 	}
 	
 	private void init() {
-	    AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-        as.setEnabled(true);
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        rootNode.setRenderState(as);
-        rootNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-        rootNode.setLightCombineMode(LightState.REPLACE);
+	    // we attach transparent objects to this node, so it must be
+	    // rendered in the transparent bucket
+	    objectsNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 	    
 	    CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
 	    cs.setCullMode(CullState.CS_BACK);
 	    cs.setEnabled(true);
 	    rootNode.setRenderState(cs);
 	    
+	    // create a first person controller to move the Camera with W,A,S,D and mouse look
+	    movementInput = new FirstPersonHandler(cam, 15.0f, 0.5f);
+	    // move the camera a bit backwards and up
 	    cam.setLocation(new Vector3f(2, 10, 15));
 	    
-	    // add a global collision handler
-	    final SyntheticButton collisionEventHandler = getPhysicsSpace().getCollisionEventHandler();
-//	    input.addAction( new MyCollisionAction(), collisionEventHandler, false );
-
+	    // create a Physics update callback, to simulate basic wind force
 	    wind = new PhysicsWindCallback(SceneSettings.get().getWindVariation(),
 	                                    SceneSettings.get().getWindForce());
 	    getPhysicsSpace().addToUpdateCallbacks(wind);
 	}
 	
+	/**
+	 * set up some key actions.
+	 * - SPACE to release a new object,
+	 * - ESC to quit the game
+	 * - TAB to enable / disable the GUI GameState
+	 */
 	private void setupInput() {
 		input.addAction( new InputAction() {
 			public void performAction( InputActionEvent evt ) {
@@ -234,18 +237,6 @@ public class MainGameState extends PhysicsGameState {
 		    public void performAction( InputActionEvent evt ) {
 		        if ( evt.getTriggerPressed() ) {
 		        	spawnObject();
-//		        	try {
-//		            	AudioTrack track = SoundUtil.get().getSound(MaterialType.DEFAULT);
-//		            	RangedAudioTracker tracker = new RangedAudioTracker(track);
-////		            	track.setVolume(Math.min(vel/100, 1));
-//		            	tracker.setAudioTrack(track);
-//		            	tracker.setToTrack(spawnObject());
-//		            	tracker.checkTrackAudible(DisplaySystem.getDisplaySystem().getRenderer().getCamera().getLocation());
-//		            	track.play();
-//                        
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
 		        }
 		    }
 		}, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_SPACE, InputHandler.AXIS_NONE, false );
@@ -265,6 +256,9 @@ public class MainGameState extends PhysicsGameState {
 		}, InputHandler.DEVICE_KEYBOARD, KeyInput.KEY_TAB, InputHandler.AXIS_NONE, false );
 	}
 
+	/**
+	 * create some light sources to illuminate the scene.
+	 */
 	private void setupLight() {
 		LightState ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
 
@@ -274,16 +268,22 @@ public class MainGameState extends PhysicsGameState {
         dr1.setDiffuse(ColorRGBA.white.clone());
         dr1.setDirection(new Vector3f(-0.2f, -0.3f, -0.4f).normalizeLocal());
         dr1.setShadowCaster(true);
-		
+
         ls.attach(dr1);
 		ls.setEnabled(true);
-		
 		ls.setGlobalAmbient(new ColorRGBA(0.6f, 0.6f, 0.6f, 1.0f));
-		
 		ls.setTwoSidedLighting(false);
+
 		rootNode.setRenderState(ls);
 	}
 
+	/**
+	 * create a new Object.
+	 * The ObjectFactory create an object depending on what we selected in the GUI GameState.
+	 * - the new Object gets attached to the objectNode,
+	 * - is moved a bit in front of the camera
+	 * - and finally we add force to it.
+	 */
 	private void spawnObject() {
 		DynamicPhysicsNode node = ObjectFactory.get().createObject();
 		node.setName("physics node");
@@ -292,8 +292,14 @@ public class MainGameState extends PhysicsGameState {
 		node.addForce(cam.getDirection().mult(ObjectFactory.get().getForce()));
 		objectsNode.attachChild(node);
 		objectsNode.updateRenderState();
+		objectsNode.updateGeometricState(0, false);
 	}
 
+	/**
+	 * we update the input controllers and some physic object if needed,
+	 * then we update the physics world and call updateGeometricstate()
+	 * happens in super.update().
+	 */
 	@Override
 	public void update(float tpf) {
 		input.update(tpf);
@@ -305,15 +311,21 @@ public class MainGameState extends PhysicsGameState {
 		super.update(tpf);
 	}
 
+	/**
+	 * render the scene, draw bounds or physics if needed.
+	 */
 	@Override
 	public void render(float tpf) {
 	    super.render(tpf);
 	    if (showPhysics) {
-	        rootNode.updateGeometricState(0, false);
-	        PhysicsDebugger.drawPhysics(getPhysicsSpace(), 
+	        PhysicsDebugger.drawPhysics(getPhysicsSpace(),
 	                DisplaySystem.getDisplaySystem().getRenderer());
 	    }
-
+	    
+	    if (showBounds) {
+	        Debugger.drawBounds(getRootNode(),
+	                DisplaySystem.getDisplaySystem().getRenderer());
+	    }
 	}
 
 	public Wall getWall() {
@@ -360,4 +372,7 @@ public class MainGameState extends PhysicsGameState {
         return wind;
     }
 
+    public void setShowBounds(boolean showBounds) {
+        this.showBounds = showBounds;
+    }
 }
