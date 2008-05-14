@@ -1,4 +1,6 @@
+#summary A Playground to experiment with jME Physics through a jMEDesktop GUI
 #labels Phase-Implementation,Featured
+
 PhysicsFun is a little Playground to experiment and play with jME Physics.
 Some things you can do in PhysicsFun are:
   * create Objects with different Basic-Shapes and Physics-Materials and see how they react with each other.
