@@ -17,4 +17,3 @@ some of the things used in physics fun:
   * StandardGame
   * GameStates 
   * jMEDesktopState for the GUI
-  * Shadow and Reflection RenderPasses (which is a bit buggy and a perfomance eater)
