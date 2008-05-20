@@ -21,7 +21,7 @@ public class Wall extends Node {
 	private int y;
 	private float bSize = 1;
 	
-	private final float OFFS = 0.001f;
+	private final float OFFS = 0.000001f;
 	
 	/**
 	 * Constructs the Wall with a specified width and heigth.

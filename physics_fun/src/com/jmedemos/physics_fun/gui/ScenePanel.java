@@ -3,6 +3,7 @@ package com.jmedemos.physics_fun.gui;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -46,6 +47,7 @@ public class ScenePanel extends JPanel {
         }
         
         GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(2,2,2,2);
         setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
         
         gc.gridx = 0;
@@ -63,18 +65,27 @@ public class ScenePanel extends JPanel {
         gc.gridy = 2;
         gc.gridheight = 10;
         gc.fill = GridBagConstraints.VERTICAL;
-        JSlider sldGravity = new JFloatSlider(-10, 10, main.getPhysicsSpace().getDirectionalGravity(null).y);
+        final JSlider sldGravity = new JFloatSlider(-10, 10, main.getPhysicsSpace().getDirectionalGravity(null).y);
         sldGravity.setPaintTicks(true);
         sldGravity.setOrientation(JSlider.VERTICAL);
         sldGravity.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 main.getPhysicsSpace().setDirectionalGravity(new Vector3f(0,
                         ((JFloatSlider)e.getSource()).getFloatValue(), 0));
-                        lbl.setText("BlaBla: " +((JFloatSlider)e.getSource()).getFloatValue() );
             }
         });
         sldGravity.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
         add(sldGravity, gc);
+        
+        gc.gridy = 13;
+        JButton zero= new JButton("zero gravity");
+        zero.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                main.getPhysicsSpace().setDirectionalGravity(new Vector3f(0, 0, 0));
+                sldGravity.setValue(0);
+            }
+        });
+        add(zero, gc);
         
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.gridheight = 1;
@@ -109,17 +120,7 @@ public class ScenePanel extends JPanel {
         });
         add(unrest, gc);
         
-        gc.gridy ++;
-        gc.gridx = 0;
-        
-        JButton button = new JButton("remove projectiles");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ObjectFactory.get().removeAllPhysicObjects(main.getBallNode());
-            }
-        });
-        add(button, gc);
-        
+      
         gc.gridy++;
         gc.gridx = 0;
         

@@ -3,6 +3,7 @@ package com.jmedemos.physics_fun.gamestates;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,8 +39,8 @@ import com.jmex.awt.swingui.JMEDesktopState;
 public class JMEDesktopGUIGameState extends JMEDesktopState {
     /** a reference to the main gamestate to access the physics objects */
     private MainGameState main = null;
-	
-	/**
+
+    /**
 	 * Constructs the GUI GameState.
 	 * @param name GameStates name.
 	 */
@@ -80,7 +81,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		tabbedPane.add("Scene", new ScenePanel(main));
 		tabbedPane.addTab("new Objects", createProjectilePanel());
 		tabbedPane.add("Wall", new WallPanel(main));
-		tabbedPane.add("Swing", createSwingPanel());
+//		tabbedPane.add("Swing", createSwingPanel());
 		tabbedPane.add("Wind", createWindPanel());
 		
 		tabbedPane.setSize(tabbedPane.getPreferredSize());
@@ -98,6 +99,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 		panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
 		
 		GridBagConstraints gc = new GridBagConstraints();
+		gc.insets = new Insets(2,2,2,2);
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		gc.gridx = 0;
 	    gc.gridy = 0;
@@ -161,8 +163,8 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
     private JPanel createWindPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.95f));
-        
         GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(2,2,2,2);
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.gridx = 0;
         gc.gridy = 0;
@@ -226,6 +228,7 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
 	 */
 	private JPanel createProjectilePanel() {
 	    GridBagConstraints gc = new GridBagConstraints();
+	    gc.insets = new Insets(2,2,2,2);
 	    JPanel panel = new JPanel(new GridBagLayout());
 	    panel.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
 
@@ -310,6 +313,17 @@ public class JMEDesktopGUIGameState extends JMEDesktopState {
         comboMaterial.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
         panel.add(comboMaterial, gc);
      
+        gc.gridy ++;
+        gc.gridx = 1;
+        
+        JButton button = new JButton("remove created objects");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ObjectFactory.get().removeAllPhysicObjects(main.getBallNode());
+            }
+        });
+        panel.add(button, gc);
+        
 		// set the panels size and location
         // bottom left corner
 		panel.setSize(panel.getPreferredSize());

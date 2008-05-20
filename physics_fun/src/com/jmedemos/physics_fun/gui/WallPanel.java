@@ -3,6 +3,7 @@ package com.jmedemos.physics_fun.gui;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
@@ -43,6 +44,7 @@ public class WallPanel extends JPanel {
         }
         
         GridBagConstraints gc = new GridBagConstraints();
+        gc.insets = new Insets(2,2,2,2);
         gc.fill = GridBagConstraints.HORIZONTAL;
         this.setBackground(new Color(0.5f, 0.5f, 0.5f, 0.75f));
         

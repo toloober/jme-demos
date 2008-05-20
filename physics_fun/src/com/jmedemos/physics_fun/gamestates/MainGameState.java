@@ -9,14 +9,12 @@ import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.light.DirectionalLight;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -36,7 +34,6 @@ import com.jmex.game.state.GameStateManager;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsDebugger;
 import com.jmex.physics.StaticPhysicsNode;
-import com.jmex.physics.material.Material;
 import com.jmex.physics.util.PhysicsPicker;
 import com.jmex.physics.util.states.PhysicsGameState;
 
@@ -55,41 +52,26 @@ public class MainGameState extends PhysicsGameState {
 	private InputHandler input = new InputHandler();
 	/** the static floor */
 	private StaticPhysicsNode floor = null;
-	
-	/**
-	 * This quad lies on top of the floor.
-	 * Its only used to display the floor's texture.
-	 */
-	private Quad carpet = null;
-	
-	/**
-	 * The Node where newly created objects are attached to.
-	 */
+	/** The Node where newly created objects are attached to. */
 	private Node objectsNode = null;
+	
+	/** should the physics debug view be rendereed */ 
 	private boolean showPhysics = false;
+	/** should the bounding boxes be rendered */
 	private boolean showBounds = false;
-	private TextureState tsCarpet = null;
-	private PhysicsPicker picker = null;
 
-	/**
-	 * A Wall build with physics objects.
-	 */
+	/** the physics picker */
+	private PhysicsPicker picker = null;
+	/** The physics Wind. */
+	private PhysicsWindCallback wind = null;
+
+	/** A Wall built with physics objects. */
 	private Wall wall = null;
-	
-	/**
-	 * a physics swing.
-	 */
+	/** a physics swing. */
 	private Swing swing = null;
-	
-	/**
-	 * a physics seesaw.
-	 */
+	/** a physics seesaw. */
 	private Seesaw seesaw = null;
 	
-	/**
-	 * The Wind.
-	 */
-	private PhysicsWindCallback wind = null;
 	
 	/**
 	 * Constructs the MainGameState.
@@ -99,6 +81,8 @@ public class MainGameState extends PhysicsGameState {
 	 */
 	public MainGameState(String name) {
 		super(name);
+		
+		// the node where newly created objects get attached to
 		objectsNode = new Node("object Node");
 		rootNode.attachChild(objectsNode);
 		
@@ -114,6 +98,7 @@ public class MainGameState extends PhysicsGameState {
         ObjectFactory.createObjectFactory(getPhysicsSpace());
         
         createFloor(50, 50);
+        createOuterWalls(75);
         
         wall = new Wall(getPhysicsSpace(), SceneSettings.get().getWallWidth(), 
         		SceneSettings.get().getWallHeigth(),
@@ -126,21 +111,16 @@ public class MainGameState extends PhysicsGameState {
         seesaw.setLocalTranslation(-13, -1, 5);
         rootNode.attachChild(seesaw);
         
-        swing = new Swing(getPhysicsSpace());
-        swing.setLocalTranslation(15, 3f, 4);
-        rootNode.attachChild(swing);
-        
-//        Flag flag = new Flag(getPhysicsSpace(), new Vector3f(30, 0, -15), 10, 0.2f);
-//        rootNode.attachChild(flag);
+//        swing = new Swing(getPhysicsSpace());
+//        swing.setLocalTranslation(15, 3f, 4);
+//        rootNode.attachChild(swing);
         
         rootNode.updateGeometricState(0, true);
         rootNode.updateRenderState();
 	}
 	
 	/**
-	 * creates the floor.
-	 * a large flat box is used as physical representation.
-	 * on top of that we lay a Quad with the floor Texture on it.
+	 * creates the floor and two walls standing on the floor.
 	 */
 	private void createFloor(float width, float length) {
 	    Texture tex = TextureManager.loadTexture(
@@ -151,52 +131,53 @@ public class MainGameState extends PhysicsGameState {
         TextureState tsCarpet = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsCarpet.setTexture(tex);
 
-        Box f = new Box("vis floor", new Vector3f(), width, 1.0f, length);
-        f.setModelBound(new BoundingBox());
-        f.updateModelBound();
-        floor = getPhysicsSpace().createStaticNode();
-        floor.attachChild(f);
-        floor.generatePhysicsGeometry();
-        floor.setMaterial(Material.CONCRETE);
-        floor.setLocalTranslation(0, -1.5f, 0);
+        StaticPhysicsNode floor = makeWall("floor", width, 0.5f, length, new Vector3f(0, -1, 0), null);
+        floor.setRenderState(tsCarpet);
         rootNode.attachChild(floor);
 
-        carpet = new Quad("carpet", width*2, length*2);
-        carpet.setModelBound(new BoundingBox());
-        carpet.updateModelBound();
-        carpet.getLocalRotation().fromAngleAxis(FastMath.DEG_TO_RAD * -90, Vector3f.UNIT_X);
-        carpet.getLocalTranslation().set(f.getLocalTranslation());
-        carpet.getLocalTranslation().y -= ((BoundingBox)f.getWorldBound()).yExtent/2;
-        carpet.getLocalTranslation().y += 0.01f;
-        carpet.setRenderState(tsCarpet);
-        rootNode.attachChild(carpet);
-        
-        Box backWall = new Box("back wall", new Vector3f(), width/2, 5, 1);
-        backWall.setModelBound(new BoundingBox());
-        backWall.updateModelBound();
-        ObjectFactory.get().applyRenderStates(backWall, MaterialType.CONCRETE);
-        final StaticPhysicsNode staticBackWall = getPhysicsSpace().createStaticNode();
-        staticBackWall.attachChild(backWall);
-        staticBackWall.generatePhysicsGeometry();
-        staticBackWall.setLocalTranslation(0, 5, -width/2);
-        rootNode.attachChild(staticBackWall);
-        
-        Box leftWall = new Box("left wall", new Vector3f(), 1, 5, width/2);
-        leftWall.setModelBound(new BoundingBox());
-        leftWall.updateModelBound();
-        ObjectFactory.get().applyRenderStates(leftWall, MaterialType.CONCRETE);
-        final StaticPhysicsNode staticLeftWall = getPhysicsSpace().createStaticNode();
-        staticLeftWall.attachChild(leftWall);
-        staticLeftWall.generatePhysicsGeometry();
-        staticLeftWall.setLocalTranslation(-width/2, 5, 0);
-        rootNode.attachChild(staticLeftWall);
+        rootNode.attachChild(makeWall("back wall", width/2, 5, 1, new Vector3f(0, 5, -width/2), MaterialType.GRANITE));
+        rootNode.attachChild(makeWall("left wall", 1, 5, width/2, new Vector3f(-width/2, 5, 0), MaterialType.GRANITE));
 	}
 	
-	public void refreshCarpetTexture() {
-	    carpet.setRenderState(tsCarpet);
-	    carpet.updateRenderState();
+	/**
+	 * create the outer boundaries of the scene.
+	 * 6 walls prevent object from falling endlessly thourgh the world.
+	 */
+	public void createOuterWalls(float size) {
+	    rootNode.attachChild(makeWall("top",    size, 1, size, new Vector3f(0, size, 0),  MaterialType.GLASS));
+	    rootNode.attachChild(makeWall("bottom", size, 1, size, new Vector3f(0, -size/2, 0), MaterialType.GLASS));
+	    rootNode.attachChild(makeWall("left",   1, size, size, new Vector3f(-size, 0, 0),  MaterialType.GLASS));
+	    rootNode.attachChild(makeWall("right",  1, size, size, new Vector3f(size, 0, 0),  MaterialType.GLASS));
+	    rootNode.attachChild(makeWall("back",   size, size, 1, new Vector3f(0, 0, -size), MaterialType.GLASS));
+	    rootNode.attachChild(makeWall("front",  size, size, 1, new Vector3f(0, 0, size),  MaterialType.GLASS));
 	}
 	
+	/**
+	 * a simple helper method to create a static physic wall.
+	 * @param name node name
+	 * @param x x extent
+	 * @param y y extent
+	 * @param z z extent
+	 * @param loc location
+	 * @param type type of material/texture
+	 * @return staticPhysicNode with the attached box
+	 */
+	public StaticPhysicsNode makeWall(String name, float x, float y ,float z, Vector3f loc, MaterialType type) {
+	    Box box = new Box(name, new Vector3f(), x, y, z);
+	    box.setModelBound(new BoundingBox());
+	    box.updateModelBound();
+	    if (type != null)
+	        ObjectFactory.get().applyRenderStates(box, type);
+	    StaticPhysicsNode physicWall = getPhysicsSpace().createStaticNode();
+	    physicWall.attachChild(box);
+	    physicWall.setLocalTranslation(loc);
+	    physicWall.generatePhysicsGeometry();
+	    return physicWall;
+	}
+	
+	/**
+	 * Initializes the rootNodes RenderStates, initializes the Camera and 
+	 */
 	private void init() {
 	    // we attach transparent objects to this node, so it must be
 	    // rendered in the transparent bucket
@@ -298,12 +279,12 @@ public class MainGameState extends PhysicsGameState {
 	/**
 	 * we update the input controllers and some physic object if needed,
 	 * then we update the physics world and call updateGeometricstate()
-	 * happens in super.update().
+	 * which happens in super.update().
 	 */
 	@Override
 	public void update(float tpf) {
 		input.update(tpf);
-		swing.update();
+//		swing.update();
 		
 		if (movementInput.isEnabled()) {
 			movementInput.update(tpf);
@@ -338,10 +319,6 @@ public class MainGameState extends PhysicsGameState {
 
     public Node getBallNode() {
         return objectsNode;
-    }
-
-    public Quad getCarpet() {
-        return carpet;
     }
 
 	public boolean isShowPhysics() {

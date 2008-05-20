@@ -40,7 +40,7 @@ public class Main {
 		game.getGame().getSettings().setMusic(false);
 		game.getGame().start();
 		
-		// set up resource paths
+		// set up resource search paths
 		try {
 			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_AUDIO,
 					new SimpleResourceLocator(Main.class.getClassLoader().getResource("com/jmedemos/physics_fun/resources/")));
@@ -54,8 +54,6 @@ public class Main {
 
 		// create and activate the GameStates
 		GameStateManager.getInstance().attachChild(new MainGameState("main"));
-		// deactivated for now, eats too much performance
-//		GameStateManager.getInstance().attachChild(new RenderPassGamestate());
 		GameStateManager.getInstance().attachChild(new OrthoGameState("txt"));
 		GameStateManager.getInstance().attachChild(new StatisticsGameState());
 		GameStateManager.getInstance().activateAllChildren();
