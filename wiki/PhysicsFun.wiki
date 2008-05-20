@@ -7,7 +7,7 @@ Some things you can do in PhysicsFun are:
   * modify different settings like gravity, wind, autoRestThreshold  etc.
 
 = screenshots =
-http://img143.imageshack.us/img143/5047/seesawkj1.jpg
+http://img362.imageshack.us/img362/7109/fun1kx0.jpg
 
 in motion:
 http://www.youtube.com/watch?v=FPk3ARoXt0k
