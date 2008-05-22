@@ -1,0 +1,7 @@
+#summary A Arcade Space Game
+
+= Introduction =
+Stardust at the moment still very incomplete and not very nicely structured.
+
+
+you can check out the source via svn: http://code.google.com/p/jme-demos/source/browse/trunk/stardust 
