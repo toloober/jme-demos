@@ -31,7 +31,7 @@ public class MissileProjectile extends Projectile {
         
         setLifeTime(20);
         setSpeed(3000);
-        Spatial model = ModelUtil.get().loadModel("data/models/missile.obj", "data/textures");
+        Spatial model = ModelUtil.get().loadModel("missile.obj");
         MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         ms.setEmissive(ColorRGBA.yellow);
         ms.setAmbient(ColorRGBA.yellow);

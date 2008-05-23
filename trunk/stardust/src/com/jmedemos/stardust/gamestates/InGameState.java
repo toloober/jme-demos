@@ -146,10 +146,10 @@ public class InGameState extends PhysicsGameState {
 
         // create the Player
         player = new PlayerShip("player", getRootNode(), getPhysicsSpace(),
-                "data/models/xwing.obj", 0.7f, missileCam);
+                "xwing.obj", 0.7f, missileCam);
         rootNode.attachChild(player.getNode());
         EntityManager.get().addEntity(player);
-        SoundUtil.get().addFx("/data/sounds/shoot.wav", player.getNode());
+        SoundUtil.get().addFx("shoot.wav", player.getNode());
         
         HealthPowerUp health = PowerUpManager.get().createHealthPowerUp();
         health.getNode().getLocalTranslation().z = 1000;

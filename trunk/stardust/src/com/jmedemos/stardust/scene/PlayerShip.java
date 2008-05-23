@@ -26,15 +26,14 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.controls.ControlManager;
-import com.jmedemos.stardust.core.Game;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.actions.ShipMissileAction;
 import com.jmedemos.stardust.scene.actions.ShipWeaponAction;
 import com.jmedemos.stardust.scene.projectile.ProjectileFactory;
 import com.jmedemos.stardust.scene.projectile.ProjectileFactory.ProjectileType;
 import com.jmedemos.stardust.sound.SoundUtil;
+import com.jmedemos.stardust.util.ModelUtil;
 import com.jmedemos.stardust.util.PhysicsThrustController;
-import com.jmex.model.util.ModelLoader;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.callback.FrictionCallback;
@@ -90,12 +89,8 @@ public class PlayerShip extends Entity {
     	damage = 10;
         
     	Spatial model = null;
-        try {
-            model = ModelLoader.loadModel(modelString);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Game.getInstance().quit();
-        }
+        model = ModelUtil.get().loadModel(modelString);
+        
         model.setLocalScale(scale);
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
