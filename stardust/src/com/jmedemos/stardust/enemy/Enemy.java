@@ -41,7 +41,7 @@ public class Enemy extends Entity {
         this.space = space;
         node = space.createDynamicNode();
         node.setName("enemy");
-        Spatial n = ModelUtil.get().loadModel("base_ship.obj", "data/textures");
+        Spatial n = ModelUtil.get().loadModel("xwing.obj");
         node.attachChild(n);
         n.setLocalScale(5);
         chaseController = new ChaseController(target);

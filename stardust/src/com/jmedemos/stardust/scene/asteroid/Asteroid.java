@@ -39,8 +39,7 @@ public class Asteroid extends Entity {
     public Asteroid(final String name, final String modelName,
             final float scale, final PhysicsSpace physicsSpace) {
 
-        model = ModelUtil.get().loadModel(modelName + ".obj",
-                "data/textures");
+        model = ModelUtil.get().loadModel(modelName + ".obj");
         model.setName("model");
         model.setLocalScale(scale);
         model.setModelBound(new BoundingBox());

@@ -2,9 +2,7 @@ package com.jmedemos.stardust.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 
@@ -59,21 +57,14 @@ public final class ModelUtil {
      * @param texturePath path to the texture
      * @return reference to the Spatial representing the model.
      */
-    public Spatial loadModel(final String modelPath, final String texturePath) {
+    public Spatial loadModel(final String modelPath) {
         Spatial model = null;
 
         ByteArrayOutputStream out = modelTable.get(modelPath);
         if (out == null) {
             // no internal format created yet, convert the model to .jme
             URL modelUrl = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_MODEL, modelPath);
-            try {
-                converter.setProperty("mtllib", modelUrl);
-                converter.setProperty("texdir", new File(texturePath).toURI()
-                        .toURL());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                Game.getInstance().quit();
-            }
+            converter.setProperty("mtllib", modelUrl);
 
             out = new ByteArrayOutputStream();
 
