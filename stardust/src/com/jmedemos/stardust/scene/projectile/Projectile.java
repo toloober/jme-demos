@@ -1,10 +1,13 @@
 package com.jmedemos.stardust.scene.projectile;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Sphere;
 import com.jmedemos.stardust.scene.Entity;
+import com.jmedemos.stardust.scene.EntityManager;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.material.Material;
@@ -19,7 +22,7 @@ import com.jmex.physics.material.Material;
 public class Projectile extends Entity {
 
     /**
-     * Graphical representation of the Projektile.
+     * Graphical representation of the Projectile.
      * This can be a Sphere or more complex model.
      */
     private Spatial model = null;
@@ -49,18 +52,18 @@ public class Projectile extends Entity {
      * little helper.
      */
     private static int counter = 0;
+    
+    /**
+     * Indicates whether this Projectile is active.
+     */
+    private boolean active;
 
     /**
-     * @param direction direction of the projectil.
-     * @param startLocation spwan point of the projectil.
      * @param physicsSpace reference to physicsspace.
      */
     @SuppressWarnings("serial")
-    public Projectile(final Vector3f direction, final Vector3f startLocation,
-            final PhysicsSpace physicsSpace) {
-        
+    public Projectile(final PhysicsSpace physicsSpace) {
         health = 1;
-        this.direction = direction.normalize();
 
         // create the physical representation of the projectile
         node = physicsSpace.createDynamicNode();
@@ -72,14 +75,8 @@ public class Projectile extends Entity {
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
 
-        node.getLocalTranslation().set(startLocation);
         node.attachChild(model);
         node.generatePhysicsGeometry();
-        node.updateGeometricState(0, false);
-
-        // attach a controller to the projectile, so that it gets moved forward
-        // every update cycle.
-        node.addController(new ProjectileMover(this));
     }
 
     /**
@@ -96,16 +93,36 @@ public class Projectile extends Entity {
 //        node.updateGeometricState(0, true);
         node.updateRenderState();
     }
+    
+    /**
+     * Fires this projectile.
+     * 
+     * @param direction      the direction to fire the projectile in
+     * @param startLocation  the location to fire the projectile from
+     * @param rotation       the rotation of the projectile
+     */
+    public void fire(final Vector3f direction, final Vector3f startLocation,  final Quaternion rotation) {
+    	this.lifeTime = 100;
+    	this.direction = direction.normalize();
+    	node.getLocalTranslation().set(startLocation);
+    	
+    	// attach a controller to the projectile, so that it gets moved forward
+        // every update cycle.
+        node.addController(new ProjectileMover(this));
+    	
+        node.setCullMode(SceneElement.CULL_DYNAMIC);
+    	node.updateGeometricState(0, false);
+    }
 
     /**
      * destroys the projectile and removes it from the parent Node.
      * @param controller controller which initiated the removal.
      */
     public void die() {
-        super.die();
-        node.removeController(0);
-        node.detachAllChildren();
-        node.delete();
+    	EntityManager.get().remove(this);
+        this.node.removeFromParent();
+        this.node.removeController(0);
+        this.active = false;
     }
     
     /**
@@ -154,4 +171,18 @@ public class Projectile extends Entity {
     public DynamicPhysicsNode getNode() {
         return node;
     }
+    
+    public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	/**
+     * Indicates whether this Projectile is active.
+     * 
+     * @return whether this Projectile is active
+     */
+	public boolean isActive() {
+		return active;
+	}
+    
 }

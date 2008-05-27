@@ -39,18 +39,19 @@ public class ShipWeaponAction implements Runnable {
         ship.getLowerRightWeapon().updateWorldVectors();
         
         // Fire 4 bullets
-        ship.getWeapon().createProjectile(direction,
+        ship.getWeapon().createProjectile().fire(direction,
                 ship.getUpperLeftWeapon().getWorldTranslation(),
                 ship.getNode().getWorldRotation());
-        ship.getWeapon().createProjectile(direction,
+        ship.getWeapon().createProjectile().fire(direction,
                 ship.getUpperRightWeapon().getWorldTranslation(),
                 ship.getNode().getWorldRotation());
-        ship.getWeapon().createProjectile(direction,
+        ship.getWeapon().createProjectile().fire(direction,
                 ship.getLowerLeftWeapon().getWorldTranslation(),
-                ship.getNode().getLocalRotation());
-        ship.getWeapon().createProjectile(direction,
+                ship.getNode().getWorldRotation());
+        ship.getWeapon().createProjectile().fire(direction,
                 ship.getLowerRightWeapon().getWorldTranslation(),
-                ship.getNode().getLocalRotation());
+                ship.getNode().getWorldRotation());
+        
         // Play sound
         SoundUtil.get().playSFX(SoundUtil.BG_SOUND_SHOT);
     }
