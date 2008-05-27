@@ -43,6 +43,10 @@ public class ProjectileFactory {
      * Current projectile type.
      */
     private ProjectileType type = ProjectileType.BULLET;
+    
+    private BulletProjectilePool bulletProjectilePool;
+    
+    private MissileProjectilePool missileProjectilePool;
 
     /**
      * projectil factory constructor.
@@ -58,6 +62,9 @@ public class ProjectileFactory {
         this.physics = physics;
         this.type = type;
         missileCam = mc;
+        
+        this.bulletProjectilePool = new BulletProjectilePool(physics);
+        this.missileProjectilePool = new MissileProjectilePool(physics);
     }
 
     /**
@@ -77,16 +84,14 @@ public class ProjectileFactory {
      * @param rotation rotation of the ship when firing.
      * @return reference to the newly created projectile.
      */
-    public final Projectile createProjectile(final ProjectileType type,
-            final Vector3f direction, final Vector3f start,
-            final Quaternion rotation) {
+    public final Projectile createProjectile(final ProjectileType type) {
         Projectile p = null;
         switch (type) {
         case BULLET:
-            p = new BulletProjectile(physics, direction, start);
+            p = bulletProjectilePool.get();
             break;
         case MISSILE:
-            p = new MissileProjectile(physics, direction, start, rotation);
+            p = missileProjectilePool.get();
             break;
         default:
             break;
@@ -110,16 +115,15 @@ public class ProjectileFactory {
      * @param rotation rotation of the ship when firing.
      * @return reference to the newly created projectile.
      */
-    public final Projectile createProjectile(final Vector3f direction,
-            final Vector3f startPosition, final Quaternion rotation) {
-        return createProjectile(this.type, direction, startPosition, rotation);
+    public final Projectile createProjectile() {
+        return createProjectile(this.type);
     }
 
     public final Projectile createHomingMissile(final PlayerShip player,
             final Vector3f direction, final Vector3f start,
             final Quaternion rotation) {
         
-        MissileProjectile p = new MissileProjectile(physics, direction, start, rotation);
+        MissileProjectile p = missileProjectilePool.get();
         rootNode.attachChild(p.getNode());
         p.getNode().updateRenderState();
         EntityManager.get().addEntity(p);

@@ -16,15 +16,10 @@ import com.jmex.physics.PhysicsSpace;
 public class MissileProjectile extends Projectile {
     /**
      * Replaces the default look with a missile model. 
-     * @param direction direction the projectile heads.
-     * @param startLocation spawn point.
      * @param physics reference to physics space.
-     * @param rotation rotation of the ship when firing
      */
-    public MissileProjectile(final PhysicsSpace physics,
-            final Vector3f direction, final Vector3f startLocation,
-            final Quaternion rotation) {
-        super(direction, startLocation, physics);
+    public MissileProjectile(final PhysicsSpace physics) {
+        super(physics);
         
         /** A missile does 40% damage. */
         damage = 40;
@@ -37,9 +32,15 @@ public class MissileProjectile extends Projectile {
         ms.setAmbient(ColorRGBA.yellow);
         model.setRenderState(ms);
         updateModel(model);
-        getNode().getLocalRotation().set(rotation);
         // the missile should spawn a bit below us
         getNode().getLocalTranslation().addLocal(getNode().getLocalRotation().getRotationColumn(1).mult(-1));
         getNode().attachChild(ParticleEffectFactory.get().getMissileTrail());
     }
+    
+    @Override
+    public void fire(Vector3f direction, Vector3f startLocation, Quaternion rotation) {
+    	getNode().getLocalRotation().set(rotation);
+    	super.fire(direction, startLocation, rotation);
+    }
+    
 }
