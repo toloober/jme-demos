@@ -3,6 +3,7 @@ package com.jmedemos.stardust.scene.projectile;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
@@ -14,6 +15,7 @@ import com.jmex.physics.PhysicsSpace;
  * A slow flying missile.
  */
 public class MissileProjectile extends Projectile {
+    private Node target;
     /**
      * Replaces the default look with a missile model. 
      * @param physics reference to physics space.
@@ -41,6 +43,11 @@ public class MissileProjectile extends Projectile {
     public void fire(Vector3f direction, Vector3f startLocation, Quaternion rotation) {
     	getNode().getLocalRotation().set(rotation);
     	super.fire(direction, startLocation, rotation);
+    	getNode().addController(new HomingDevice(this, target));
+    }
+
+    public void setTarget(Node target) {
+        this.target = target;
     }
     
 }

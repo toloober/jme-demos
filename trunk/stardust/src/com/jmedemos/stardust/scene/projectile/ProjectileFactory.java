@@ -4,7 +4,9 @@ import java.util.logging.Logger;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jmedemos.stardust.core.Game;
 import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PlayerShip;
@@ -18,49 +20,53 @@ import com.jmex.physics.callback.FrictionCallback;
  * to createProjectile(), or the currently in the factory set type can be used.
  */
 public class ProjectileFactory {
-
-    /**
-     * reference to the missile cam.
-     */
+    private static ProjectileFactory instance;
+    /** reference to the missile cam. */
     private MissileCamera missileCam;
-    
-    /**
-     * reference to logger.
-     */
+    /** reference to logger. */
     private Logger log = Logger.getLogger(ProjectileFactory.class.getName());
-
-    /**
-     * reference to root node.
-     */
+    /** reference to root node. */
     private Node rootNode = null;
-
-    /**
-     * reference to physics space.
-     */
+    /** reference to physics space. */
     private PhysicsSpace physics = null;
-
-    /**
-     * Current projectile type.
-     */
-    private ProjectileType type = ProjectileType.BULLET;
-    
     private BulletProjectilePool bulletProjectilePool;
-    
     private MissileProjectilePool missileProjectilePool;
 
     /**
+     * Initialize the Projectile Factory.
+     * @param rootNode the node to attach new projectiles to.
+     * @param space reference to a physics space.
+     * @param cam reference to the missile cam.
+     */
+    public static void create(final Node rootNode, final PhysicsSpace space,
+                                final MissileCamera cam) {
+        instance = new ProjectileFactory(rootNode, space, null, cam);
+    }
+    
+    /**
+     * @return the Singleton instance of the ProjectileFactory.
+     */
+    public static ProjectileFactory get() {
+        if (instance == null) {
+            Logger.getLogger(ProjectileFactory.class.getName()).severe(
+                    "projectile factory not yet initialized");
+            Game.getInstance().quit();
+        }
+        return instance;
+    }
+
+    /**
      * projectil factory constructor.
-     * the root-node and physics space are needed to spwan new projectiles.
+     * the root-node and physics space are needed to spawn new projectiles.
      * 
      * @param rootNode reference to root node.
      * @param physicsreference to physics space.
      * @param type projectile type.
      */
-    public ProjectileFactory(final Node rootNode, final PhysicsSpace physics,
+    private ProjectileFactory(final Node rootNode, final PhysicsSpace space,
             final ProjectileType type, final MissileCamera mc) {
         this.rootNode = rootNode;
-        this.physics = physics;
-        this.type = type;
+        this.physics = space;
         missileCam = mc;
         
         this.bulletProjectilePool = new BulletProjectilePool(physics);
@@ -108,51 +114,29 @@ public class ProjectileFactory {
         return p;
     }
 
-    /**
-     * create a new projectile with the currently set type in the projectilefactory
-     * @param direction direction in which the projectil should fly.
-     * @param start spawn point of the projectile.
-     * @param rotation rotation of the ship when firing.
-     * @return reference to the newly created projectile.
-     */
-    public final Projectile createProjectile() {
-        return createProjectile(this.type);
-    }
-
-    public final Projectile createHomingMissile(final PlayerShip player,
-            final Vector3f direction, final Vector3f start,
-            final Quaternion rotation) {
-        
+    public final Projectile createHomingMissile(final PlayerShip player) {
         MissileProjectile p = missileProjectilePool.get();
-        rootNode.attachChild(p.getNode());
-        p.getNode().updateRenderState();
         EntityManager.get().addEntity(p);
         
+        // the homing missile is propelled by force and needs high
+        // speed values to compensate the friction callback
+        p.setSpeed(2000000);
+        
+        rootNode.attachChild(p.getNode());
+        p.getNode().updateRenderState();
+        
         // remove default ProjectileMover, add HomingDevice
-        p.getNode().removeController(0);
-        p.getNode().addController(new HomingDevice(p, player.getTargetDevice().getCurrentTarget()));
-        p.getNode().setLinearVelocity(direction.mult(player.getPhysicsThrustController().getThrottle()));
+        p.setTarget(player.getTargetDevice().getCurrentTarget());
+//        p.getNode().setLinearVelocity(direction.mult(player.getPhysicsThrustController().getThrottle()));
+        
+        // the HomingMissile needs a force Friction callback, to eliminate the force which 
+        // pushes the rocked into the wrong (old) direction
         FrictionCallback fcb = new FrictionCallback();
         fcb.add(p.getNode(), 1000, 0);
         physics.addToUpdateCallbacks(fcb);
         
         p.getNode().attachChild(missileCam.getCameraNode());
-        p.getNode().updateGeometricState(0, true);
+        
         return p;
-    }
-    
-    /**
-     * currently set projectile type.
-     * @return current projectile type.
-     */
-    public final ProjectileType getType() {
-        return type;
-    }
-
-    /**
-     * @param typeprojectile type-
-     */
-    public final void setType(final ProjectileType type) {
-        this.type = type;
     }
 }

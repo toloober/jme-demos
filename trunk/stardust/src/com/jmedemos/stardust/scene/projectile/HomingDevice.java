@@ -33,8 +33,9 @@ public class HomingDevice extends Controller {
         object.getNode().lookAt(target.getWorldTranslation(), Vector3f.UNIT_Y);
 
         float currentSpeed = object.getNode().getLinearVelocity(null).dot(object.getNode().getLocalRotation().getRotationColumn(2));
-        float thrust = object.getSpeed()*50-currentSpeed;
+        float thrust = object.getSpeed()-currentSpeed;
         if (Math.round(thrust) > 0) {
+            System.out.println("adding force " +thrust);
             object.getNode().addForce(new Vector3f(object.getNode().getLocalRotation().getRotationColumn(2).mult(thrust * time)));
         }
     }

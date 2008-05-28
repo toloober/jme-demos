@@ -33,10 +33,15 @@ public class Projectile extends Entity {
     private float speed = 20;
 
     /**
-     * Lifetime of a Projectil.
+     * Lifetime of a Projectil in seconds.
      * when a projectile dies, it will be removed from the Scene.
      */
-    private float lifeTime = 100;
+    private float lifeTime = 10;
+    
+    /**
+     * the current age of the projectile.
+     */
+    private float age = 10;
 
     /**
      * Direction in which the projectile flies.
@@ -75,8 +80,7 @@ public class Projectile extends Entity {
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
 
-        node.attachChild(model);
-        node.generatePhysicsGeometry();
+        updateModel(model);
     }
 
     /**
@@ -84,13 +88,15 @@ public class Projectile extends Entity {
      * @param model new trimesh for the projectile.
      */
     public final void updateModel(final Spatial model) {
-        this.model.removeFromParent();
-        this.model = model;
+        if (this.model != null) {
+            this.model.removeFromParent();
+            this.model = model;
+        }
         node.attachChild(model);
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
         node.generatePhysicsGeometry();
-//        node.updateGeometricState(0, true);
+        node.computeMass();
         node.updateRenderState();
     }
     
@@ -102,14 +108,11 @@ public class Projectile extends Entity {
      * @param rotation       the rotation of the projectile
      */
     public void fire(final Vector3f direction, final Vector3f startLocation,  final Quaternion rotation) {
-    	this.lifeTime = 100;
+    	this.age = lifeTime;
     	this.direction = direction.normalize();
     	node.getLocalTranslation().set(startLocation);
-    	
-    	// attach a controller to the projectile, so that it gets moved forward
-        // every update cycle.
-        node.addController(new ProjectileMover(this));
-    	
+    	node.getLocalRotation().set(rotation);
+    	    	
         node.setCullMode(SceneElement.CULL_DYNAMIC);
     	node.updateGeometricState(0, false);
     }
@@ -178,11 +181,17 @@ public class Projectile extends Entity {
 
 	/**
      * Indicates whether this Projectile is active.
-     * 
      * @return whether this Projectile is active
      */
 	public boolean isActive() {
 		return active;
 	}
-    
+
+    public float getAge() {
+        return age;
+    }
+
+    public void setAge(float age) {
+        this.age = age;
+    }
 }

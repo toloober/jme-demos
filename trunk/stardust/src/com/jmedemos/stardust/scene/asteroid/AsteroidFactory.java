@@ -120,7 +120,7 @@ public class AsteroidFactory {
         physNode.updateGeometricState(0, true);
         physNode.addTorque(rotation.mult(100));
         // create the asteroid trail
-        physNode.attachChild(ParticleEffectFactory.get().getAsteroidTrail(asteroid.getModel()));
+        physNode.attachChild(ParticleEffectFactory.get().getAsteroidTrail(asteroid.getNode()));
         physNode.addController(new AsteroidMover(asteroid, targetPos, speed));
         
         rootNode.attachChild(physNode);

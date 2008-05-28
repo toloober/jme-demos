@@ -6,60 +6,64 @@ import com.jme.math.Ray;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.util.Timer;
 
+/**
+ * Fires a ray straight ahead and checks if it hits any Entity.
+ * If we hit an entity, we set it as new target if the target is not locked.
+ */
 public class TargetDevice extends Controller {
     private static final long serialVersionUID = 1L;
     private Node origin;
     private Node scene;
-    private int hits;
     
-    private Node player;
     private Node currentTarget = null;
     private Boolean locked = false;
     private Boolean foundTarget = false;
-    private float lastPlayed = 0;
-    private float interval = 0.5f;
     
-    public TargetDevice(Node origin, Node scene, Node player) {
+    /**
+     * creates a new TargetDevice
+     * @param origin the node which fires the Ray
+     * @param scene the Scene to check for targets
+     * @param player 
+     */
+    public TargetDevice(Node origin, Node scene) {
         this.origin = origin;
         this.scene = scene;
-        this.player = player;
     }
     
+    /**
+     * casts a ray and checks for targets.
+     */
     @Override
     public void update(float time) {
+        if (locked == true) {
+            return;
+        }
         foundTarget = false;
-        if (!locked) {
-            Ray ray = new Ray(origin.getLocalTranslation(), origin.getLocalRotation().getRotationColumn(2));
-            PickResults results = new BoundingPickResults();
-            results.setCheckDistance(true);
-            scene.findPick(ray, results);
-            hits += results.getNumber();
-            if(results.getNumber() > 0) {
-            	float currentTime = Timer.getTimer().getTimeInSeconds();
-                for(int i = 0; i < results.getNumber(); i++) {
-                    Geometry geom = results.getPickData(i).getTargetMesh().getParentGeom();
-                    if ((geom.getParent() != player && EntityManager.get().getEntity(geom.getParent()) instanceof Entity) || 
-                        (geom.getParent().getParent() != player && EntityManager.get().getEntity(geom.getParent().getParent()) instanceof Entity)) {
-                        currentTarget = results.getPickData(i).getTargetMesh().getParentGeom().getParent();
-                        // found a asteroid model
-//                        System.out.println(results.getPickData(i).getTargetMesh().getParentGeom().getParent().getName());
-                        foundTarget = true;
-                        if (lastPlayed + interval < currentTime) {
-                        	lastPlayed = currentTime;
-//                        	AudioSystem.getSystem().getMusicQueue().getTrack(
-//                        			SoundUtil.BG_TARGET_SPOT).play();
-                        }
-                    }
-//                    hitItems += results.getPickData(i).getTargetMesh().getParentGeom().getName() + " " + results.getPickData(i).getDistance();
-                }
+        
+        Ray ray = new Ray(origin.getLocalTranslation(), origin.getLocalRotation().getRotationColumn(2));
+        PickResults results = new BoundingPickResults();
+        results.setCheckDistance(true);
+        scene.findPick(ray, results);
+        
+        if (results.getNumber() <= 0) { 
+            currentTarget = null;
+            return;
+        }
+    	// iterate through the targets
+        for(int i = 0; i < results.getNumber(); i++) {
+            Geometry geom = results.getPickData(i).getTargetMesh().getParentGeom();
+            if ((geom.getParent() != origin && EntityManager.get().getEntity(geom.getParent()) != null) || 
+                (geom.getParent().getParent() != origin && EntityManager.get().getEntity(geom.getParent().getParent()) != null)) {
+                currentTarget = results.getPickData(i).getTargetMesh().getParentGeom().getParent();
+                foundTarget = true;
+                break;
             }
-            
-            results.clear();
-            if (foundTarget == false) {
-                currentTarget = null;
-            }
+        }
+        
+        results.clear();
+        if (foundTarget == false) {
+            currentTarget = null;
         }
     }
 

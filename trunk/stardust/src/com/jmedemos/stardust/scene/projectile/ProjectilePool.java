@@ -2,6 +2,8 @@ package com.jmedemos.stardust.scene.projectile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * A ResourcePool for Projectiles. Subclasses have to
  * implement {@link #newInstance()} to create instances of the pooled Object.
@@ -11,34 +13,35 @@ import java.util.List;
  * @param <P> the type of Projectile to pool
  */
 public abstract class ProjectilePool<P extends Projectile> {
-	
-	/**
-	 * The pool of Projectiles.
-	 */
+    /** our logger */
+	private Logger log = Logger.getLogger(ProjectilePool.class.getName());
+	/** The pool of Projectiles. */
 	private List<P> pool;
 	
 	/**
 	 * Constructs an empty ProjectilePool.
 	 */
 	public ProjectilePool() {
-		this.pool = new ArrayList<P>();
+		this.pool = new ArrayList<P>(100);
 	}
 	
 	/**
 	 * Returns a Projectile from the pool.
-	 * 
 	 * @return the Projectile
 	 */
-	public synchronized P get() {
+	public P get() {
 		P projectile = null;
 		for (P p: pool) {
 			if (!p.isActive()) {
+			    log.info("recycling projectile");
 				projectile = p;
 			}
 		}
 		if (projectile == null) {
+		    log.info("creating new projectile");
 			projectile = newInstance();
 			pool.add(projectile);
+			System.out.println(pool.size());
 		}
 		projectile.setActive(true);
 		return projectile;

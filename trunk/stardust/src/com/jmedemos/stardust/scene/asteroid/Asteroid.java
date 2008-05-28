@@ -10,6 +10,7 @@ import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.Entity;
+import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmedemos.stardust.util.ModelUtil;
 import com.jmex.effects.particles.ParticleGeometry;
@@ -22,8 +23,6 @@ import com.jmex.physics.material.Material;
  */
 @SuppressWarnings("serial")
 public class Asteroid extends Entity {
-    /** asteroid model. */
-    private Spatial model = null;
     /** physic node.*/
     private DynamicPhysicsNode node = null;
     private ParticleGeometry particleGeom = null;
@@ -39,7 +38,7 @@ public class Asteroid extends Entity {
     public Asteroid(final String name, final String modelName,
             final float scale, final PhysicsSpace physicsSpace) {
 
-        model = ModelUtil.get().loadModel(modelName + ".obj");
+        Spatial model = ModelUtil.get().loadModel(modelName + ".obj");
         model.setName("model");
         model.setLocalScale(scale);
         model.setModelBound(new BoundingBox());
@@ -61,16 +60,28 @@ public class Asteroid extends Entity {
         node.setMass(100f);
     }
 
+    /**
+     * Death of an Asteroid.
+     *  - play an explosion sound anddisplay a explosion particle effect.
+     *  - hide the Asteroid and let the particle trail fade out
+     */
     @Override
     public void die() {
-        super.die();
+        if (particleGeom != null) {
+            // this asteroid has a particle trail, we can't remove the node from
+            // its parent yet.
+            // the node will detach from the parent when the particle trail faded out
+            // -> see asteroid.OnDeadListener
+            particleGeom.getParticleController().setRepeatType(Controller.RT_CLAMP);
+            EntityManager.get().remove(this);
+            getNode().detachAllChildren();
+        } else {
+            super.die();
+        }
         node.updateWorldVectors();
         ParticleEffectFactory.get().spawnExplosion(node.getWorldTranslation().clone());
         SoundUtil.get().playExplosion(node.getWorldTranslation().clone());
-        model.setCullMode(SceneElement.CULL_ALWAYS);
-        if (particleGeom != null) {
-        	particleGeom.getParticleController().setRepeatType(Controller.RT_CLAMP);
-        }
+        node.setCullMode(SceneElement.CULL_ALWAYS);
         node.delete();
     }
     
@@ -79,19 +90,11 @@ public class Asteroid extends Entity {
     }
     
     /**
-     * returns the TriMesh.
-     * @return reference to the trimesh
-     */
-    public final Spatial getModel() {
-        return model;
-    }
-
-    /**
-     * The physicnode of the asteroid.
+     * The physic node of the asteroid.
      * @return reference to physic node.
      */
     public final DynamicPhysicsNode getPhysNode() {
-        return this.node;
+        return node;
     }
 
     /**

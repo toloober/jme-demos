@@ -30,8 +30,8 @@ public class EnemyFactory {
 		return instance;
 	}
 	
-	public Enemy createEnemy(Node target) {
-		Enemy enemy = new Enemy(target, space);
+	public Enemy createEnemy(String modelName, Node target) {
+		Enemy enemy = new Enemy(modelName, target, space);
 		enemy.setSpeed(enemy.getSpeed()*rand.nextFloat()*2);
 		enemy.setAgility(enemy.getAgility()*rand.nextFloat()*3);
 		EntityManager.get().addEntity(enemy);

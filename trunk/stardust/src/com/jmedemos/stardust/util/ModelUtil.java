@@ -58,12 +58,22 @@ public final class ModelUtil {
      * @return reference to the Spatial representing the model.
      */
     public Spatial loadModel(final String modelPath) {
+        URL modelUrl = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_MODEL, modelPath);
+        
+        if (modelPath.endsWith("jme")) {
+            // already in internal format
+            try {
+                return (Spatial) BinaryImporter.getInstance().load(modelUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Game.getInstance().quit();
+            }
+        }
+        
         Spatial model = null;
-
         ByteArrayOutputStream out = modelTable.get(modelPath);
         if (out == null) {
             // no internal format created yet, convert the model to .jme
-            URL modelUrl = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_MODEL, modelPath);
             converter.setProperty("mtllib", modelUrl);
 
             out = new ByteArrayOutputStream();
