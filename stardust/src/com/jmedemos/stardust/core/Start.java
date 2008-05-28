@@ -24,10 +24,10 @@ public final class Start {
      * @param args not used.
      */
     public static void main(final String[] args) {
-        Game game = Game.getInstance();
-        game.start();
-        
         try {
+            Game game = Game.getInstance();
+            game.start();
+        
 			ResourceLocatorTool.addResourceLocator(
 			        ResourceLocatorTool.TYPE_TEXTURE,
 			        new SimpleResourceLocator(Start.class

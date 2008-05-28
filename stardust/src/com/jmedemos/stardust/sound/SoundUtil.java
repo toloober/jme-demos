@@ -1,8 +1,10 @@
 package com.jmedemos.stardust.sound;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jmedemos.stardust.core.Game;
@@ -18,19 +20,21 @@ import com.jmex.audio.MusicTrackQueue.RepeatType;
 public class SoundUtil {
     /** Singleton instance.*/
     private static SoundUtil instance = null;
-    /** Index of the Intro Musik.  */
+    /** Index of the Intro Music.  */
     public static int BG_SOUND_INTRO = 0;
-    /** Index of the InGame Musik. */
+    /** Index of the InGame Music. */
     public static int BG_SOUND_INGAME = 1;
     /** Soundeffekt of a bullet shot. */
-    public static int BG_SOUND_SHOT = 2;
+    public static int BG_BULLET_SHOT = 2;
     /** Soundeffekt of a missile shot. */
     public static int BG_MISSILE_SHOT = 3;
-    /** Soundeffect for target sportted. */
+    /** Soundeffect for target spotted. */
     public static int BG_TARGET_SPOT = 4;
     /** Explosion Soundeffekt. */
     private AudioTrack exp = null;
-    /** table of positional objects with its soundeffect. */
+    /** Enemy fireing */
+    private ArrayList<AudioTrack> enemyFire = null;
+    /** table of positional objects with its sound effect. */
     private Hashtable<Spatial, RangedAudioTracker> trackers = null;
     /** list of soundeffects. */
     private Hashtable<String, AudioTrack> sounds = null;
@@ -51,37 +55,38 @@ public class SoundUtil {
     }
 
     /**
-     * Konstruktor. Hash Tabellen erstellen.
+     * create the HashTables.
      */
     private SoundUtil() {
         trackers = new Hashtable<Spatial, RangedAudioTracker>();
         sounds = new Hashtable<String, AudioTrack>();
+        enemyFire = new ArrayList<AudioTrack>(5);
     }
 
     /**
-     * Hintergrund-Musik laden und der Queue hinzufuegen.
+     * load background music and add it to the queue.
      */
     public final void initMusic() {
         // reference to the Audiosystem
         AudioSystem audio = AudioSystem.getSystem();
 
         if (!AudioSystem.isCreated()) {
-            Logger.getLogger("util.SoundUtil").severe(
-                    "Audiosystem noch nicht bereit!");
+            Logger.getLogger(SoundUtil.class.getName()).severe(
+                    "Audiosystem not yet ready!");
             Game.getInstance().quit();
         }
 
         // load Intro music
-        AudioTrack intro = audio.createAudioTrack("/data/sounds/stardust.ogg",
+        AudioTrack intro = audio.createAudioTrack("stardust.ogg",
                 false);
         intro.setType(TrackType.MUSIC);
         intro.setRelative(false);
         intro.setTargetVolume(0.7f);
         intro.setLooping(true);
 
-        // Die InGame Hintergrund Musik laden
+        // load the background music.
         AudioTrack ingame = audio.createAudioTrack(
-                "/data/sounds/stardustmain.ogg", false);
+                "stardustmain.ogg", false);
         ingame.setType(TrackType.MUSIC);
         ingame.setRelative(false);
         ingame.setTargetVolume(0.7f);
@@ -132,11 +137,20 @@ public class SoundUtil {
         exp.setMaxVolume(1.0f);
         exp.setLooping(false);
         exp.setRelative(true);
+        
+        AudioTrack a = audio.createAudioTrack("shoot.wav", false);
+        a.setType(TrackType.POSITIONAL);
+        a.setTargetVolume(1.0f);
+        a.setMinVolume(0.2f);
+        a.setMaxVolume(1.0f);
+        a.setLooping(false);
+        a.setRelative(true);
+        enemyFire.add(a);
     }
 
     /**
      * play the explosion sound effect at a given location in the world.
-     * @param pos Position der Explosion.
+     * @param pos position of the explosion.
      */
     public final void playExplosion(final Vector3f pos) {
     	if (!enableSoundFx) {
@@ -147,26 +161,24 @@ public class SoundUtil {
     }
 
     /**
-     * Soundeffekt laden und in die Liste der Positionierten Sounds aufnehmen.
-     * Falls der Soundeffekt schon mal geladen wurde, wird dieser aus der
-     * HashTabelle geholt.
+     * add a new sound effect to the list of playable effects.
+     * If this sound file has already been loaded, only a new positional tracker 
+     * will be created.
      * 
-     * @param track Soundeffekt.
-     * @param emitter Objekt von welchem der Soundeffekt abgespielt wird.
+     * @param track sound effect.
+     * @param emitter the object emitting the sound effect.
      */
     public final void addFx(final String track, final Spatial emitter) {
-        // Check ob dieser Sound schon geladen wurde
+        // see if this sound file has already been loaded.
         AudioTrack sound = sounds.get(track);
         if (sound == null) {
-            // Falls dieser Track bisher noch nciht geladen wurde, diesen
-            // neu erstellen und in die Hash Tabelle einfuegen.
+            // not yet loaded, create a new AutioTrack and add it into the table
             sound = AudioSystem.getSystem().createAudioTrack(track, false);
             sound.setType(TrackType.POSITIONAL);
             sound.setRelative(true);
             sound.setLooping(true);
 
-            // Name des Soundeffektes zusammen mit dem AudioTrack in der
-            // HashTabelle speichern.
+            // put the name together with the AudioTrack into the table of tracks
             sounds.put(track, sound);
         }
 
@@ -178,10 +190,17 @@ public class SoundUtil {
         tracker.setTrackIn3D(true);
         tracker.setMaxVolume(1.0f);
 
-        // Objekt zusammen mit dem Soundeffekt in die Hashtabelle einfuegen.
+        // put the positional tracker together with the AudioTrack into the table of emitters
         trackers.put(emitter, tracker);
     }
 
+    static int enemyFireIdx = 0;
+    public void playEnemyfire(Vector3f pos) {
+        enemyFireIdx = (int)(FastMath.rand.nextFloat()*4.0f);
+        enemyFire.get(enemyFireIdx).setWorldPosition(pos);
+        enemyFire.get(enemyFireIdx).play();
+    }
+    
     public void playSFX(int idx) {
     	if (!enableSoundFx) {
     		return;
@@ -196,12 +215,15 @@ public class SoundUtil {
     	AudioSystem.getSystem().getMusicQueue().getTrack(idx).play();
     }
     
+    /**
+     * stop the music queue.
+     */
     public void stopMusic() {
     	AudioSystem.getSystem().getMusicQueue().stop();
     }
     
     /**
-     * @return HashTabelle der im Raum Positionierten Sounds.
+     * @return HashTabelle of the objects emitting sounds.
      */
     public final Hashtable<Spatial, RangedAudioTracker> getTrackers() {
         return trackers;

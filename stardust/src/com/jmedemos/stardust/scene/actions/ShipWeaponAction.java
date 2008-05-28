@@ -1,17 +1,21 @@
 package com.jmedemos.stardust.scene.actions;
 
 import com.jme.math.Vector3f;
+import com.jme.util.Timer;
 import com.jmedemos.stardust.scene.PlayerShip;
+import com.jmedemos.stardust.scene.projectile.ProjectileFactory;
+import com.jmedemos.stardust.scene.projectile.ProjectileFactory.ProjectileType;
 import com.jmedemos.stardust.sound.SoundUtil;
 
 /**
  * fires projectiles created by the ProjectilFactory.
  */
 public class ShipWeaponAction implements Runnable {
-
-    /**
-     * reference to player ship.
-     */
+    /** min time between playing the sound */
+    private float sfxTimeout = 0.1f;
+    /** last played */
+    private float lastSFxPlayed = 0;
+    /** reference to player ship. */
     private PlayerShip ship = null;
 
     /**
@@ -23,7 +27,7 @@ public class ShipWeaponAction implements Runnable {
     }
 
     /**
-     * creates new projectiles.
+     * creates a new projectile.
      * Dependant on the current type set in the ProjectileFactory, 
      * bullets or Missiles are created.
      */
@@ -39,20 +43,29 @@ public class ShipWeaponAction implements Runnable {
         ship.getLowerRightWeapon().updateWorldVectors();
         
         // Fire 4 bullets
-        ship.getWeapon().createProjectile().fire(direction,
+
+        ProjectileFactory.get().createProjectile(ProjectileType.BULLET).fire(
+                direction,
                 ship.getUpperLeftWeapon().getWorldTranslation(),
                 ship.getNode().getWorldRotation());
-        ship.getWeapon().createProjectile().fire(direction,
+        ProjectileFactory.get().createProjectile(ProjectileType.BULLET).fire(
+                direction,
                 ship.getUpperRightWeapon().getWorldTranslation(),
                 ship.getNode().getWorldRotation());
-        ship.getWeapon().createProjectile().fire(direction,
+        ProjectileFactory.get().createProjectile(ProjectileType.BULLET).fire(
+                direction,
                 ship.getLowerLeftWeapon().getWorldTranslation(),
-                ship.getNode().getWorldRotation());
-        ship.getWeapon().createProjectile().fire(direction,
+                ship.getNode().getLocalRotation());
+        ProjectileFactory.get().createProjectile(ProjectileType.BULLET).fire(
+                direction,
                 ship.getLowerRightWeapon().getWorldTranslation(),
                 ship.getNode().getWorldRotation());
         
-        // Play sound
-        SoundUtil.get().playSFX(SoundUtil.BG_SOUND_SHOT);
+        float current = Timer.getTimer().getTimeInSeconds(); 
+        if (lastSFxPlayed + sfxTimeout < current) {
+            // Play sound
+            SoundUtil.get().playSFX(SoundUtil.BG_BULLET_SHOT);
+            lastSFxPlayed = current;
+        }
     }
 };

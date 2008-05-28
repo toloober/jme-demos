@@ -8,7 +8,7 @@ import com.jmex.physics.PhysicsNode;
 import com.jmex.physics.contact.ContactInfo;
 
 /**
- *  Global Collision Actions. 
+ *  Global physics collision handler. 
  */
 public class CollisionAction extends InputAction {
     

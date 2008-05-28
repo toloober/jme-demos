@@ -29,8 +29,6 @@ import com.jmedemos.stardust.controls.ControlManager;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.actions.ShipMissileAction;
 import com.jmedemos.stardust.scene.actions.ShipWeaponAction;
-import com.jmedemos.stardust.scene.projectile.ProjectileFactory;
-import com.jmedemos.stardust.scene.projectile.ProjectileFactory.ProjectileType;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmedemos.stardust.util.ModelUtil;
 import com.jmedemos.stardust.util.PhysicsThrustController;
@@ -54,8 +52,6 @@ public class PlayerShip extends Entity {
     private PhysicsThrustController physicsThrustController = null;
     /** Physics Node of the player. */
     private DynamicPhysicsNode node = null;
-    /** Projectile factory. */
-    private ProjectileFactory weapon = null;
 
     /**
      * Weapon positions.
@@ -84,9 +80,9 @@ public class PlayerShip extends Entity {
      */
     public PlayerShip(final String name, final Node root,
             final PhysicsSpace physicsSpace, final String modelString,
-            final float scale, final MissileCamera mc) {
+            final float scale) {
         
-    	damage = 10;
+    	damage = 5;
         
     	Spatial model = null;
         model = ModelUtil.get().loadModel(modelString);
@@ -94,8 +90,6 @@ public class PlayerShip extends Entity {
         model.setLocalScale(scale);
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
-        weapon = new ProjectileFactory(root, physicsSpace,
-                ProjectileType.BULLET, mc);
 
         node = physicsSpace.createDynamicNode();
         node.setName("player physics");
@@ -119,13 +113,13 @@ public class PlayerShip extends Entity {
         node.attachChild(lowerLeftWeapon);
 
         upperRightWeapon.setLocalTranslation(-box.xExtent, box.yExtent,
-                box.zExtent);
+                box.zExtent*2);
         upperLeftWeapon.setLocalTranslation(box.xExtent, box.yExtent,
-                box.zExtent);
+                box.zExtent*2);
         lowerLeftWeapon.setLocalTranslation(box.xExtent, -box.yExtent,
-                box.zExtent);
+                box.zExtent*2);
         lowerRightWeapon.setLocalTranslation(-box.xExtent, -box.yExtent,
-                box.zExtent);
+                box.zExtent*2);
 
         // Friction Callback to reduce spinning effect after colliding with another object
         FrictionCallback fc = new FrictionCallback();
@@ -152,7 +146,7 @@ public class PlayerShip extends Entity {
         ln.setTarget(node);
         node.attachChild(ln);
         
-        targetDevice = new TargetDevice(node, root, this.getNode());
+        targetDevice = new TargetDevice(node, root);
         node.addController(targetDevice);
         
         // refresh renderstates
@@ -275,14 +269,6 @@ public class PlayerShip extends Entity {
 
     public void setFireRate(int fireRate) {
         this.fireRate = fireRate;
-    }
-
-    public ProjectileFactory getWeapon() {
-        return weapon;
-    }
-
-    public void setWeapon(ProjectileFactory weapon) {
-        this.weapon = weapon;
     }
 
     public Node getLowerLeftWeapon() {

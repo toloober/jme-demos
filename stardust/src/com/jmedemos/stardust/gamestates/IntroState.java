@@ -67,7 +67,8 @@ public class IntroState extends BasicGameState {
         introText.add("Stardust - a Game by Christoph Luder and Kurt Mueller");
         introText.add("Initially made as a Semseter work in MAS-IT @ FHNW (Switzerland)");
         introText.add("created with: jMonkeyEngine");
-        introText.add("Coding: Christoph 'Core-Dump' Luder / Kurt 'tuete' Mueller");
+        introText.add("Coding: Christoph 'Core-Dump' Luder");
+        introText.add("Coding: Ronald Van Rijn");
         introText.add("Music: Kurt 'tuete' Mueller");
         introText.add("visit: www.stardust.ch");
 

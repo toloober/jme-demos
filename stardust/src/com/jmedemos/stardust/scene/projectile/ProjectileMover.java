@@ -27,9 +27,8 @@ public class ProjectileMover extends Controller {
      * @param time time since last update
      */
     public final void update(final float time) {
-        projectile.setLifeTime(projectile.getLifeTime() - time);
-
-        if (projectile.getLifeTime() < 0) {
+        projectile.setAge(projectile.getAge() - time);
+        if (projectile.getAge() < 0) {
             projectile.die();
             return;
         }
