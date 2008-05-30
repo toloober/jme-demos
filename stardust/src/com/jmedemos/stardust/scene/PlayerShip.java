@@ -113,13 +113,13 @@ public class PlayerShip extends Entity {
         node.attachChild(lowerLeftWeapon);
 
         upperRightWeapon.setLocalTranslation(-box.xExtent, box.yExtent,
-                box.zExtent*2);
+                box.zExtent*3);
         upperLeftWeapon.setLocalTranslation(box.xExtent, box.yExtent,
-                box.zExtent*2);
+                box.zExtent*3);
         lowerLeftWeapon.setLocalTranslation(box.xExtent, -box.yExtent,
-                box.zExtent*2);
+                box.zExtent*3);
         lowerRightWeapon.setLocalTranslation(-box.xExtent, -box.yExtent,
-                box.zExtent*2);
+                box.zExtent*3);
 
         // Friction Callback to reduce spinning effect after colliding with another object
         FrictionCallback fc = new FrictionCallback();

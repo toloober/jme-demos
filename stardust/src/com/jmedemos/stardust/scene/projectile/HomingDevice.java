@@ -24,6 +24,7 @@ public class HomingDevice extends Controller {
     public void update(float time) {
         object.setLifeTime(object.getLifeTime()-time);
         if (object.getLifeTime() < 0) {
+            target = null;
             object.die();
             return;
         }
@@ -35,7 +36,6 @@ public class HomingDevice extends Controller {
         float currentSpeed = object.getNode().getLinearVelocity(null).dot(object.getNode().getLocalRotation().getRotationColumn(2));
         float thrust = object.getSpeed()-currentSpeed;
         if (Math.round(thrust) > 0) {
-            System.out.println("adding force " +thrust);
             object.getNode().addForce(new Vector3f(object.getNode().getLocalRotation().getRotationColumn(2).mult(thrust * time)));
         }
     }

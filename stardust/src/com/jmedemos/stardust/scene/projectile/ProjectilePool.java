@@ -38,12 +38,13 @@ public abstract class ProjectilePool<P extends Projectile> {
 			}
 		}
 		if (projectile == null) {
-		    log.info("creating new projectile");
+		    log.info("creating new projectile, pool size: " +pool.size());
 			projectile = newInstance();
 			pool.add(projectile);
-			System.out.println(pool.size());
 		}
+		projectile.getNode().setActive(true);
 		projectile.setActive(true);
+		projectile.setAge(projectile.getLifeTime());
 		return projectile;
 	}
 

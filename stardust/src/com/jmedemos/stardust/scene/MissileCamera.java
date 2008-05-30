@@ -14,6 +14,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.core.Game;
+import com.jmex.physics.DynamicPhysicsNode;
 
 public class MissileCamera {
     /**
@@ -153,10 +154,15 @@ public class MissileCamera {
      * @param tpf time since last frame.
      */
     public void render(final float tpf) {
+        boolean parentStatus = false;
+        if (missileCamNode.getParent()!= null) {
+            parentStatus = ((DynamicPhysicsNode)missileCamNode.getParent()).isActive();
+        }
+        if ( parentStatus != isActive) {
+            setActive(parentStatus);
+        }
+        
         if (isActive) {
-            if (missileCamNode.getParent() == null) {
-                setActive(false);
-            }
             // render the missile cam to a texture
             lastRend += tpf;
             if (lastRend > throttle ) {
@@ -164,9 +170,6 @@ public class MissileCamera {
               lastRend = 0;
             }
         } else {
-            if (missileCamNode.getParent() != null) {
-                setActive(true);
-            }
             // animate the noise texture
             lastRend += tpf;
             if (lastRend > noiseThrottle ) {

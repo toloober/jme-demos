@@ -122,21 +122,11 @@ public class ProjectileFactory {
         // speed values to compensate the friction callback
         p.setSpeed(2000000);
         
-        rootNode.attachChild(p.getNode());
-        p.getNode().updateRenderState();
-        
-        // remove default ProjectileMover, add HomingDevice
         p.setTarget(player.getTargetDevice().getCurrentTarget());
-//        p.getNode().setLinearVelocity(direction.mult(player.getPhysicsThrustController().getThrottle()));
-        
-        // the HomingMissile needs a force Friction callback, to eliminate the force which 
-        // pushes the rocked into the wrong (old) direction
-        FrictionCallback fcb = new FrictionCallback();
-        fcb.add(p.getNode(), 1000, 0);
-        physics.addToUpdateCallbacks(fcb);
-        
         p.getNode().attachChild(missileCam.getCameraNode());
         
+        rootNode.attachChild(p.getNode());
+        p.getNode().updateRenderState();
         return p;
     }
 }
