@@ -36,12 +36,12 @@ public class Projectile extends Entity {
      * Lifetime of a Projectil in seconds.
      * when a projectile dies, it will be removed from the Scene.
      */
-    private float lifeTime = 10;
+    private float lifeTime = 5;
     
     /**
      * the current age of the projectile.
      */
-    private float age = 10;
+    private float age = 5;
 
     /**
      * Direction in which the projectile flies.
@@ -108,7 +108,6 @@ public class Projectile extends Entity {
      * @param rotation       the rotation of the projectile
      */
     public void fire(final Vector3f direction, final Vector3f startLocation,  final Quaternion rotation) {
-    	this.age = lifeTime;
     	this.direction = direction.normalize();
     	node.getLocalTranslation().set(startLocation);
     	node.getLocalRotation().set(rotation);
@@ -123,7 +122,7 @@ public class Projectile extends Entity {
      */
     public void die() {
     	EntityManager.get().remove(this);
-        this.node.removeFromParent();
+    	this.node.delete();
         this.node.removeController(0);
         this.active = false;
     }

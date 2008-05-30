@@ -21,12 +21,12 @@ import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.util.ShaderUtils;
 
+@SuppressWarnings("serial")
 public class Planet extends Sphere {
     private Logger log = Logger.getLogger(Planet.class.getName());
     private TextureState planetTextures;
     
     private float cloudHeight = 0.004f;
-    private float cloudRotation = 0f;
     
     private float atmoGlowPower = 20f;
     private float atmoAbsPower  = 2f;
@@ -77,8 +77,7 @@ public class Planet extends Sphere {
         Texture normalmap = TextureManager.loadTexture(normal, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
         Texture specmap   = TextureManager.loadTexture(spec, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
 
-        System.out.println("Loaded planet textures");
-       
+        log.info("Loaded planet textures");
         getLocalRotation().fromAngles(FastMath.HALF_PI, 0f, 0f);
         
         planetTextures = r.createTextureState();
