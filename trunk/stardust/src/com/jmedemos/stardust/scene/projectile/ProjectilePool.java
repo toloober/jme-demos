@@ -33,7 +33,7 @@ public abstract class ProjectilePool<P extends Projectile> {
 		P projectile = null;
 		for (P p: pool) {
 			if (!p.isActive()) {
-			    log.info("recycling projectile");
+			    log.finer("recycling projectile");
 				projectile = p;
 			}
 		}

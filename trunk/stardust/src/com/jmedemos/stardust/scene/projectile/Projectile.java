@@ -114,6 +114,7 @@ public class Projectile extends Entity {
     	    	
         node.setCullMode(SceneElement.CULL_DYNAMIC);
     	node.updateGeometricState(0, false);
+    	node.clearDynamics();
     }
 
     /**

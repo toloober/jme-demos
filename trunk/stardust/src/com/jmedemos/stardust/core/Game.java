@@ -1,7 +1,14 @@
 package com.jmedemos.stardust.core;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
+import com.jme.input.joystick.JoystickInput;
+import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
+import com.jmex.audio.AudioSystem;
 import com.jmex.game.StandardGame;
 import com.jmex.game.StandardGame.GameType;
+import com.jmex.game.state.GameStateManager;
 
 /**
  * The Game class, has a reference to StandardGame.
@@ -12,7 +19,7 @@ public final class Game {
     /** far frustum.  */
     public static final float FAR_FRUSTUM = 100000;
     /** StandardGame reference. */
-    StandardGame stdGame;
+    private StandardGame stdGame;
     
     /**
      * returns the singleton instance of the game.
@@ -30,13 +37,27 @@ public final class Game {
      */
     public void start() {
     	stdGame.start();
+    	
+        UncaughtExceptionHandler handler = new SDExceptionHandler(this); 
+        Thread.setDefaultUncaughtExceptionHandler(handler);
+        stdGame.setUncaughtExceptionHandler(handler);
     }
     
     /**
      * Finish Game.
      */
     public void quit() {
-    	stdGame.finish();
+    	stdGame.shutdown();
+    	
+		GameStateManager.getInstance().cleanup();
+		DisplaySystem.getDisplaySystem().getRenderer().cleanup();
+		TextureManager.doTextureCleanup();
+		TextureManager.clearCache();
+		JoystickInput.destroyIfInitalized();
+        if (AudioSystem.isCreated()) {
+            AudioSystem.getSystem().cleanup();
+        }
+        
         System.exit(0);
     }
 

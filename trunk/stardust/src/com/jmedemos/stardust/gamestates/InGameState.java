@@ -228,6 +228,7 @@ public class InGameState extends PhysicsGameState {
         // update renderstates
         rootNode.updateRenderState();
         rootNode.updateGeometricState(0, true);
+        
     }
     
     /** Init physics. Disable gravitation, 
@@ -336,6 +337,7 @@ public class InGameState extends PhysicsGameState {
         // -> Last <- but not least, update the ChaseCam
         chaseCam.update(tpf);
         chaseCam.getCamNode().updateGeometricState(tpf, true);
+//        SceneMonitor.getMonitor().updateViewer(tpf);
     }
 
     /**
