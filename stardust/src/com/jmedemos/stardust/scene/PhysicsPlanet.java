@@ -7,8 +7,8 @@ import com.jmex.physics.StaticPhysicsNode;
 public class PhysicsPlanet  {
     private StaticPhysicsNode node;
     
-    public PhysicsPlanet(PhysicsSpace space, String texName, float radius) {
-        Planet p = new Planet("earth", radius);
+    public PhysicsPlanet(PhysicsSpace space, String texName, float radius, boolean useShader) {
+        Planet p = new Planet("earth", radius, useShader);
         node = space.createStaticNode();
         node.setName("physics planet node");
         node.attachChild(p);

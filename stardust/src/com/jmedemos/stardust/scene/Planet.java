@@ -25,6 +25,7 @@ import com.jmedemos.stardust.util.ShaderUtils;
 public class Planet extends Sphere {
     private Logger log = Logger.getLogger(Planet.class.getName());
     private TextureState planetTextures;
+    private boolean useShader = false; 
     
     private float cloudHeight = 0.004f;
     
@@ -41,11 +42,13 @@ public class Planet extends Sphere {
     private static MaterialState atmoMaterial;
     private static MaterialState planetMaterial;
 
-    public Planet(String texName, float radius){
+    public Planet(String texName, float radius, boolean useShader){
         super(texName, 64, 64, radius);
         log.info("Loaded planet model");
+        this.useShader = useShader;
         Renderer r = DisplaySystem.getDisplaySystem().getRenderer();
-        if (planetShader == null){
+        
+        if (planetShader == null && useShader == true) {
             planetShader = ShaderUtils.getPlanetShader();
             atmoShader = ShaderUtils.getAtmosphereShader();
 
@@ -69,32 +72,40 @@ public class Planet extends Sphere {
             planetMaterial.setShininess(32f);
         }
         
+        Texture normalmap = null;
+        Texture specmap = null;
+        URL normal;
+        URL spec;
         URL color  = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+".png");
-        URL normal = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_normal.png");
-        URL spec   = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_specular.png");
+        if (useShader) {
+            normal = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_normal.png");
+            spec   = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_specular.png");
+            normalmap = TextureManager.loadTexture(normal, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
+            specmap   = TextureManager.loadTexture(spec, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
+        }
       
         Texture colormap  = TextureManager.loadTexture(color, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
-        Texture normalmap = TextureManager.loadTexture(normal, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
-        Texture specmap   = TextureManager.loadTexture(spec, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
 
         log.info("Loaded planet textures");
         getLocalRotation().fromAngles(FastMath.HALF_PI, 0f, 0f);
         
         planetTextures = r.createTextureState();
         planetTextures.setTexture(colormap, 0);
-        planetTextures.setTexture(normalmap, 1);
-        planetTextures.setTexture(specmap, 2);
-//        planetTextures.setTexture(cloudmap, 3);
-        
-        final Planet self = this;
+        if (useShader) {
+            planetTextures.setTexture(normalmap, 1);
+            planetTextures.setTexture(specmap, 2);
+//            planetTextures.setTexture(cloudmap, 3);
+        }
         
         planetTextures.load();
-        self.setVBOInfo(new VBOInfo(true));
-        self.lockBounds();
+        setVBOInfo(new VBOInfo(true));
+        lockBounds();
 //        self.lockTransforms();
-
         setModelBound(new BoundingSphere());
         updateModelBound();
+        if (useShader == false) {
+        	setRenderState(planetTextures);
+        }
     }
     
     public void updateUniforms(){
@@ -105,39 +116,45 @@ public class Planet extends Sphere {
         atmoShader.setUniform("fGlowPower",   atmoGlowPower);
     }
     
+    public void renderShader(Renderer r) {
+    	updateUniforms();
+    	
+    	clearRenderState(RenderState.RS_TEXTURE);
+    	setRenderState(atmoShader);
+    	setRenderState(blendAlpha);
+    	setRenderState(atmoMaterial);
+    	
+    	// back of atmosphere
+    	setRenderState(frontCull);
+    	updateRenderState();
+    	r.draw(this.getBatch(0));
+    	
+    	clearRenderState(RenderState.RS_ALPHA);
+    	clearRenderState(RenderState.RS_CULL);
+    	
+    	// PLANET
+    	setRenderState(planetTextures);
+    	setRenderState(planetShader);
+    	setRenderState(planetMaterial);
+    	
+    	updateRenderState();
+    	r.draw(this.getBatch(0));
+    	
+    	clearRenderState(RenderState.RS_TEXTURE);
+    	setRenderState(atmoShader);
+    	setRenderState(blendAlpha);
+    	setRenderState(atmoMaterial);
+    	
+    	// front of atmosphere
+    	setRenderState(backCull);
+    	updateRenderState();
+    }
+    
     @Override
     public void draw(Renderer r){
-        updateUniforms();
+        if (useShader)
+            renderShader(r);
         
-        clearRenderState(RenderState.RS_TEXTURE);
-        setRenderState(atmoShader);
-        setRenderState(blendAlpha);
-        setRenderState(atmoMaterial);
-
-        // back of atmosphere
-        setRenderState(frontCull);
-        updateRenderState();
-        r.draw(this.getBatch(0));
-        
-        clearRenderState(RenderState.RS_ALPHA);
-        clearRenderState(RenderState.RS_CULL);
-        
-        // PLANET
-        setRenderState(planetTextures);
-        setRenderState(planetShader);
-        setRenderState(planetMaterial);
-        
-        updateRenderState();
-        r.draw(this.getBatch(0));
-        
-        clearRenderState(RenderState.RS_TEXTURE);
-        setRenderState(atmoShader);
-        setRenderState(blendAlpha);
-        setRenderState(atmoMaterial);
-        
-        // front of atmosphere
-        setRenderState(backCull);
-        updateRenderState();
         r.draw(this.getBatch(0));
     }
             

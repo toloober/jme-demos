@@ -127,7 +127,7 @@ public class InGameState extends PhysicsGameState {
             GameTaskQueueManager.getManager().render(new Callable<Object>() {
                 public Object call() throws Exception {
                     missileCam = new MissileCamera(disp.getWidth()-125, 95, rootNode);
-                    earth = new PhysicsPlanet(getPhysicsSpace(), "earth", 4000);
+                    earth = new PhysicsPlanet(getPhysicsSpace(), "earth", 4000, false);
                     earth.getNode().setLocalTranslation(new Vector3f(0, -5000, 6000));
                     rootNode.attachChild(earth.getNode());
                     return null;
@@ -141,10 +141,6 @@ public class InGameState extends PhysicsGameState {
 
 //        getPhysicsSpace().addToUpdateCallbacks(
 //                new PointGravityCallback(new Vector3f(0, -5000, 6000), 1000, 7000));
-        // create the Earth
-//        earth = new PhysicsPlanet("earth", getPhysicsSpace(), 50, 50, 4000.0f,
-//                new Vector3f(0, -5000, 6000), "data/textures/earth.jpg");
-//        rootNode.attachChild(earth.getPhysicNode());
         
         // create an instance of the AsteroidFactory
         asteroidFactory = new AsteroidFactory(rootNode, getPhysicsSpace());
