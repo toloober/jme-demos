@@ -40,13 +40,13 @@ public class ChaseController extends Controller {
             
             // if we get too near, flee
             if (me.getLocalTranslation().distance(
-                    target.getLocalTranslation()) < 300) {
+                    target.getLocalTranslation()) < 500) {
                 mode = AIMode.EVADE;
             }
             
             // if we are far enough away, start the attack
             if (me.getLocalTranslation().distance(
-                    target.getLocalTranslation()) > 1500) {
+                    target.getLocalTranslation()) > 2500) {
                 mode = AIMode.CHASE;
             }
             

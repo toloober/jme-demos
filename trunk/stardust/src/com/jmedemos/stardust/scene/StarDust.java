@@ -7,7 +7,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 
@@ -60,10 +60,10 @@ public class StarDust extends Node {
         ms.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f));
         ms.setEnabled(true);
 
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.One);
         as.setTestEnabled(false);
         as.setEnabled(true);
 

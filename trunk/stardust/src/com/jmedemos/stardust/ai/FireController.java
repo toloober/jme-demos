@@ -5,12 +5,12 @@ import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.util.Timer;
 import com.jmedemos.stardust.scene.projectile.ProjectileFactory;
 import com.jmedemos.stardust.scene.projectile.ProjectileFactory.ProjectileType;
 import com.jmedemos.stardust.sound.SoundUtil;
+import com.jmedemos.stardust.util.SDUtils;
 
 /**
  * Fire at the target if we are close enough.
@@ -74,7 +74,6 @@ public class FireController extends Controller {
                 me.getLocalTranslation().add(targetDirection.mult(50)),
                 me.getLocalRotation());
         
-//        SoundUtil.get().playSFX(SoundUtil.BG_BULLET_SHOT);
         SoundUtil.get().playEnemyfire(me.getLocalTranslation());
     }
     
@@ -109,12 +108,12 @@ public class FireController extends Controller {
         
         freeSight = false;
         for(int i = 0; i < results.getNumber(); i++) {
-            Geometry geom = results.getPickData(i).getTargetMesh().getParentGeom();
-            if (geom.getParent().getParent() == me) {
+            Node geom = results.getPickData(i).getTargetMesh().getParent();
+            if (SDUtils.containsNode(geom, me)) {
                 // oops, ignore that
                 continue;
             }
-            if (isTarget(geom.getParent())) {
+            if (SDUtils.containsNode(geom, target)) {
                 // got our target   
                 freeSight = true;
                 break;
@@ -127,21 +126,6 @@ public class FireController extends Controller {
         return freeSight;
     }
     
-    /**
-     * Check if this node or any of its Parents is our Target
-     * @param node the node to check.
-     * @return true if this is our target.
-     */
-    private boolean isTarget(final Node node) {
-        while (node.getParent() != null) {
-            if (node == target) {
-                return true;
-            }
-            return isTarget(node.getParent());
-        }
-        return false;
-    }
-
     public boolean isFreeSight() {
         return freeSight;
     }

@@ -1,17 +1,17 @@
 package com.jmedemos.stardust.scene;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import com.jme.scene.Node;
 
 
 public class EntityManager {
-    private HashMap<Node, Entity> entites;
+    private WeakHashMap<Node, Entity> entites;
     
     private static EntityManager instance;
     
     private EntityManager () {
-        entites = new HashMap<Node, Entity>();
+        entites = new WeakHashMap<Node, Entity>();
     }
     
     public static EntityManager get () {
@@ -33,11 +33,11 @@ public class EntityManager {
     }
     
     /**
-     * Check if this Node is a projectile.
+     * Check if this Node is a Entity.
      * @param node node to check
-     * @return true if this node belongs to an Enemy
+     * @return true if this node is a entity
      */
-    public boolean isProjectile (Node node) {
+    public boolean isEntity (Node node) {
         return entites.containsKey(node);
     }
 }

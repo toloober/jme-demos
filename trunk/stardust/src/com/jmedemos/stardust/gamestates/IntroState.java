@@ -85,7 +85,8 @@ public class IntroState extends BasicGameState {
         TextureState ts = disp.getRenderer().createTextureState();
         ts.setTexture(TextureManager.loadTexture(ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,
                 "data/textures/logo_3.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+                Texture.MinificationFilter.BilinearNoMipMaps, 
+                Texture.MagnificationFilter.Bilinear));
         q.setRenderState(ts);
         q.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         rootNode.attachChild(q);
@@ -94,7 +95,7 @@ public class IntroState extends BasicGameState {
         fader = new Fader("Fader", disp.getWidth(), disp.getHeight(),
                 ColorRGBA.black, 5);
         fader.setAlpha(0.0f);
-        fader.setMode(Fader.FADE_IN);
+        fader.setMode(Fader.FadeMode.FadeIn);
         rootNode.attachChild(fader);
 
         // create and position the text.

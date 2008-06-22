@@ -3,6 +3,7 @@ package com.jmedemos.stardust.gamestates;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
@@ -19,6 +20,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.Timer;
+import com.jme.util.geom.Debugger;
 import com.jmedemos.stardust.ai.FireController;
 import com.jmedemos.stardust.core.Game;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
@@ -33,6 +35,7 @@ import com.jmedemos.stardust.scene.PhysicsPlanet;
 import com.jmedemos.stardust.scene.PlayerShip;
 import com.jmedemos.stardust.scene.StarDust;
 import com.jmedemos.stardust.scene.Sun;
+import com.jmedemos.stardust.scene.TrailManager;
 import com.jmedemos.stardust.scene.actions.CollisionAction;
 import com.jmedemos.stardust.scene.asteroid.AsteroidFactory;
 import com.jmedemos.stardust.scene.asteroid.AsteroidField;
@@ -107,6 +110,8 @@ public class InGameState extends PhysicsGameState {
     private MissileCamera missileCam;
     private Skybox skybox;
     
+    private boolean drawBounds = false;
+    
     /**
      * Constructor of the InGame GameState. Init the Scene: 
      * - create scene elements
@@ -116,17 +121,17 @@ public class InGameState extends PhysicsGameState {
      */
     public InGameState(final String name, final TransitionGameState trans) {
         super(name);
-        
         // init physics
         initPhysics();
         
         EnemyFactory.create(getPhysicsSpace());
         PowerUpManager.create(getPhysicsSpace());
+        TrailManager.create(rootNode);
         
         try {
-            GameTaskQueueManager.getManager().render(new Callable<Object>() {
+            GameTaskQueueManager.getManager().update(new Callable<Object>() {
                 public Object call() throws Exception {
-                    missileCam = new MissileCamera(disp.getWidth()-125, 95, rootNode);
+//                    missileCam = new MissileCamera(disp.getWidth()-125, 95, rootNode);
                     earth = new PhysicsPlanet(getPhysicsSpace(), "earth", 4000, false);
                     earth.getNode().setLocalTranslation(new Vector3f(0, -5000, 6000));
                     rootNode.attachChild(earth.getNode());
@@ -137,6 +142,7 @@ public class InGameState extends PhysicsGameState {
             e.printStackTrace();
             Game.getInstance().quit();
         }
+        
         ProjectileFactory.create(rootNode, getPhysicsSpace(), missileCam);
 
 //        getPhysicsSpace().addToUpdateCallbacks(
@@ -160,7 +166,7 @@ public class InGameState extends PhysicsGameState {
 
         // create the Hud
         hud = new Hud(disp.getWidth(), disp.getHeight(), player);
-        hud.getHudNode().attachChild(missileCam.getMonitorNode());
+//        hud.getHudNode().attachChild(missileCam.getMonitorNode());
 
         // create our ChaseCam
         chaseCam = new ChaseCam(player.getNode(), 7f, -20f);
@@ -177,7 +183,7 @@ public class InGameState extends PhysicsGameState {
 
         // create a Z-Buffer for the Scene
         ZBufferState z = disp.getRenderer().createZBufferState();
-        z.setFunction(ZBufferState.CF_LEQUAL);
+        z.setFunction(ZBufferState.TestFunction.LessThanOrEqualTo);
         rootNode.setRenderState(z);
         
         // init the explosion effect
@@ -273,6 +279,16 @@ public class InGameState extends PhysicsGameState {
             return;
         }
         
+        GameTaskQueueManager.getManager().update(new Callable<Object>() {
+            public Object call() throws Exception {
+                if (Game.getInstance().isPaused()) {
+                    Timer.getTimer().reset();
+                    Game.getInstance().resume();
+                }
+                return null;
+            }
+        });
+        
         // disable mouse cursor
         MouseInput.get().setCursorVisible(false);
 
@@ -304,7 +320,7 @@ public class InGameState extends PhysicsGameState {
     @Override
     public final void update(final float tpf) {
     	// render the missile cam
-    	missileCam.render(tpf);
+//    	missileCam.render(tpf);
     	
         getPhysicsSpace().update(tpf);
         input.update(tpf);
@@ -333,7 +349,8 @@ public class InGameState extends PhysicsGameState {
         // -> Last <- but not least, update the ChaseCam
         chaseCam.update(tpf);
         chaseCam.getCamNode().updateGeometricState(tpf, true);
-//        SceneMonitor.getMonitor().updateViewer(tpf);
+        SceneMonitor.getMonitor().updateViewer(tpf);
+        TrailManager.get().update();
     }
 
     /**
@@ -344,6 +361,9 @@ public class InGameState extends PhysicsGameState {
         super.render(tpf);
         // draw the hud separately (Ortho queue)
         disp.getRenderer().draw(hud.getHudNode());
+        SceneMonitor.getMonitor().renderViewer(disp.getRenderer());
+        if (drawBounds)
+        	Debugger.drawBounds(rootNode, disp.getRenderer());
     }
 
     /**

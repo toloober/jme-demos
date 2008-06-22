@@ -10,7 +10,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.VBOInfo;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.MaterialState;
@@ -38,7 +38,7 @@ public class Planet extends Sphere {
     private static GLSLShaderObjectsState atmoShader;
     private static CullState backCull;
     private static CullState frontCull;
-    private static AlphaState blendAlpha;
+    private static BlendState blendAlpha;
     private static MaterialState atmoMaterial;
     private static MaterialState planetMaterial;
 
@@ -53,22 +53,22 @@ public class Planet extends Sphere {
             atmoShader = ShaderUtils.getAtmosphereShader();
 
             backCull = r.createCullState();
-            backCull.setCullMode(CullState.CS_BACK);
+            backCull.setCullFace(CullState.Face.Back);
             
             frontCull = r.createCullState();
-            frontCull.setCullMode(CullState.CS_FRONT);
+            backCull.setCullFace(CullState.Face.Front);
 
-            blendAlpha = r.createAlphaState();
+            blendAlpha = r.createBlendState();
             blendAlpha.setBlendEnabled(true);
-            blendAlpha.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-            blendAlpha.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+            blendAlpha.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+            blendAlpha.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
             
             atmoMaterial = r.createMaterialState();
-            atmoMaterial.setMaterialFace(MaterialState.MF_FRONT_AND_BACK);
-            atmoMaterial.setColorMaterial(MaterialState.CM_AMBIENT_AND_DIFFUSE);
+            atmoMaterial.setMaterialFace(MaterialState.MaterialFace.FrontAndBack);
+            atmoMaterial.setColorMaterial(MaterialState.ColorMaterial.AmbientAndDiffuse);
             
             planetMaterial = r.createMaterialState();
-            planetMaterial.setMaterialFace(MaterialState.MF_FRONT);
+            planetMaterial.setMaterialFace(MaterialState.MaterialFace.Front);
             planetMaterial.setShininess(32f);
         }
         
@@ -80,11 +80,17 @@ public class Planet extends Sphere {
         if (useShader) {
             normal = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_normal.png");
             spec   = ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, texName+"_specular.png");
-            normalmap = TextureManager.loadTexture(normal, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
-            specmap   = TextureManager.loadTexture(spec, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
+            normalmap = TextureManager.loadTexture(normal,
+                    Texture.MinificationFilter.BilinearNoMipMaps, 
+                    Texture.MagnificationFilter.Bilinear, 0.0f, false);
+            specmap   = TextureManager.loadTexture(spec,
+                    Texture.MinificationFilter.BilinearNoMipMaps, 
+                    Texture.MagnificationFilter.Bilinear, 0.0f, false);
         }
       
-        Texture colormap  = TextureManager.loadTexture(color, Texture.MM_LINEAR, Texture.FM_LINEAR, 0.0f, false);
+        Texture colormap  = TextureManager.loadTexture(color,
+                Texture.MinificationFilter.BilinearNoMipMaps, 
+                Texture.MagnificationFilter.Bilinear, 0.0f, false);
 
         log.info("Loaded planet textures");
         getLocalRotation().fromAngles(FastMath.HALF_PI, 0f, 0f);
@@ -99,7 +105,7 @@ public class Planet extends Sphere {
         
         planetTextures.load();
         setVBOInfo(new VBOInfo(true));
-        lockBounds();
+//        lockBounds();
 //        self.lockTransforms();
         setModelBound(new BoundingSphere());
         updateModelBound();
@@ -127,9 +133,9 @@ public class Planet extends Sphere {
     	// back of atmosphere
     	setRenderState(frontCull);
     	updateRenderState();
-    	r.draw(this.getBatch(0));
+    	r.draw(this);
     	
-    	clearRenderState(RenderState.RS_ALPHA);
+    	clearRenderState(RenderState.RS_BLEND);
     	clearRenderState(RenderState.RS_CULL);
     	
     	// PLANET
@@ -138,7 +144,7 @@ public class Planet extends Sphere {
     	setRenderState(planetMaterial);
     	
     	updateRenderState();
-    	r.draw(this.getBatch(0));
+    	r.draw(this);
     	
     	clearRenderState(RenderState.RS_TEXTURE);
     	setRenderState(atmoShader);
@@ -155,7 +161,7 @@ public class Planet extends Sphere {
         if (useShader)
             renderShader(r);
         
-        r.draw(this.getBatch(0));
+        r.draw(this);
     }
             
 }

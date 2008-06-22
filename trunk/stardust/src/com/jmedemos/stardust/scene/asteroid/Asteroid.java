@@ -4,8 +4,8 @@ import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
@@ -13,7 +13,7 @@ import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmedemos.stardust.util.ModelUtil;
-import com.jmex.effects.particles.ParticleGeometry;
+import com.jmex.effects.particles.ParticleMesh;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.material.Material;
@@ -25,7 +25,7 @@ import com.jmex.physics.material.Material;
 public class Asteroid extends Entity {
     /** physic node.*/
     private DynamicPhysicsNode node = null;
-    private ParticleGeometry particleGeom = null;
+    private ParticleMesh particleGeom = null;
     private static int counter = 0;
 
     /**
@@ -81,7 +81,7 @@ public class Asteroid extends Entity {
         node.updateWorldVectors();
         ParticleEffectFactory.get().spawnExplosion(node.getWorldTranslation().clone());
         SoundUtil.get().playExplosion(node.getWorldTranslation().clone());
-        node.setCullMode(SceneElement.CULL_ALWAYS);
+        node.setCullHint(CullHint.Always);
         node.delete();
     }
     
@@ -101,7 +101,7 @@ public class Asteroid extends Entity {
      * trail as particle effect.
      * @return reference to the particle trail.
      */
-    public final ParticleGeometry getParticleGeom() {
+    public final ParticleMesh getParticleGeom() {
         return particleGeom;
     }
 }

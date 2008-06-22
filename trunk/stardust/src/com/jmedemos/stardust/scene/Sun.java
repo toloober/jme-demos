@@ -6,6 +6,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
@@ -43,7 +44,7 @@ public class Sun {
      */
     public Sun(final Node rootNode, final Node skybox) {
         lightState = display.getRenderer().createLightState();
-        lightNode = new LightNode("sun", lightState);
+        lightNode = new LightNode("sun");
         setSun(rootNode, skybox);
     }
 
@@ -59,8 +60,8 @@ public class Sun {
         dr.setDiffuse(ColorRGBA.white);
         dr.setAmbient(ColorRGBA.gray);
         lightState.setTwoSidedLighting(true);
+        lightState.attach(dr);
         lightNode.setLight(dr);
-        lightNode.setTarget(rootNode);
 
         Vector3f min2 = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max2 = new Vector3f(0.15f, 0.15f, 0.15f);
@@ -70,7 +71,7 @@ public class Sun {
 
         lightNode.attachChild(lightBox);
 
-        lightBox.setLightCombineMode(LightState.OFF);
+        lightBox.setLightCombineMode(LightCombineMode.Off);
 
 //        TextureState[] tex = new TextureState[4];
 //        tex[0] = display.getRenderer().createTextureState();

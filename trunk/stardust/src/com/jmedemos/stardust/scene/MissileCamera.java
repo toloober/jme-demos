@@ -1,14 +1,15 @@
 package com.jmedemos.stardust.scene;
 
 import com.jme.image.Texture;
+import com.jme.image.Texture2D;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -50,7 +51,7 @@ public class MissileCamera {
     /**
      *  Texture to render the scene to.
      */
-    private Texture fakeTex;
+    private Texture2D fakeTex;
     
     /**
      * TextureState with the rendered scene.
@@ -93,7 +94,7 @@ public class MissileCamera {
         createNoiseTextureState();
         
         tRenderer = disp.createTextureRenderer(
-                240, 180, TextureRenderer.RENDER_TEXTURE_2D);
+                240, 180, TextureRenderer.Target.Texture2D);
         
         missileCamNode = new CameraNode("missile Camera Node", tRenderer.getCamera());
         tRenderer.getCamera().setFrustumFar(Game.FAR_FRUSTUM);
@@ -103,19 +104,24 @@ public class MissileCamera {
         
         monitorNode = new Node("Monitor Node");
         monitorQuad = new Quad("Monitor");
-        monitorQuad.initialize(240, 180);
-        monitorQuad.setLocalTranslation(x, y, 0);
+//        monitorQuad.initialize(240, 180);
+        monitorQuad.initialize(3, 3);
+//        monitorQuad.setLocalTranslation(x, y, 0);
+        monitorQuad.setLocalTranslation(new Vector3f(3.75f, 52.5f, 90));
         
         Quad quad2 = new Quad("Monitor");
-        quad2.initialize(250, 190);
-        quad2.setLocalTranslation(x, y, 0);
+//        quad2.initialize(250, 190);
+        quad2.initialize(3.4f, 3.4f);
+//        quad2.setLocalTranslation(x, y, 0);
+        quad2.setLocalTranslation(new Vector3f(3.95f, 52.6f, 89.5f));
         monitorNode.attachChild(quad2);
         monitorNode.attachChild(monitorQuad);
         
+        
         // Ok, now lets create the Texture object that our scene will be rendered to.
         tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-        fakeTex = new Texture();
-        fakeTex.setRTTSource(Texture.RTT_SOURCE_RGBA);
+        fakeTex = new Texture2D();
+        fakeTex.setRenderToTextureType(Texture.RenderToTextureType.RGBA);
         tRenderer.setupTexture(fakeTex);
         screenTextureState = disp.getRenderer().createTextureState();
         screenTextureState.setTexture(fakeTex);
@@ -124,7 +130,7 @@ public class MissileCamera {
         
         monitorNode.updateGeometricState(0.0f, true);
         monitorNode.updateRenderState();
-        monitorNode.setLightCombineMode(LightState.OFF);
+        monitorNode.setLightCombineMode(LightCombineMode.Off);
         setActive(false);
     }
     
@@ -135,9 +141,10 @@ public class MissileCamera {
     public void createNoiseTextureState() {
         noiseTex = TextureManager.loadTexture(
         		ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,
-        			"data/textures/noise.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
-        noiseTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        			"noise.jpg"),
+                    Texture.MinificationFilter.BilinearNoMipMaps, 
+                    Texture.MagnificationFilter.Bilinear);
+//        noiseTex.setWrap(Texture.WrapMode.Clamp);
         noiseTex.setTranslation(new Vector3f());
         noiseTextureState = disp.getRenderer().createTextureState();
         noiseTextureState.setTexture(noiseTex);
