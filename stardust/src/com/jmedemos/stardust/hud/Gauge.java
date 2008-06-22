@@ -5,7 +5,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -76,18 +76,22 @@ public class Gauge {
 		tsGauge = renderer.createTextureState();
 		tsGauge.setTexture(TextureManager.loadTexture(
 				ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, gaugeTex),
-				Texture.MM_LINEAR, Texture.FM_LINEAR, 1.0f, true));
+				Texture.MinificationFilter.BilinearNoMipMaps, 
+				Texture.MagnificationFilter.Bilinear,
+				1.0f, true));
 		
 		TextureState tsGaugeFrame = renderer.createTextureState();
 		tsGaugeFrame.setTexture(TextureManager.loadTexture(
 		        ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, gaugeFrameTex),
-		        Texture.MM_LINEAR, Texture.FM_LINEAR, 1.0f, true));
+		        Texture.MinificationFilter.BilinearNoMipMaps, 
+                Texture.MagnificationFilter.Bilinear,
+		        1.0f, true));
 		
 		// get width / height of the gauge
 		width = tsGauge.getTexture().getImage().getWidth();
 		heigth = tsGauge.getTexture().getImage().getHeight();
 		
-		// calculate the border thinkness
+		// calculate the border thickness
 		border = tsGaugeFrame.getTexture().getImage().getWidth() - tsGauge.getTexture().getImage().getWidth();
 		
 		// create the gauge quads and the Node to attach the quads to
@@ -103,13 +107,13 @@ public class Gauge {
         gauge.setRenderState(tsGauge);
         gaugeFrame.setRenderState(tsGaugeFrame);
         
-        // create a alphastate for the Gaugenode
-        AlphaState as = renderer.createAlphaState();
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        as.setTestEnabled(false);
-        gaugeNode.setRenderState(as);
+        // create a blendstate for the Gaugenode
+        BlendState bs = renderer.createBlendState();
+        bs.setBlendEnabled(true);
+        bs.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        bs.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+        bs.setTestEnabled(false);
+        gaugeNode.setRenderState(bs);
         
         gaugeNode.setLocalTranslation(xPos+width+border, yPos+heigth+border, 0);
         gaugeNode.updateGeometricState(0, true);

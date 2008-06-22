@@ -123,7 +123,7 @@ public class ProjectileFactory {
         p.setSpeed(2000000);
         
         p.setTarget(player.getTargetDevice().getCurrentTarget());
-        p.getNode().attachChild(missileCam.getCameraNode());
+//        p.getNode().attachChild(missileCam.getCameraNode());
         
         rootNode.attachChild(p.getNode());
         p.getNode().updateRenderState();

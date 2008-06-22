@@ -20,29 +20,35 @@ public class DarkSkyBox extends Skybox {
 
         Texture north = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/north.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
         Texture south = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/south.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
         Texture east = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/east.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
         Texture west = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/west.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
         Texture up = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/top.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
         Texture down = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"data/textures/bottom.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR);
+                Texture.MinificationFilter.BilinearNoMipMaps,
+                Texture.MagnificationFilter.Bilinear);
 
-        setTexture(Skybox.NORTH, north);
-        setTexture(Skybox.WEST, west);
-        setTexture(Skybox.SOUTH, south);
-        setTexture(Skybox.EAST, east);
-        setTexture(Skybox.UP, up);
-        setTexture(Skybox.DOWN, down);
+        setTexture(Skybox.Face.North, north);
+        setTexture(Skybox.Face.West, west);
+        setTexture(Skybox.Face.South, south);
+        setTexture(Skybox.Face.East, east);
+        setTexture(Skybox.Face.Up, up);
+        setTexture(Skybox.Face.Down, down);
 
         Callable<Object> preload = new Callable<Object>() {
             public Object call() throws Exception {

@@ -3,6 +3,8 @@
 	<name>Stardust</name>
 	<comment></comment>
 	<projects>
+		<project>jme 2.0</project>
+		<project>jME Physics 2</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

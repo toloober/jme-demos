@@ -11,9 +11,8 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -21,8 +20,8 @@ import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.scene.asteroid.OnDeadListener;
 import com.jmex.effects.particles.ParticleFactory;
-import com.jmex.effects.particles.ParticleGeometry;
 import com.jmex.effects.particles.ParticleMesh;
+import com.jmex.effects.particles.ParticleSystem.ParticleType;
 
 /**
  * creates and manages the particle effects for an explosion.
@@ -31,7 +30,7 @@ public class ParticleEffectFactory {
     private ArrayList<ParticleMesh> explosions = null;
     private ArrayList<ParticleMesh> asteroidTrails = null;
     private ArrayList<ParticleMesh> missileTrails = null;
-    private AlphaState as = null;
+    private BlendState bs = null;
     private TextureState ts = null;
     private ZBufferState zs = null;
     private static ParticleEffectFactory instanze = null;
@@ -63,19 +62,20 @@ public class ParticleEffectFactory {
         rootNode = root;
         
         DisplaySystem display = DisplaySystem.getDisplaySystem();
-        as = display.getRenderer().createAlphaState();
-        as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE);
-        as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
+        bs = display.getRenderer().createBlendState();
+        bs = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
+        bs.setBlendEnabled(true);
+        bs.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        bs.setDestinationFunction(BlendState.DestinationFunction.One);
+        bs.setTestEnabled(true);
+        bs.setTestFunction(BlendState.TestFunction.GreaterThan);
 
         ts = display.getRenderer().createTextureState();
         ts.setTexture(TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,
                         "data/textures/flaresmall.jpg"), 
-                        Texture.FM_LINEAR, Texture.FM_LINEAR));
+                        Texture.MinificationFilter.BilinearNoMipMaps,
+                        Texture.MagnificationFilter.Bilinear));
 
         zs = display.getRenderer().createZBufferState();
         zs.setWritable(false);
@@ -163,7 +163,7 @@ public class ParticleEffectFactory {
         pMesh.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         pMesh.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
         pMesh.setRenderState(ts);
-        pMesh.setRenderState(as);
+        pMesh.setRenderState(bs);
         pMesh.setRenderState(zs);
 
         rootNode.attachChild(pMesh);
@@ -180,7 +180,7 @@ public class ParticleEffectFactory {
      */
     private ParticleMesh createAstroidTrail(final Spatial asteroidmodel) {
         ParticleMesh pMesh = ParticleFactory.buildParticles("tail", 180,
-                ParticleGeometry.PT_QUAD);
+                ParticleType.Quad);
         pMesh.setEmissionDirection(new Vector3f(1, 1, 1));
         pMesh.setOriginOffset(new Vector3f(0, 0, 0));
         pMesh.setInitialVelocity(0.005f);
@@ -197,13 +197,13 @@ public class ParticleEffectFactory {
         
         pMesh.setModelBound(new BoundingBox());
         pMesh.updateModelBound();
-        pMesh.setCullMode(SceneElement.CULL_NEVER);
+        pMesh.setCullHint(Spatial.CullHint.Never);
 
         // removes the asteroid from the scene after the particle trail has died
         pMesh.getParticleController().addListener(new OnDeadListener());
         
         pMesh.setRenderState(ts);
-        pMesh.setRenderState(as);
+        pMesh.setRenderState(bs);
         pMesh.setRenderState(zs);
         
         asteroidTrails.add(pMesh);
@@ -217,7 +217,7 @@ public class ParticleEffectFactory {
      */
     private ParticleMesh createMissileTrail() {
         ParticleMesh pMesh = ParticleFactory.buildParticles("tail", 200,
-                ParticleGeometry.PT_QUAD);
+                ParticleType.Quad);
         pMesh.setEmissionDirection(new Vector3f(1, 1, 1));
         pMesh.setInitialVelocity(0);
         pMesh.setStartSize(1f);
@@ -233,12 +233,12 @@ public class ParticleEffectFactory {
         
         pMesh.setModelBound(new BoundingBox());
         pMesh.updateModelBound();
-        pMesh.setCullMode(SceneElement.CULL_NEVER);
+        pMesh.setCullHint(Spatial.CullHint.Never);
 
         // removes the missile from the scene after the particle trail has died
         pMesh.getParticleController().addListener(new OnDeadListener());
         pMesh.setRenderState(ts);
-        pMesh.setRenderState(as);
+        pMesh.setRenderState(bs);
         pMesh.setRenderState(zs);
         
         missileTrails.add(pMesh);

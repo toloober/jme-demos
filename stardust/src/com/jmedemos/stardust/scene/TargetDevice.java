@@ -4,8 +4,8 @@ import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.scene.Controller;
-import com.jme.scene.Geometry;
 import com.jme.scene.Node;
+import com.jmedemos.stardust.util.SDUtils;
 
 /**
  * Fires a ray straight ahead and checks if it hits any Entity.
@@ -52,10 +52,12 @@ public class TargetDevice extends Controller {
         }
     	// iterate through the targets
         for(int i = 0; i < results.getNumber(); i++) {
-            Geometry geom = results.getPickData(i).getTargetMesh().getParentGeom();
-            if ((geom.getParent() != origin && EntityManager.get().getEntity(geom.getParent()) != null) || 
-                (geom.getParent().getParent() != origin && EntityManager.get().getEntity(geom.getParent().getParent()) != null)) {
-                currentTarget = results.getPickData(i).getTargetMesh().getParentGeom().getParent();
+            Node geom = results.getPickData(i).getTargetMesh().getParent();
+            if (SDUtils.containsNode(geom, origin) == true) {
+                 // we hit ourselves
+                continue;
+            }
+            if (isEntity(geom)) {
                 foundTarget = true;
                 break;
             }
@@ -67,6 +69,18 @@ public class TargetDevice extends Controller {
         }
     }
 
+    private boolean isEntity(Node toCheck) {
+        if (EntityManager.get().isEntity(toCheck)) {
+            currentTarget = toCheck;
+            return true;
+        }
+        if (toCheck.getParent() != null) {
+            return isEntity(toCheck.getParent());
+        } else {
+            return false;
+        }
+    }
+    
     public Boolean getLocked() {
         return locked;
     }

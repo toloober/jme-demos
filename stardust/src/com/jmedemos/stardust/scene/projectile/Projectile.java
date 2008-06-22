@@ -3,8 +3,8 @@ package com.jmedemos.stardust.scene.projectile;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.SceneElement;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.shape.Sphere;
 import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.scene.EntityManager;
@@ -112,7 +112,7 @@ public class Projectile extends Entity {
     	node.getLocalTranslation().set(startLocation);
     	node.getLocalRotation().set(rotation);
     	    	
-        node.setCullMode(SceneElement.CULL_DYNAMIC);
+        node.setCullHint(CullHint.Dynamic);
     	node.updateGeometricState(0, false);
     	node.clearDynamics();
     }

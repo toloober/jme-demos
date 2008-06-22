@@ -22,7 +22,7 @@ public class HomingDevice extends Controller {
      */
     @Override
     public void update(float time) {
-        object.setLifeTime(object.getLifeTime()-time);
+        object.setAge(object.getAge()-time);
         if (object.getLifeTime() < 0) {
             target = null;
             object.die();

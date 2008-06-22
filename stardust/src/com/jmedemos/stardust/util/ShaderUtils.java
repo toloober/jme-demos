@@ -2,8 +2,6 @@ package com.jmedemos.stardust.util;
 
 import java.net.URL;
 
-import com.jme.scene.batch.GeomBatch;
-import com.jme.scene.state.GLSLShaderDataLogic;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.resource.ResourceLocatorTool;
@@ -27,12 +25,6 @@ public class ShaderUtils {
 //        }
 //    }
     
-    private static class PlanetDataLogic implements GLSLShaderDataLogic {
-        public void applyData(GLSLShaderObjectsState shader, GeomBatch batch){
-            
-        }
-    }
-        
     public static GLSLShaderObjectsState getPlanetShader(){
         if (planet != null) {
             return null;

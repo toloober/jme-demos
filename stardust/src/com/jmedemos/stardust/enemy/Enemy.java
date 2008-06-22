@@ -5,6 +5,7 @@ import com.jme.scene.Spatial;
 import com.jmedemos.stardust.ai.ChaseController;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.Entity;
+import com.jmedemos.stardust.scene.TrailManager;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmedemos.stardust.util.ModelUtil;
 import com.jmex.physics.DynamicPhysicsNode;
@@ -44,6 +45,9 @@ public class Enemy extends Entity {
         fc = new FrictionCallback();
         fc.add(node, 0f, 25.0f);
         space.addToUpdateCallbacks(fc);
+        
+        TrailManager.get().createTrail(getNode());
+        
     }
     
     public Node getNode() {
@@ -64,6 +68,7 @@ public class Enemy extends Entity {
         node.detachAllChildren();
         node.removeController(chaseController);
         space.removeFromUpdateCallbacks(fc);
+        TrailManager.get().removeTrail(getNode());
         fc = null;
         space = null;
         chaseController = null;

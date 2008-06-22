@@ -1,7 +1,5 @@
 package com.jmedemos.stardust.core;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import com.jme.input.joystick.JoystickInput;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -36,29 +34,28 @@ public final class Game {
      * Start (Standard-) Game.
      */
     public void start() {
-    	stdGame.start();
-    	
-        UncaughtExceptionHandler handler = new SDExceptionHandler(this); 
-        Thread.setDefaultUncaughtExceptionHandler(handler);
-        stdGame.setUncaughtExceptionHandler(handler);
+        stdGame.start();
+    }
+
+    private boolean paused = false;
+    public void pause() {
+        stdGame.lock();
+        paused = true;
     }
     
+    public void resume() {
+        stdGame.unlock();
+        paused = false;
+    }
+    
+    public boolean isPaused() {
+        return paused;
+    }
     /**
      * Finish Game.
      */
     public void quit() {
     	stdGame.shutdown();
-    	
-		GameStateManager.getInstance().cleanup();
-		DisplaySystem.getDisplaySystem().getRenderer().cleanup();
-		TextureManager.doTextureCleanup();
-		TextureManager.clearCache();
-		JoystickInput.destroyIfInitalized();
-        if (AudioSystem.isCreated()) {
-            AudioSystem.getSystem().cleanup();
-        }
-        
-        System.exit(0);
     }
 
     /**
@@ -67,7 +64,7 @@ public final class Game {
      * @param type type of game.
      */
     private Game(final String gameName, final StandardGame.GameType type) {
-    	stdGame = new StandardGame(gameName, type);
+    	stdGame = new StandardGame(gameName, type, null, Thread.getDefaultUncaughtExceptionHandler());
     	stdGame.getSettings().setWidth(1024);
     	stdGame.getSettings().setHeight(768);
     	stdGame.getSettings().setFramerate(-1);

@@ -1,9 +1,11 @@
 package com.jmedemos.stardust.core;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.system.DisplaySystem;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
@@ -25,6 +27,9 @@ public final class Start {
      * @param args not used.
      */
     public static void main(final String[] args) {
+        UncaughtExceptionHandler handler = new SDExceptionHandler(); 
+        Thread.setDefaultUncaughtExceptionHandler(handler);
+
         Game game = Game.getInstance();
         game.start();
         
@@ -87,8 +92,8 @@ public final class Start {
         
         GameStateManager.getInstance().activateChildNamed("Menu");
         
-//        SceneMonitor.getMonitor().registerNode(((InGameState)GameStateManager.getInstance().getChild("InGame")).getRootNode());
-//        SceneMonitor.getMonitor().showViewer(true);
-//        SceneMonitor.getMonitor().setViewerUpdateInterval(2);
+        SceneMonitor.getMonitor().registerNode(((InGameState)GameStateManager.getInstance().getChild("InGame")).getRootNode());
+        SceneMonitor.getMonitor().showViewer(true);
+        SceneMonitor.getMonitor().setViewerUpdateInterval(0.3f);
     }
 }

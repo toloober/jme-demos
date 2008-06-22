@@ -10,16 +10,17 @@ import java.util.logging.Logger;
  */
 public class SDExceptionHandler implements UncaughtExceptionHandler {
 	private Logger log = Logger.getLogger(SDExceptionHandler.class.getName());
-	private Game game;
 	
-	public SDExceptionHandler(final Game game) {
-		this.game = game;
-	}
-
+	public SDExceptionHandler() {
+    }
+	
 	public void uncaughtException(Thread t, Throwable e) {
 		log.severe("caucht uncaught exception, quitting game");
 		log.severe(e.getMessage());
 		e.printStackTrace();
+		
+		Game game = Game.getInstance();
 		game.quit();
+		System.exit(-1);
 	}
 }

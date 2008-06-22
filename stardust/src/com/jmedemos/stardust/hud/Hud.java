@@ -3,6 +3,7 @@ package com.jmedemos.stardust.hud;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.state.LightState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.Timer;
@@ -91,7 +92,7 @@ public class Hud {
 
         LightState ls = display.getRenderer().createLightState();
         ls.setEnabled(false);
-        hudNode.setLightCombineMode(LightState.REPLACE);
+        hudNode.setLightCombineMode(LightCombineMode.Replace);
         hudNode.setRenderState(ls);
 
         hudNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);

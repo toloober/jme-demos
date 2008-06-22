@@ -1,7 +1,7 @@
 package com.jmedemos.stardust.util;
 
 import org.fenggui.Display;
-import org.fenggui.event.Key;
+import org.fenggui.event.key.Key;
 import org.fenggui.event.mouse.MouseButton;
 import org.lwjgl.input.Keyboard;
 
@@ -10,6 +10,7 @@ import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
+
 
 /**
  * FengJMEInputHandler.
@@ -190,17 +191,17 @@ public class FengJMEInputHandler extends InputHandler {
             // If the button is down, the mouse is being dragged
             if (down)
                 mouseHandled = disp.fireMouseDraggedEvent(newX, newY,
-                        getMouseButton(lastButton));
+                        getMouseButton(lastButton), 1);
             else
-                mouseHandled = disp.fireMouseMovedEvent(newX, newY);
+                mouseHandled = disp.fireMouseMovedEvent(newX, newY, getMouseButton(lastButton), 1);
         }
 
         public void onWheel(int wheelDelta, int x, int y) {
             // wheelDelta is positive if the mouse wheel rolls up
             if (wheelDelta > 0)
-                mouseHandled = disp.fireMouseWheel(x, y, true, wheelDelta);
+                mouseHandled = disp.fireMouseWheel(x, y, true, 1, wheelDelta);
             else
-                mouseHandled = disp.fireMouseWheel(x, y, false, wheelDelta);
+                mouseHandled = disp.fireMouseWheel(x, y, false, 1, wheelDelta);
 
             // note (johannes): wheeling code not tested on jME, please report
             // problems on www.fenggui.org/forum/

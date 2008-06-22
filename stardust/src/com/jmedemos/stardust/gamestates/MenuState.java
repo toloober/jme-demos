@@ -7,14 +7,14 @@ import org.fenggui.CheckBox;
 import org.fenggui.Container;
 import org.fenggui.Display;
 import org.fenggui.FengGUI;
-import org.fenggui.composites.Window;
+import org.fenggui.binding.render.Binding;
+import org.fenggui.binding.render.lwjgl.LWJGLBinding;
+import org.fenggui.composite.Window;
 import org.fenggui.event.ButtonPressedEvent;
 import org.fenggui.event.IButtonPressedListener;
 import org.fenggui.event.ISelectionChangedListener;
 import org.fenggui.event.SelectionChangedEvent;
 import org.fenggui.layout.GridLayout;
-import org.fenggui.render.Binding;
-import org.fenggui.render.lwjgl.LWJGLBinding;
 import org.fenggui.theme.ITheme;
 import org.fenggui.theme.XMLTheme;
 

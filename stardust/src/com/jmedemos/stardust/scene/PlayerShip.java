@@ -11,15 +11,13 @@ import com.jme.input.controls.controller.ActionController;
 import com.jme.input.controls.controller.ActionRepeatController;
 import com.jme.input.controls.controller.Axis;
 import com.jme.input.controls.controller.GameControlAction;
-import com.jme.light.LightNode;
-import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -130,22 +128,21 @@ public class PlayerShip extends Entity {
 
         initControls();
 
-        LightState ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
-        ls.setEnabled(true);
-        
-        SpotLight sp = new SpotLight();
-        sp.setAngle(20);
-        sp.setAttenuate(true);
-        sp.setDiffuse(ColorRGBA.white);
-        sp.setSpecular(ColorRGBA.yellow);
-        sp.setLocation(new Vector3f(0, 0, -5));
-        sp.setDirection(node.getLocalRotation().getRotationColumn(2));
-        
-        LightNode ln = new LightNode("shipLight", ls);
-        ls.attach(sp);
-        ln.setTarget(node);
-        node.attachChild(ln);
-        
+//        LightState ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+//        ls.setEnabled(true);
+//        
+//        SpotLight sp = new SpotLight();
+//        sp.setAngle(20);
+//        sp.setAttenuate(true);
+//        sp.setDiffuse(ColorRGBA.white);
+//        sp.setSpecular(ColorRGBA.yellow);
+//        sp.setLocation(new Vector3f(0, 0, -5));
+//        sp.setDirection(node.getLocalRotation().getRotationColumn(2));
+//        
+//        LightNode ln = new LightNode("shipLight");
+//        ls.attach(sp);
+//        node.attachChild(ln);
+//        
         targetDevice = new TargetDevice(node, root);
         node.addController(targetDevice);
         
@@ -165,22 +162,23 @@ public class PlayerShip extends Entity {
 
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(TextureManager.loadTexture(
-        		ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "data/textures/crosshair.png"),
-                Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+        		ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"crosshair.png"),
+                Texture.MinificationFilter.BilinearNoMipMaps, 
+                Texture.MagnificationFilter.Bilinear));
         ts.setEnabled(true);
         q.setRenderState(ts);
 
-        crosshair.setLightCombineMode(LightState.REPLACE);
+        crosshair.setLightCombineMode(LightCombineMode.Replace);
         
         LightState ls = display.getRenderer().createLightState();
         ls.setEnabled(false);
         crosshair.setRenderState(ls);
 
-        AlphaState as = display.getRenderer().createAlphaState();
+        BlendState as = display.getRenderer().createBlendState();
         as.setBlendEnabled(true);
         as.setTestEnabled(false);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
+        as.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         as.setEnabled(true);
         crosshair.setRenderState(as);
         crosshair.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
