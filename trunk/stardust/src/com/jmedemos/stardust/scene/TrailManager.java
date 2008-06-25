@@ -38,7 +38,7 @@ public class TrailManager {
 		ts = r.createTextureState();
 		ts.setEnabled(true);
 		Texture t1 = TextureManager.loadTexture(ResourceLocatorTool.locateResource(
-						ResourceLocatorTool.TYPE_TEXTURE, "trail_y.png"),
+						ResourceLocatorTool.TYPE_TEXTURE, "trail_y1.png"),
 						Texture.MinificationFilter.Trilinear,
 						Texture.MagnificationFilter.Bilinear);
 		ts.setTexture(t1);
@@ -93,12 +93,11 @@ public class TrailManager {
 		return trail;
 	}
 
-	public void update() {
+	public void update(float tpf) {
 		for (Map.Entry<Spatial, TrailMesh> t: trails.entrySet()) {
 			t.getKey().updateWorldVectors();
 			t.getValue().setTrailFront(
-					t.getKey().getWorldTranslation(), 30, 
-					Timer.getTimer().getTimePerFrame());
+					t.getKey().getWorldTranslation(), 30, tpf);
 			t.getValue().update(DisplaySystem.getDisplaySystem().getRenderer().getCamera().getLocation());
 		}
 	}

@@ -175,11 +175,17 @@ public class InGameState extends PhysicsGameState {
 
         // escape leaves the InGamestate
         GameControlManager manager = new GameControlManager();
-        GameControl exit = manager.addControl("Exit");
+        GameControl exit = manager.addControl("exit");
         exit.addBinding(new KeyboardBinding(KeyInput.KEY_ESCAPE));
-        ActionChangeController quit = new ActionChangeController(exit,
+        GameControl pause = manager.addControl("pause");
+        pause.addBinding(new KeyboardBinding(KeyInput.KEY_P));
+        
+        ActionChangeController exitAction = new ActionChangeController(exit,
                 new InGameListener());
-        this.getRootNode().addController(quit);
+        getRootNode().addController(exitAction);
+        ActionChangeController pauseAction = new ActionChangeController(pause,
+                new InGameListener());
+        getRootNode().addController(pauseAction);
 
         // create a Z-Buffer for the Scene
         ZBufferState z = disp.getRenderer().createZBufferState();
@@ -210,7 +216,7 @@ public class InGameState extends PhysicsGameState {
         rootNode.attachChild(dust);
         trans.increment();
         
-        for (int i = 0; i < 0; i++) {
+        for (int i = 0; i < 5; i++) {
             Enemy enemy = EnemyFactory.get().createEnemy("xwing.obj", player.getNode());
             enemy.setTarget(player.getNode());
             enemy.getNode().setLocalTranslation(i*100, 500, 500);
@@ -281,10 +287,7 @@ public class InGameState extends PhysicsGameState {
         
         GameTaskQueueManager.getManager().update(new Callable<Object>() {
             public Object call() throws Exception {
-                if (Game.getInstance().isPaused()) {
-                    Timer.getTimer().reset();
-                    Game.getInstance().resume();
-                }
+                Game.getInstance().resume();
                 return null;
             }
         });
@@ -318,7 +321,10 @@ public class InGameState extends PhysicsGameState {
      * @param tpf time since last frame in ms.
      */
     @Override
-    public final void update(final float tpf) {
+    public final void update(float tpf) {
+    	if (Game.getInstance().isPaused()) {
+    		tpf = 0;
+    	}
     	// render the missile cam
 //    	missileCam.render(tpf);
     	
@@ -350,14 +356,17 @@ public class InGameState extends PhysicsGameState {
         chaseCam.update(tpf);
         chaseCam.getCamNode().updateGeometricState(tpf, true);
         SceneMonitor.getMonitor().updateViewer(tpf);
-        TrailManager.get().update();
+        TrailManager.get().update(tpf);
     }
 
     /**
      * Render the Scene and draw the HUD.
      */
     @Override
-    public void render(final float tpf) {
+    public void render(float tpf) {
+    	if (Game.getInstance().isPaused()) {
+    		tpf = 0;
+    	}
         super.render(tpf);
         // draw the hud separately (Ortho queue)
         disp.getRenderer().draw(hud.getHudNode());
