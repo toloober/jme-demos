@@ -38,13 +38,15 @@ public final class Game {
     }
 
     private boolean paused = false;
+    
+    public void togglePause() {
+    	paused = !paused;
+    }
     public void pause() {
-        stdGame.lock();
         paused = true;
     }
     
     public void resume() {
-        stdGame.unlock();
         paused = false;
     }
     

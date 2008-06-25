@@ -1,10 +1,7 @@
 package com.jmedemos.stardust.gamestates.controller;
 
-import java.util.concurrent.Callable;
-
 import com.jme.input.controls.GameControl;
 import com.jme.input.controls.controller.ControlChangeListener;
-import com.jme.util.GameTaskQueueManager;
 import com.jmedemos.stardust.core.Game;
 import com.jmex.game.state.GameStateManager;
 
@@ -23,9 +20,14 @@ public class InGameListener implements ControlChangeListener {
     public final void changed(final GameControl control, final float oldValue,
             final float newValue, final float time) {
         if (newValue == 1.0f) {
-            Game.getInstance().pause();
-//            GameStateManager.getInstance().deactivateChildNamed("InGame");
-//            GameStateManager.getInstance().activateChildNamed("Menu");
+        	if (control.getName().equals("exit")) {
+        		GameStateManager.getInstance().deactivateChildNamed("InGame");
+        		GameStateManager.getInstance().activateChildNamed("Menu");
+        	}
+        	
+        	if (control.getName().equals("pause")) {
+        		Game.getInstance().togglePause();
+        	}
         }
     }
 }
