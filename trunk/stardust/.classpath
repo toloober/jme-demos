@@ -11,6 +11,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/scenemonitor_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/sm_properties_jme2.jar"/>
-	<classpathentry kind="lib" path="lib/FengGUI.jar"/>
+	<classpathentry kind="lib" path="lib/fengui_lwjgl2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
