@@ -1,9 +1,12 @@
 package com.jmedemos.physics_fun.core;
 
 import java.net.URISyntaxException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 import com.jmedemos.physics_fun.gamestates.JMEDesktopGUIGameState;
@@ -21,8 +24,9 @@ import com.jmex.game.state.StatisticsGameState;
  */
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		// only show Warnings
+	    System.setProperty("jme.stats", "set");
 		Logger.getLogger("com.jme").setLevel(Level.WARNING);
 		Logger.getLogger("com.jmex").setLevel(Level.WARNING);
 
@@ -55,7 +59,12 @@ public class Main {
 		// create and activate the GameStates
 		GameStateManager.getInstance().attachChild(new MainGameState("main"));
 		GameStateManager.getInstance().attachChild(new OrthoGameState("txt"));
-		GameStateManager.getInstance().attachChild(new StatisticsGameState());
+//		GameTaskQueueManager.getManager().update(new Callable<Object>() {
+//		    public Object call() throws Exception {
+//		        GameStateManager.getInstance().attachChild(new StatisticsGameState());
+//		        return null;
+//		    }
+//		}).get();
 		GameStateManager.getInstance().activateAllChildren();
 		GameStateManager.getInstance().attachChild(new JMEDesktopGUIGameState("gui",
 				(MainGameState)GameStateManager.getInstance().getChild("main")));

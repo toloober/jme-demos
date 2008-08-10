@@ -5,18 +5,19 @@ import java.util.ArrayList;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.image.Texture.WrapMode;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.CullState.Face;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
@@ -68,7 +69,7 @@ public class Swing extends Node {
         // a Texture for the rope
         Texture t = TextureManager.loadTexture(
         		ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "rope.jpg"));
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        t.setWrap(WrapMode.Repeat);
         t.setScale(new Vector3f(1f,5,1));
         TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         ts.setTexture(t);
@@ -139,7 +140,7 @@ public class Swing extends Node {
         q.setModelBound(new BoundingBox());
         q.updateModelBound();
         q.getLocalRotation().fromAngleAxis(FastMath.DEG_TO_RAD*-90, Vector3f.UNIT_X);
-        q.setCullMode(SceneElement.CULL_ALWAYS);
+        q.setCullHint(CullHint.Always);
         torusNode.attachChild(q);
         
         PhysicsMesh physicTourus = torusNode.createMesh("swing torus");
@@ -163,7 +164,7 @@ public class Swing extends Node {
         bNode.setRenderState(ts);
         CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
         cs.setEnabled(true);
-        cs.setCullMode(CullState.CS_NONE);
+        cs.setCullFace(Face.None);
         bNode.setRenderState(cs);
         bNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         
@@ -223,10 +224,10 @@ public class Swing extends Node {
             Vector3f bottomRight = torusNode.localToWorld(joint.getAnchor(null), null);
             bottomRight.x += ropeWidth;
             
-            BufferUtils.setInBuffer(topLeft, rope.getVertexBuffer(0), 0);
-            BufferUtils.setInBuffer(bottomLeft, rope.getVertexBuffer(0), 1);
-            BufferUtils.setInBuffer(bottomRight, rope.getVertexBuffer(0), 2);
-            BufferUtils.setInBuffer(topRight, rope.getVertexBuffer(0), 3);
+            BufferUtils.setInBuffer(topLeft, rope.getVertexBuffer(), 0);
+            BufferUtils.setInBuffer(bottomLeft, rope.getVertexBuffer(), 1);
+            BufferUtils.setInBuffer(bottomRight, rope.getVertexBuffer(), 2);
+            BufferUtils.setInBuffer(topRight, rope.getVertexBuffer(), 3);
 
             ropes.add(rope);
             bNode.attachChild(rope);
@@ -289,17 +290,17 @@ public class Swing extends Node {
             Vector3f topRight = topCylinderNode.getLocalTranslation().clone();
             topRight.x += ropeWidth;
             
-            tmpVec.x = ((Quad)torusNode.getChild("dummy")).getVertexBuffer(0).get(i*3);
-            tmpVec.z = ((Quad)torusNode.getChild("dummy")).getVertexBuffer(0).get(i*3+1);
-            tmpVec.y = ((Quad)torusNode.getChild("dummy")).getVertexBuffer(0).get(i*3+2);
+            tmpVec.x = ((Quad)torusNode.getChild("dummy")).getVertexBuffer().get(i*3);
+            tmpVec.z = ((Quad)torusNode.getChild("dummy")).getVertexBuffer().get(i*3+1);
+            tmpVec.y = ((Quad)torusNode.getChild("dummy")).getVertexBuffer().get(i*3+2);
             
             tmpVec.addLocal(torusNode.getLocalTranslation());
-            BufferUtils.setInBuffer(topLeft, rope.getVertexBuffer(0), 0);
+            BufferUtils.setInBuffer(topLeft, rope.getVertexBuffer(), 0);
             tmpVec.x -= ropeWidth;
-            BufferUtils.setInBuffer(tmpVec, rope.getVertexBuffer(0), 1);
+            BufferUtils.setInBuffer(tmpVec, rope.getVertexBuffer(), 1);
             tmpVec.x += 2*ropeWidth;
-            BufferUtils.setInBuffer(tmpVec, rope.getVertexBuffer(0), 2);
-            BufferUtils.setInBuffer(topRight, rope.getVertexBuffer(0), 3);
+            BufferUtils.setInBuffer(tmpVec, rope.getVertexBuffer(), 2);
+            BufferUtils.setInBuffer(topRight, rope.getVertexBuffer(), 3);
     		i++;
     	}
     }

@@ -9,6 +9,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingCapsule;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.image.Texture.MinificationFilter;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -22,12 +23,18 @@ import com.jme.scene.shape.RoundedBox;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Teapot;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.BlendState.DestinationFunction;
+import com.jme.scene.state.BlendState.SourceFunction;
+import com.jme.scene.state.BlendState.TestFunction;
+import com.jme.scene.state.CullState.Face;
+import com.jme.scene.state.ShadeState.ShadeMode;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
@@ -37,7 +44,7 @@ import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.geometry.PhysicsMesh;
 
 /**
- * An obejct Factory which creates new simple physic objects
+ * An Object Factory which creates new simple physic objects
  * like Boxes, Spheres, Cylinders etc. 
  * @author Christoph Luder
  */
@@ -50,17 +57,17 @@ public class ObjectFactory {
 	private float force = 750;
 	private Hashtable<MaterialType, ArrayList<RenderState>> rsTable;
 	private Renderer renderer = DisplaySystem.getDisplaySystem().getRenderer();
-	private AlphaState as = null;
+	private BlendState as = null;
 	
 	private ObjectFactory(PhysicsSpace space) {
 	    rsTable = new Hashtable<MaterialType, ArrayList<RenderState>>(MaterialType.values().length);
 	    this.space = space;
 	    
 	    // create a AlphaState for transparent Objects
-        as = renderer.createAlphaState();
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        as.setTestFunction(AlphaState.TF_GREATER);
+        as = renderer.createBlendState();
+        as.setSourceFunction(SourceFunction.SourceAlpha);
+        as.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
+        as.setTestFunction(TestFunction.GreaterThan);
         as.setBlendEnabled(true);
 	}
 	
@@ -106,7 +113,7 @@ public class ObjectFactory {
 	        ms.setDiffuse(new ColorRGBA(0.5f, 0.5f, 0.5f, 1f));
 	        
 	        ShadeState ss = renderer.createShadeState();
-	        ss.setShade(ShadeState.SM_FLAT);
+	        ss.setShadeMode(ShadeMode.Flat);
 	        rsList.add(ss);
 	        break;
 	    case GHOST:
@@ -122,6 +129,10 @@ public class ObjectFactory {
 	        ms.setShininess(128);
 	        // glass is transparent
 	        rsList.add(as);
+	        
+	        CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
+	        cs.setCullFace(Face.Back);
+	        rsList.add(cs);
 	        break;
 	    case GRANITE:
 	        texture = "granite.jpg";
@@ -170,7 +181,7 @@ public class ObjectFactory {
 	        ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 	        ts.setTexture(TextureManager.loadTexture(
 	                ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, 
-	                texture), Texture.MM_LINEAR, Texture.FM_LINEAR));
+	                texture), false));
 	        rsList.add(ts);
 	        
 	    }
@@ -237,7 +248,7 @@ public class ObjectFactory {
 			break;
 		case CYLINDER:
 		    visual = new Cylinder("cylinder", 15, 10, 0.5f, 2f, true);
-		    visual.setModelBound(new BoundingSphere());
+		    visual.setModelBound(new BoundingBox());
 		    break;
 		case TORUS:
 		    visual = new Torus("torus", 15, 10, 0.3f, 1);
@@ -262,7 +273,7 @@ public class ObjectFactory {
 		
 		if (isBasicShape) {
 		    // create geometry automatically
-		    node.generatePhysicsGeometry(true);
+		    node.generatePhysicsGeometry(false);
 		} else {
 		    // create a physical copy of the existing mesh
 		    PhysicsMesh mesh = node.createMesh("physics mesh");
