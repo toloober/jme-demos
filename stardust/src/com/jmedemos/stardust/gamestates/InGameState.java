@@ -3,7 +3,6 @@ package com.jmedemos.stardust.gamestates;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
@@ -131,7 +130,7 @@ public class InGameState extends PhysicsGameState {
         try {
             GameTaskQueueManager.getManager().update(new Callable<Object>() {
                 public Object call() throws Exception {
-//                    missileCam = new MissileCamera(disp.getWidth()-125, 95, rootNode);
+                    missileCam = new MissileCamera(disp.getWidth()-125, 95, rootNode);
                     earth = new PhysicsPlanet(getPhysicsSpace(), "earth", 4000, false);
                     earth.getNode().setLocalTranslation(new Vector3f(0, -5000, 6000));
                     rootNode.attachChild(earth.getNode());
@@ -166,7 +165,7 @@ public class InGameState extends PhysicsGameState {
 
         // create the Hud
         hud = new Hud(disp.getWidth(), disp.getHeight(), player);
-//        hud.getHudNode().attachChild(missileCam.getMonitorNode());
+        hud.getHudNode().attachChild(missileCam.getMonitorNode());
 
         // create our ChaseCam
         chaseCam = new ChaseCam(player.getNode(), 7f, -20f);
@@ -326,7 +325,7 @@ public class InGameState extends PhysicsGameState {
     		tpf = 0;
     	}
     	// render the missile cam
-//    	missileCam.render(tpf);
+    	missileCam.render(tpf);
     	
         getPhysicsSpace().update(tpf);
         input.update(tpf);
@@ -355,7 +354,7 @@ public class InGameState extends PhysicsGameState {
         // -> Last <- but not least, update the ChaseCam
         chaseCam.update(tpf);
         chaseCam.getCamNode().updateGeometricState(tpf, true);
-        SceneMonitor.getMonitor().updateViewer(tpf);
+//        SceneMonitor.getMonitor().updateViewer(tpf);
         TrailManager.get().update(tpf);
     }
 
@@ -370,7 +369,7 @@ public class InGameState extends PhysicsGameState {
         super.render(tpf);
         // draw the hud separately (Ortho queue)
         disp.getRenderer().draw(hud.getHudNode());
-        SceneMonitor.getMonitor().renderViewer(disp.getRenderer());
+//        SceneMonitor.getMonitor().renderViewer(disp.getRenderer());
         if (drawBounds)
         	Debugger.drawBounds(rootNode, disp.getRenderer());
     }

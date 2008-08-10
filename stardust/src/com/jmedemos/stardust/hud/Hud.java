@@ -111,7 +111,7 @@ public class Hud {
                 screenHeight - 10 - fpsText.getHeight(), 0);
 
         fpsNode.attachChild(fpsText);
-        hudNode.attachChild(fpsNode);
+//        hudNode.attachChild(fpsNode);
     }
 
     /**
@@ -163,7 +163,7 @@ public class Hud {
     		return;
     	}
     	
-        fpsText.print("FPS:" + (int) (1 / tpf));
+//        fpsText.print("FPS:" + (int) (1 / tpf));
         currentThrottle.print("current Throttle: "
         		  + player.getPhysicsThrustController().getThrottle()
         		  + " Speed: " +player.getPhysicsThrustController().getSpeed());

@@ -104,16 +104,12 @@ public class MissileCamera {
         
         monitorNode = new Node("Monitor Node");
         monitorQuad = new Quad("Monitor");
-//        monitorQuad.initialize(240, 180);
-        monitorQuad.initialize(3, 3);
-//        monitorQuad.setLocalTranslation(x, y, 0);
-        monitorQuad.setLocalTranslation(new Vector3f(3.75f, 52.5f, 90));
+        monitorQuad.initialize(240, 180);
+        monitorQuad.setLocalTranslation(x, y, 0);
         
         Quad quad2 = new Quad("Monitor");
-//        quad2.initialize(250, 190);
-        quad2.initialize(3.4f, 3.4f);
-//        quad2.setLocalTranslation(x, y, 0);
-        quad2.setLocalTranslation(new Vector3f(3.95f, 52.6f, 89.5f));
+        quad2.initialize(250, 190);
+        quad2.setLocalTranslation(x, y, 0);
         monitorNode.attachChild(quad2);
         monitorNode.attachChild(monitorQuad);
         
@@ -144,7 +140,7 @@ public class MissileCamera {
         			"noise.jpg"),
                     Texture.MinificationFilter.BilinearNoMipMaps, 
                     Texture.MagnificationFilter.Bilinear);
-//        noiseTex.setWrap(Texture.WrapMode.Clamp);
+        noiseTex.setWrap(Texture.WrapMode.Repeat);
         noiseTex.setTranslation(new Vector3f());
         noiseTextureState = disp.getRenderer().createTextureState();
         noiseTextureState.setTexture(noiseTex);
