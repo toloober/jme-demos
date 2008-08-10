@@ -1,12 +1,14 @@
 package com.jmedemos.physics_fun.gamestates;
 
-import com.jme.image.Texture;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.BlendState.DestinationFunction;
+import com.jme.scene.state.BlendState.SourceFunction;
+import com.jme.scene.state.ZBufferState.TestFunction;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
@@ -21,7 +23,7 @@ public class OrthoGameState extends BasicGameState {
 	private float lastLocY = locY;
 	private float offsetY = 0;
 	private TextureState font = null;
-	private AlphaState textAlphaState = null;
+	private BlendState textBlendState = null;
 	
 	/**
 	 * Construct the GameState.
@@ -33,24 +35,24 @@ public class OrthoGameState extends BasicGameState {
 		// we want the text alway pass the ZBuffer Test,, so it gets drawn over everything else.
 		ZBufferState zs = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();
 		zs.setEnabled(true);
-		zs.setFunction(ZBufferState.CF_ALWAYS);
+		zs.setFunction(TestFunction.Always);
 		rootNode.setRenderState(zs);
 		
-		// An AlphaState to display the Text correctly
-		textAlphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-		textAlphaState.setBlendEnabled(true);
-		textAlphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		textAlphaState.setDstFunction(AlphaState.DB_ONE);
-		textAlphaState.setTestEnabled(true);
-		textAlphaState.setTestFunction(AlphaState.TF_GREATER);
-		textAlphaState.setEnabled(true);
-		rootNode.setRenderState(textAlphaState);
+		// An BlendState to display the Text correctly
+		textBlendState = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
+		textBlendState.setBlendEnabled(true);
+		textBlendState.setSourceFunction(SourceFunction.SourceAlpha);
+		textBlendState.setDestinationFunction(DestinationFunction.One);
+		textBlendState.setTestEnabled(true);
+		textBlendState.setTestFunction(BlendState.TestFunction.GreaterThan);
+		textBlendState.setEnabled(true);
+		rootNode.setRenderState(textBlendState);
 
 		// load the font texture for the ortho gamestate 
 		font = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 		font.setTexture(TextureManager.loadTexture(
 						ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE, "defaultfont.tga"),
-						Texture.MM_LINEAR, Texture.FM_LINEAR));
+						true));
 		font.setEnabled(true);
 		
 		// add the text to display
@@ -72,16 +74,16 @@ public class OrthoGameState extends BasicGameState {
 	 * create a crosshair to easely see the center of the screen.
 	 */
 	public void setCrosshair() {
-		AlphaState as = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+		BlendState as = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         as.setBlendEnabled(true);
         as.setTestEnabled(false);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+        as.setSourceFunction(SourceFunction.SourceAlpha);
+        as.setDestinationFunction(DestinationFunction.OneMinusSourceAlpha);
         as.setEnabled(true);
 		TextureState cross = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 		cross.setTexture(TextureManager.loadTexture(ResourceLocatorTool.locateResource(
 		                ResourceLocatorTool.TYPE_TEXTURE,"crosshair.png"),
-						Texture.MM_LINEAR, Texture.FM_LINEAR));
+						false));
 		cross.setEnabled(true);
 		Quad q = new Quad("quad", 30, 30);
 		q.setLocalTranslation(DisplaySystem.getDisplaySystem().getWidth()/2,
@@ -114,7 +116,7 @@ public class OrthoGameState extends BasicGameState {
 	 * not much  to clean up here.
 	 */
 	public void cleanup() {
-		this.textAlphaState = null;
+		this.textBlendState = null;
 		this.rootNode = null;
 	}
 }

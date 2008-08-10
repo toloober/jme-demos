@@ -1,8 +1,8 @@
 package com.jmedemos.physics_fun.gamestates;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.image.Texture.WrapMode;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
@@ -18,6 +18,7 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.CullState.Face;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.Debugger;
@@ -125,9 +126,9 @@ public class MainGameState extends PhysicsGameState {
 	private void createFloor(float width, float length) {
 	    Texture tex = TextureManager.loadTexture(
                 ResourceLocatorTool.locateResource(ResourceLocatorTool.TYPE_TEXTURE,"floor.png"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR, Image.GUESS_FORMAT_NO_S3TC, 0.0f, true);
+                false);
         tex.setScale(new Vector3f(10, 10, 10));
-        tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        tex.setWrap(WrapMode.Repeat);
         TextureState tsCarpet = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsCarpet.setTexture(tex);
 
@@ -184,7 +185,7 @@ public class MainGameState extends PhysicsGameState {
 	    objectsNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 	    
 	    CullState cs = DisplaySystem.getDisplaySystem().getRenderer().createCullState();
-	    cs.setCullMode(CullState.CS_BACK);
+	    cs.setCullFace(Face.Back);
 	    cs.setEnabled(true);
 	    rootNode.setRenderState(cs);
 	    
