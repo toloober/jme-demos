@@ -69,8 +69,16 @@ public class TargetDevice extends Controller {
         }
     }
 
+    /**
+     * TODO hack, don't target projectiles
+     * @param toCheck node to check
+     * @return true if we target an entity which is not a projectile
+     */
     private boolean isEntity(Node toCheck) {
-        if (EntityManager.get().isEntity(toCheck)) {
+        if (EntityManager.get().isEntity(toCheck)
+                // TODO hack
+                && !toCheck.getName().startsWith("projectil")
+                ) {
             currentTarget = toCheck;
             return true;
         }

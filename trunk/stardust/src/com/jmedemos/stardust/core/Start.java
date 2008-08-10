@@ -2,18 +2,24 @@ package com.jmedemos.stardust.core;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URISyntaxException;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jme.util.resource.SimpleResourceLocator;
 import com.jmedemos.stardust.gamestates.InGameState;
 import com.jmedemos.stardust.gamestates.IntroState;
 import com.jmedemos.stardust.gamestates.MenuState;
 import com.jmedemos.stardust.sound.SoundUtil;
+import com.jmex.game.state.GameState;
 import com.jmex.game.state.GameStateManager;
+import com.jmex.game.state.StatisticsGameState;
 import com.jmex.game.state.load.TransitionGameState;
 
 /**
@@ -25,8 +31,11 @@ public final class Start {
      * creates the Game instance and starts it. 
      * creates Gamestates.
      * @param args not used.
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws InterruptedException, ExecutionException {
+        System.setProperty("jme.stats", "set");
         UncaughtExceptionHandler handler = new SDExceptionHandler(); 
         Thread.setDefaultUncaughtExceptionHandler(handler);
 
@@ -91,9 +100,16 @@ public final class Start {
         trans.setProgress(1.0f, "Finished Loading");
         
         GameStateManager.getInstance().activateChildNamed("Menu");
+        GameTaskQueueManager.getManager().update(new Callable<Object>() {
+            public Object call() throws Exception {
+                GameState stat = new StatisticsGameState("Statistics", 0.5f, 0.15f, 0.8f, false);
+                GameStateManager.getInstance().attachChild(stat);
+                return null;
+            }
+        }).get();
         
-        SceneMonitor.getMonitor().registerNode(((InGameState)GameStateManager.getInstance().getChild("InGame")).getRootNode());
-        SceneMonitor.getMonitor().showViewer(true);
-        SceneMonitor.getMonitor().setViewerUpdateInterval(0.3f);
+//        SceneMonitor.getMonitor().registerNode(((InGameState)GameStateManager.getInstance().getChild("InGame")).getRootNode());
+//        SceneMonitor.getMonitor().showViewer(true);
+//        SceneMonitor.getMonitor().setViewerUpdateInterval(0.3f);
     }
 }

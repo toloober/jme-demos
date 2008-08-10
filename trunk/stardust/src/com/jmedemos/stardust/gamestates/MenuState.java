@@ -114,6 +114,7 @@ public class MenuState extends BasicGameState {
                 if (isActive()) {
                     GameStateManager.getInstance().deactivateAllChildren();
                     GameStateManager.getInstance().activateChildNamed("InGame");
+                    GameStateManager.getInstance().activateChildNamed("Statistics");
                 }
             }
         });

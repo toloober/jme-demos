@@ -2,16 +2,12 @@ package com.jmedemos.stardust.scene.projectile;
 
 import java.util.logging.Logger;
 
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
-import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jmedemos.stardust.core.Game;
 import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PlayerShip;
 import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.callback.FrictionCallback;
 
 /**
  * factory class to create different projectils.
@@ -123,7 +119,7 @@ public class ProjectileFactory {
         p.setSpeed(2000000);
         
         p.setTarget(player.getTargetDevice().getCurrentTarget());
-//        p.getNode().attachChild(missileCam.getCameraNode());
+        p.getNode().attachChild(missileCam.getCameraNode());
         
         rootNode.attachChild(p.getNode());
         p.getNode().updateRenderState();
