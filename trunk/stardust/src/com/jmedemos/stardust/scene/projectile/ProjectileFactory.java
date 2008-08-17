@@ -4,7 +4,6 @@ import java.util.logging.Logger;
 
 import com.jme.scene.Node;
 import com.jmedemos.stardust.core.Game;
-import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PlayerShip;
 import com.jmex.physics.PhysicsSpace;
@@ -103,7 +102,6 @@ public class ProjectileFactory {
             // attach projectile to root node.
             rootNode.attachChild(p.getNode());
             p.getNode().updateRenderState();
-            EntityManager.get().addEntity(p);
         } else {
             log.severe("Unknown projektil type:" + type);
         }
@@ -112,7 +110,6 @@ public class ProjectileFactory {
 
     public final Projectile createHomingMissile(final PlayerShip player) {
         MissileProjectile p = missileProjectilePool.get();
-        EntityManager.get().addEntity(p);
         
         // the homing missile is propelled by force and needs high
         // speed values to compensate the friction callback

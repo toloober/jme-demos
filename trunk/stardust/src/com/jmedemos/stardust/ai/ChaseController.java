@@ -1,5 +1,6 @@
 package com.jmedemos.stardust.ai;
 
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
@@ -19,12 +20,17 @@ public class ChaseController extends Controller {
     private float speed = 0;
     private float agility = 0;
     private float evadeBoost = 2;
+    private float fleeRange;
+    private float attackRange;
     
-    public ChaseController(final Node me, final Node target, float speed, float agility) {
+    public ChaseController(final Node me, final Node target, float speed,
+    						float fleeRange, float attackRange, float agility) {
         this.me = me;
         this.target = target;
         this.speed = speed;
         this.agility = agility;
+        this.fleeRange = fleeRange;
+        this.attackRange = attackRange;
     }
     
     /**
@@ -39,14 +45,14 @@ public class ChaseController extends Controller {
             me.lookAt(target.getLocalTranslation(), Vector3f.UNIT_Y);
             
             // if we get too near, flee
-            if (me.getLocalTranslation().distance(
-                    target.getLocalTranslation()) < 500) {
+            if (me.getLocalTranslation().distance(target.getLocalTranslation()) - 
+                    FastMath.pow(target.getWorldBound().getVolume(), 1.0f/3.0f) < fleeRange) {
                 mode = AIMode.EVADE;
             }
             
             // if we are far enough away, start the attack
-            if (me.getLocalTranslation().distance(
-                    target.getLocalTranslation()) > 2500) {
+            if (me.getLocalTranslation().distance(target.getLocalTranslation()) -
+                    FastMath.pow(target.getWorldBound().getVolume(), 1.0f/3.0f) > attackRange) {
                 mode = AIMode.CHASE;
             }
             

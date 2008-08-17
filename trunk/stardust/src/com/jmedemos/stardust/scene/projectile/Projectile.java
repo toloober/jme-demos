@@ -3,14 +3,12 @@ package com.jmedemos.stardust.scene.projectile;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.shape.Sphere;
-import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.scene.EntityManager;
+import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.material.Material;
 
 /**
  * Base class for projectiles
@@ -19,14 +17,7 @@ import com.jmex.physics.material.Material;
  * A controller (ProjectileMover) accelerates the projectile after it has been fired.
  * The graphical representaion of a projectil, can be changed with updateModel().
  */
-public class Projectile extends Entity {
-
-    /**
-     * Graphical representation of the Projectile.
-     * This can be a Sphere or more complex model.
-     */
-    private Spatial model = null;
-
+public class Projectile extends PhysicsEntity {
     /**
      * Speed of the projectile.
      */
@@ -49,16 +40,6 @@ public class Projectile extends Entity {
     private Vector3f direction = null;
 
     /**
-     * The Physics node.
-     */
-    private DynamicPhysicsNode node = null;
-
-    /**
-     * little helper.
-     */
-    private static int counter = 0;
-    
-    /**
      * Indicates whether this Projectile is active.
      */
     private boolean active;
@@ -66,38 +47,18 @@ public class Projectile extends Entity {
     /**
      * @param physicsSpace reference to physicsspace.
      */
-    @SuppressWarnings("serial")
     public Projectile(final PhysicsSpace physicsSpace) {
+    	super(physicsSpace, null, 1, true);
+    	node.setName("projectile");
         health = 1;
-
-        // create the physical representation of the projectile
-        node = physicsSpace.createDynamicNode();
-        node.setName("projectil Physics [" + counter++ + "]");
-        node.setMaterial(Material.IRON);
-
+    }
+    
+    @Override
+    protected void initModel() {
         // default look of a projectile, a simple sphere
         model = new Sphere("projectil Model", 5, 5, 0.2f);
         model.setModelBound(new BoundingBox());
         model.updateModelBound();
-
-        updateModel(model);
-    }
-
-    /**
-     * Changes the graphical representation of the projectil.
-     * @param model new trimesh for the projectile.
-     */
-    public final void updateModel(final Spatial model) {
-        if (this.model != null) {
-            this.model.removeFromParent();
-            this.model = model;
-        }
-        node.attachChild(model);
-        model.setModelBound(new BoundingBox());
-        model.updateModelBound();
-        node.generatePhysicsGeometry();
-        node.computeMass();
-        node.updateRenderState();
     }
     
     /**
@@ -114,7 +75,7 @@ public class Projectile extends Entity {
     	    	
         node.setCullHint(CullHint.Dynamic);
     	node.updateGeometricState(0, false);
-    	node.clearDynamics();
+    	((DynamicPhysicsNode)node).clearDynamics();
     }
 
     /**
@@ -124,7 +85,8 @@ public class Projectile extends Entity {
     public void die() {
     	EntityManager.get().remove(this);
     	this.node.delete();
-        this.node.removeController(0);
+    	if (node.getControllerCount() > 0)
+    	    this.node.removeController(0);
         this.active = false;
     }
     
@@ -167,14 +129,6 @@ public class Projectile extends Entity {
         return direction;
     }
 
-    /**
-     * returns the physics node of the entity
-     * @return PhysicNode
-     */
-    public DynamicPhysicsNode getNode() {
-        return node;
-    }
-    
     public void setActive(boolean active) {
 		this.active = active;
 	}

@@ -34,7 +34,7 @@ public class EnemyFactory {
 		Enemy enemy = new Enemy(modelName, target, space);
 		enemy.setSpeed(enemy.getSpeed()*rand.nextFloat()*2);
 		enemy.setAgility(enemy.getAgility()*rand.nextFloat()*3);
-		EntityManager.get().addEntity(enemy);
+//		EntityManager.get().addEntity(enemy);
 		return enemy;
 	}
 }

@@ -1,27 +1,22 @@
 package com.jmedemos.stardust.enemy;
 
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import com.jmedemos.stardust.ai.ChaseController;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
-import com.jmedemos.stardust.scene.Entity;
+import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmedemos.stardust.scene.TrailManager;
 import com.jmedemos.stardust.sound.SoundUtil;
-import com.jmedemos.stardust.util.ModelUtil;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.callback.FrictionCallback;
-import com.jmex.physics.material.Material;
 
 /**
  * Enemies are created by the EnemyFactory.
  * @author Christoph Luder
  */
-public class Enemy extends Entity {
-    private DynamicPhysicsNode node = null;
+public class Enemy extends PhysicsEntity {
     private ChaseController chaseController;
     private FrictionCallback fc; 
-    private PhysicsSpace space = null;
     private float defaultSpeed = 300;
     
     /**
@@ -31,27 +26,18 @@ public class Enemy extends Entity {
      * @param space reference to physics space
      */
     Enemy(final String modelName, final Node target, final PhysicsSpace space) {
-        this.space = space;
-        node = space.createDynamicNode();
-        node.setName("enemy");
-        Spatial n = ModelUtil.get().loadModel(modelName);
-        node.attachChild(n);
-        n.setLocalScale(5);
-        chaseController = new ChaseController(node, target, defaultSpeed, 0.5f);
-        node.addController(chaseController);
-        node.setMaterial(Material.IRON);
-        node.generatePhysicsGeometry();
+    	super(space, modelName, 5, true);
+    	chaseController = new ChaseController(node, target, defaultSpeed, 300, 1500, 0.5f);
+    	node.addController(chaseController);
+    }
+
+    @Override
+    protected void initNode() {
         // Friction Callback to reduce spinning effect after colliding with another object
         fc = new FrictionCallback();
-        fc.add(node, 0f, 25.0f);
-        space.addToUpdateCallbacks(fc);
-        
+        fc.add((DynamicPhysicsNode)node, 0f, 25.0f);
+        physicsSpace.addToUpdateCallbacks(fc);
         TrailManager.get().createTrail(getNode());
-        
-    }
-    
-    public Node getNode() {
-        return node;
     }
     
     public void setTarget(Node target) {
@@ -67,10 +53,9 @@ public class Enemy extends Entity {
         node.delete();
         node.detachAllChildren();
         node.removeController(chaseController);
-        space.removeFromUpdateCallbacks(fc);
+        physicsSpace.removeFromUpdateCallbacks(fc);
         TrailManager.get().removeTrail(getNode());
         fc = null;
-        space = null;
         chaseController = null;
         node = null;
     }
@@ -89,6 +74,5 @@ public class Enemy extends Entity {
 
     public void setAgility(float agility) {
         chaseController.setAgility(agility);
-
     }
 }

@@ -24,7 +24,14 @@ public class EntityManager {
     public void remove(Entity e) {
         entites.remove(e.getNode());
     }
+    
     public void addEntity(Entity e) {
+        if (e.getNode() == null) {
+            System.err.println("Node is null");
+        }
+        if (e == null) {
+            System.err.println("entty is null");
+        }
         entites.put(e.getNode(), e);
     }
     

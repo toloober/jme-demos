@@ -14,7 +14,6 @@ import com.jme.input.controls.controller.GameControlAction;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
@@ -28,12 +27,10 @@ import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.actions.ShipMissileAction;
 import com.jmedemos.stardust.scene.actions.ShipWeaponAction;
 import com.jmedemos.stardust.sound.SoundUtil;
-import com.jmedemos.stardust.util.ModelUtil;
 import com.jmedemos.stardust.util.PhysicsThrustController;
 import com.jmex.physics.DynamicPhysicsNode;
 import com.jmex.physics.PhysicsSpace;
 import com.jmex.physics.callback.FrictionCallback;
-import com.jmex.physics.material.Material;
 
 /**
  * represents a player.
@@ -41,15 +38,13 @@ import com.jmex.physics.material.Material;
  * and defines controls to steer the ship.
  */
 @SuppressWarnings("serial")
-public class PlayerShip extends Entity {
+public class PlayerShip extends PhysicsEntity {
     /** roll speed.*/
     private float rollSpeed = 0.4f;
    /** min. time between shots in ms. */
     private int fireRate = 100;
     /** Physics throttle controller. */
     private PhysicsThrustController physicsThrustController = null;
-    /** Physics Node of the player. */
-    private DynamicPhysicsNode node = null;
 
     /**
      * Weapon positions.
@@ -76,25 +71,12 @@ public class PlayerShip extends Entity {
      * @param model path to the model
      * @param scale model scaling
      */
-    public PlayerShip(final String name, final Node root,
+    public PlayerShip(final Node root,
             final PhysicsSpace physicsSpace, final String modelString,
             final float scale) {
-        
-    	damage = 5;
-        
-    	Spatial model = null;
-        model = ModelUtil.get().loadModel(modelString);
-        
-        model.setLocalScale(scale);
-        model.setModelBound(new BoundingBox());
-        model.updateModelBound();
+        super(physicsSpace, modelString, scale, true);
 
-        node = physicsSpace.createDynamicNode();
-        node.setName("player physics");
-        node.attachChild(model);
-        node.generatePhysicsGeometry();
-        node.setMaterial(Material.IRON);
-        node.computeMass();
+        damage = 5;
 
         // set weapon positions
         // TODO this is dependant on the loaded model !! (X-Wing == 4 Weapons)
@@ -121,35 +103,20 @@ public class PlayerShip extends Entity {
 
         // Friction Callback to reduce spinning effect after colliding with another object
         FrictionCallback fc = new FrictionCallback();
-        fc.add(node, 0f, 25.0f);
+        fc.add((DynamicPhysicsNode)node, 0f, 25.0f);
         physicsSpace.addToUpdateCallbacks(fc);
 
         setupCrosshair();
 
         initControls();
 
-//        LightState ls = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
-//        ls.setEnabled(true);
-//        
-//        SpotLight sp = new SpotLight();
-//        sp.setAngle(20);
-//        sp.setAttenuate(true);
-//        sp.setDiffuse(ColorRGBA.white);
-//        sp.setSpecular(ColorRGBA.yellow);
-//        sp.setLocation(new Vector3f(0, 0, -5));
-//        sp.setDirection(node.getLocalRotation().getRotationColumn(2));
-//        
-//        LightNode ln = new LightNode("shipLight");
-//        ls.attach(sp);
-//        node.attachChild(ln);
-//        
         targetDevice = new TargetDevice(node, root);
         node.addController(targetDevice);
         
         // refresh renderstates
         node.updateRenderState();
     }
-
+    
     /**
      * create a textured quad and attach it infront of the ship.
      */
@@ -190,10 +157,6 @@ public class PlayerShip extends Entity {
         crosshair.updateRenderState();
     }
 
-    public final DynamicPhysicsNode getNode() {
-        return node;
-    }
-    
     @Override
     public void die() {
 //        super.die();
@@ -248,7 +211,7 @@ public class PlayerShip extends Entity {
         node.addController(ControlManager.get().createYawControl(node, getRollSpeed()));
         node.addController(ControlManager.get().createPitchControl(node, getRollSpeed()));
 
-        physicsThrustController = new PhysicsThrustController(node, Axis.Z, forward, backward, 1,
+        physicsThrustController = new PhysicsThrustController((DynamicPhysicsNode)node, Axis.Z, forward, backward, 1,
         		100, 500, 500);
         node.addController(physicsThrustController);
     }

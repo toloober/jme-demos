@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.jmedemos.stardust.scene.EntityManager;
+
 /**
  * A ResourcePool for Projectiles. Subclasses have to
  * implement {@link #newInstance()} to create instances of the pooled Object.
@@ -44,6 +46,7 @@ public abstract class ProjectilePool<P extends Projectile> {
 		}
 		projectile.getNode().setActive(true);
 		projectile.setActive(true);
+		EntityManager.get().addEntity(projectile);
 		projectile.setAge(projectile.getLifeTime());
 		return projectile;
 	}

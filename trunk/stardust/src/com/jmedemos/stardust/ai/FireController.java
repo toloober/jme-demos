@@ -2,6 +2,7 @@ package com.jmedemos.stardust.ai;
 
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
+import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
@@ -82,7 +83,9 @@ public class FireController extends Controller {
      * @return
      */
     private boolean isVisible() {
-        if (me.getLocalTranslation().distance(target.getLocalTranslation()) > weaponRange) {
+        // distance to center of target, minus it bounding box extent (more or less)
+        if (me.getLocalTranslation().distance(target.getLocalTranslation()) - 
+                   FastMath.pow(target.getWorldBound().getVolume(), 1.0f/3.0f) > weaponRange) {
             // to far away
             return false;
         }

@@ -72,8 +72,9 @@ public class StarDust extends Node {
                 for (int i = 0; i < 3; ++i) {
                     points[i][j][k] = new Point("stardust " + i + "" + j + ""
                             + k, vertexes, null, null, null);
+                    points[i][j][k].setAntialiased(true);
                     if (randomizeSize) {
-                        points[i][j][k].setPointSize((float) Math.random() * 100f);
+                        points[i][j][k].setPointSize((float) Math.random() * 10f);
                     }
                     points[i][j][k].setLocalTranslation(new Vector3f((i - 1)
                             * blockSize, (j - 1) * blockSize, (k - 1)
