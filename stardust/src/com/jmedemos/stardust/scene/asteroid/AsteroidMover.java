@@ -56,19 +56,19 @@ public class AsteroidMover extends Controller {
      */
     @Override
     public final void update(final float time) {
-        tempNode.getLocalTranslation().set(asteroid.getPhysNode().getLocalTranslation());
-        tempNode.getLocalRotation().set(asteroid.getPhysNode().getLocalRotation());
+        tempNode.getLocalTranslation().set(asteroid.getNode().getLocalTranslation());
+        tempNode.getLocalRotation().set(asteroid.getNode().getLocalRotation());
         tempNode.updateWorldVectors();
         tempNode.lookAt(targetPos, Vector3f.UNIT_Y);
 
-        asteroid.getPhysNode().getLocalTranslation().addLocal(
+        asteroid.getNode().getLocalTranslation().addLocal(
                 tempNode.getLocalRotation().getRotationColumn(2).mult(
                         time * speed));
 
         GameTaskQueueManager.getManager().update(new Callable<Object>() {
 			public Object call() throws Exception {
 				SoundUtil.get().getTrackers().get(
-						asteroid.getPhysNode()).checkTrackAudible(
+						asteroid.getNode()).checkTrackAudible(
 								display.getRenderer().getCamera().getLocation());
 				return null;
 			}

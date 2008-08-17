@@ -28,7 +28,6 @@ public class PowerUpManager {
 	
 	public HealthPowerUp createHealthPowerUp() {
 		HealthPowerUp powerup = new HealthPowerUp(space);
-		EntityManager.get().addEntity(powerup);
 		return powerup;
 	}
 }

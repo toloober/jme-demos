@@ -45,6 +45,11 @@ public class ChaseCam extends InputHandler {
     private CameraNode camNode = null;
 
     /**
+     * slerp factor.
+     */
+    private float slerpFactor = 10f;
+    
+    /**
      * Attaches the ChaseCam with an Y- and Z-Axis offset to the target.
      * @param target target to follow
      * @param y distance to the target on the Y-Axis
@@ -101,7 +106,7 @@ public class ChaseCam extends InputHandler {
         Vector3f targetVec = target.localToWorld(new Vector3f(0, yDistance,
                 zDistance), null);
         camNode.getLocalTranslation().set(targetVec);
-        camNode.getLocalRotation().slerp(target.getLocalRotation(), 7*time);
+        camNode.getLocalRotation().slerp(target.getLocalRotation(), slerpFactor*time);
     }
 
     /**

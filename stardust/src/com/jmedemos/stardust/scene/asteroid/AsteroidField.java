@@ -15,8 +15,7 @@ public class AsteroidField {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < length; j++) {
                 for (int k = 0; k < heigth; k++) {
-                    Asteroid asteroid = factory.createRotatingAsteroid("asteroid",
-                            "asteroid", 15.0f, 
+                    Asteroid asteroid = factory.createRotatingAsteroid("asteroid.obj", 15.0f, 
                             //position
                             new Vector3f(pos.x+i*gap+(float)Math.random()*var*(Math.random()<0.5?-1:1),
                                          pos.y+j*gap+(float)Math.random()*var*(Math.random()<0.5?-1:1),
@@ -25,8 +24,7 @@ public class AsteroidField {
                             new Vector3f((float)Math.random()*rot*(Math.random()<0.5?-1:1),
                                          (float)Math.random()*rot*(Math.random()<0.5?-1:1),
                                          (float)Math.random()*rot*(Math.random()<0.5?-1:1)));
-                    asteroid.getPhysNode().setMass(500);
-                    field.attachChild(asteroid.getPhysNode());
+                    field.attachChild(asteroid.getNode());
                 }
             }
         }

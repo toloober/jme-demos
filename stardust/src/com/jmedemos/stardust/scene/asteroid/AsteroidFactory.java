@@ -45,19 +45,16 @@ public class AsteroidFactory {
      * @param startPos spawn position
      * @return reference to a new asteroid.
      */
-    public final Asteroid createStaticAsteroid(final String asteroidName,
-           final String modelName, final float scale, final Vector3f startPos) {
+    public final Asteroid createStaticAsteroid(final String modelName, final float scale,
+            final Vector3f startPos) {
 
-        Asteroid asteroid = new Asteroid(asteroidName, modelName, scale,
-                this.physicsSpace);
+        Asteroid asteroid = new Asteroid(modelName, scale, this.physicsSpace);
 
-        DynamicPhysicsNode physNode = asteroid.getPhysNode();
+        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
         physNode.getLocalTranslation().set(startPos);
 
         rootNode.attachChild(physNode);
         physNode.updateRenderState();
-        
-        EntityManager.get().addEntity(asteroid);
         
         return asteroid;
     }
@@ -71,14 +68,12 @@ public class AsteroidFactory {
      * @param rotation rotation
      * @return reference to a new asteroid.
      */
-    public final Asteroid createRotatingAsteroid(final String asteroidName,
-            final String modelName, final float scale, final Vector3f startPos,
-            final Vector3f rotation) {
+    public final Asteroid createRotatingAsteroid(final String modelName, final float scale, 
+            final Vector3f startPos, final Vector3f rotation) {
 
-        Asteroid asteroid = new Asteroid(asteroidName, modelName, scale,
-                this.physicsSpace);
+        Asteroid asteroid = new Asteroid(modelName, scale, physicsSpace);
 
-        DynamicPhysicsNode physNode = asteroid.getPhysNode();
+        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
         physNode.getLocalTranslation().set(startPos);
         physNode.addTorque(rotation);
 
@@ -90,7 +85,6 @@ public class AsteroidFactory {
             log.severe("Unbekannter Asteroid:" + modelName);
         }
         
-        EntityManager.get().addEntity(asteroid);
         return asteroid;
     }
 
@@ -105,17 +99,15 @@ public class AsteroidFactory {
      * @param speed speed
      * @return reference to new asteroid.
      */
-    public final Asteroid createAsteroidWithTarget(final String asteroidName,
-           final String modelName, final float scale, final Vector3f startPos,
+    public final Asteroid createAsteroidWithTarget(final String modelName, final float scale, final Vector3f startPos,
            final Vector3f targetPos, final Vector3f rotation, final int speed) {
 
-        Asteroid asteroid = new Asteroid(asteroidName, modelName, scale,
-                this.physicsSpace);
+        Asteroid asteroid = new Asteroid(modelName, scale, physicsSpace);
 
         // static sound of the asteroid (noise) 
-        SoundUtil.get().addFx("/data/sounds/asteroid.wav", asteroid.getPhysNode());
+        SoundUtil.get().addFx("/data/sounds/asteroid.wav", (DynamicPhysicsNode)asteroid.getNode());
 
-        DynamicPhysicsNode physNode = asteroid.getPhysNode();
+        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
         physNode.getLocalTranslation().set(startPos);
         physNode.updateGeometricState(0, true);
         physNode.addTorque(rotation.mult(100));

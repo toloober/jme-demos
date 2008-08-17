@@ -32,6 +32,7 @@ import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PhysicsPlanet;
 import com.jmedemos.stardust.scene.PlayerShip;
+import com.jmedemos.stardust.scene.SpaceStation;
 import com.jmedemos.stardust.scene.StarDust;
 import com.jmedemos.stardust.scene.Sun;
 import com.jmedemos.stardust.scene.TrailManager;
@@ -53,6 +54,7 @@ import com.jmex.physics.util.states.PhysicsGameState;
  * GameState maybe? 
  */
 public class InGameState extends PhysicsGameState {
+	static String enemyModel = "omega_jet_blin_5k.obj"; 
     /**
      * Displaysystem.
      */
@@ -110,6 +112,7 @@ public class InGameState extends PhysicsGameState {
     private Skybox skybox;
     
     private boolean drawBounds = false;
+	private SpaceStation spaceStation;
     
     /**
      * Constructor of the InGame GameState. Init the Scene: 
@@ -151,10 +154,9 @@ public class InGameState extends PhysicsGameState {
         asteroidFactory = new AsteroidFactory(rootNode, getPhysicsSpace());
         
         // create the Player
-        player = new PlayerShip("player", getRootNode(), getPhysicsSpace(),
-                "xwing.obj", 0.7f);
+        player = new PlayerShip(getRootNode(), getPhysicsSpace(), "xwing.obj", 0.7f);
         rootNode.attachChild(player.getNode());
-        EntityManager.get().addEntity(player);
+//        EntityManager.get().addEntity(player);
         SoundUtil.get().addFx("shoot.wav", player.getNode());
         
         HealthPowerUp health = PowerUpManager.get().createHealthPowerUp();
@@ -215,12 +217,19 @@ public class InGameState extends PhysicsGameState {
         rootNode.attachChild(dust);
         trans.increment();
         
+        spaceStation = new SpaceStation(getPhysicsSpace(), "spacestation.obj", 200);
+        spaceStation.setHealth(5000);
+        spaceStation.getNode().setLocalTranslation(100, 5000, 9000);
+        rootNode.attachChild(spaceStation.getNode());
+        
         for (int i = 0; i < 5; i++) {
-            Enemy enemy = EnemyFactory.get().createEnemy("xwing.obj", player.getNode());
-            enemy.setTarget(player.getNode());
+            Enemy enemy = EnemyFactory.get().createEnemy(enemyModel, spaceStation.getNode());
             enemy.getNode().setLocalTranslation(i*100, 500, 500);
             enemy.getNode().addController(new FireController(enemy.getNode(),
-                    player.getNode(), 1500, rootNode));
+                    spaceStation.getNode(), 1500, rootNode));
+            if (enemy.getNode() == null) {
+                System.out.println("ALERT");
+            }
             rootNode.attachChild(enemy.getNode());
         }
         
@@ -247,22 +256,6 @@ public class InGameState extends PhysicsGameState {
     private void initPhysics() {
         getPhysicsSpace().setDirectionalGravity(new Vector3f(0, 0, 0));
         getPhysicsSpace().setAccuracy(1/60f);
-//        ContactCallback ignoreColission = new ContactCallback() {
-//            public boolean adjustContact(final PendingContact c) {
-//                if ((c.getNode1() == player.getNode() &&
-//                     c.getNode2().getName().startsWith("projectil")) ||
-//                    (c.getNode1().getName().startsWith("projectil") &&
-//                     c.getNode2() == player.getNode())) {
-//                    // collision player <-> projectil, ignore it
-//                    c.setIgnored(true);
-//                    return true;
-//                }
-//                return false;
-//            }
-//        };
-
-//        getPhysicsSpace().getContactCallbacks().add(ignoreColission);
-        
         SyntheticButton collisionHandler = getPhysicsSpace().getCollisionEventHandler();
         input = new InputHandler();
         input.addAction(new CollisionAction(), collisionHandler.getDeviceName(), 
@@ -335,10 +328,13 @@ public class InGameState extends PhysicsGameState {
 //            ObjectRemover.get().purge();
 //            rootNode.updateRenderState();
             seconds = Timer.getTimer().getTimeInSeconds();
-        	Enemy enemy = EnemyFactory.get().createEnemy("xwing.obj", player.getNode());
+        	Enemy enemy = EnemyFactory.get().createEnemy(enemyModel, spaceStation.getNode());
             enemy.getNode().setLocalTranslation((float)Math.random()*1000, (float)Math.random()*1000, (float)Math.random()*1000);
-            enemy.getNode().addController(new FireController(enemy.getNode(), player.getNode(),
+            enemy.getNode().addController(new FireController(enemy.getNode(), spaceStation.getNode(),
                     1500, rootNode));
+            if (enemy.getNode() == null) {
+                System.out.println("ALERT");
+            }
             rootNode.attachChild(enemy.getNode());
             rootNode.updateRenderState();
         }
@@ -356,8 +352,12 @@ public class InGameState extends PhysicsGameState {
         chaseCam.getCamNode().updateGeometricState(tpf, true);
 //        SceneMonitor.getMonitor().updateViewer(tpf);
         TrailManager.get().update(tpf);
+        if (spaceStation.getHealth() != tmp) {
+	        System.out.println("SpaceStationHealth: " +spaceStation.getHealth());
+	        tmp = spaceStation.getHealth();
+        }
     }
-
+    int tmp = 0;
     /**
      * Render the Scene and draw the HUD.
      */
@@ -399,7 +399,7 @@ public class InGameState extends PhysicsGameState {
         }
 
         // create the asteroid
-        asteroidFactory.createAsteroidWithTarget("asteroid", modelName, 10f, start,
+        asteroidFactory.createAsteroidWithTarget(modelName, 10f, start,
                 earth.getNode().getLocalTranslation().clone(), // target
                 new Vector3f(15, 10, 5), // rotation
                 (int) ((rand.nextFloat() * 250)) + 120); // speed 
