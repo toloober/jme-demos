@@ -11,7 +11,7 @@ import com.jmex.physics.PhysicsSpace;
 public class SpaceStation extends PhysicsEntity {
 
 	public SpaceStation(PhysicsSpace space, String modelName, float scale) {
-		super(space, modelName, scale, false, false);
+		super(space, modelName, scale, false, true);
         MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         ms.setAmbient(ColorRGBA.darkGray);
         ms.setDiffuse(ColorRGBA.green);
