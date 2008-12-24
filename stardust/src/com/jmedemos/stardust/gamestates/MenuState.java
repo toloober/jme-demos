@@ -71,7 +71,7 @@ public class MenuState extends BasicGameState {
                 disp = new Display(new LWJGLBinding());
                 try {
                     Binding.getInstance().setUseClassLoader(true);
-//                    theme = new XMLTheme("com/jmedemos/stardust/data/themes/QtCurve/QtCurve.xml");
+                    theme = new XMLTheme("com/jmedemos/stardust/data/themes/QtCurve/QtCurve.txt");
                 } catch (Exception e1) {
                     e1.printStackTrace();
 //                    Game.getInstance().quit();
@@ -87,7 +87,7 @@ public class MenuState extends BasicGameState {
         
         trans.increment();
         
-//        FengGUI.setTheme(theme);
+        FengGUI.setTheme(theme);
 
         input = new FengJMEInputHandler(disp);
         Window frame = FengGUI.createWindow(disp, false, false, false, false);

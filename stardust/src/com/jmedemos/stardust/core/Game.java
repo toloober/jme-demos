@@ -1,12 +1,8 @@
 package com.jmedemos.stardust.core;
 
-import com.jme.input.joystick.JoystickInput;
-import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
-import com.jmex.audio.AudioSystem;
+import com.jme.system.lwjgl.LWJGLSystemProvider;
 import com.jmex.game.StandardGame;
 import com.jmex.game.StandardGame.GameType;
-import com.jmex.game.state.GameStateManager;
 
 /**
  * The Game class, has a reference to StandardGame.
@@ -73,5 +69,6 @@ public final class Game {
     	stdGame.getSettings().setVerticalSync(true);
     	stdGame.getSettings().setMusic(true);
     	stdGame.getSettings().setSFX(true);
+    	stdGame.getSettings().setRenderer(LWJGLSystemProvider.LWJGL_SYSTEM_IDENTIFIER);
     }
 }
