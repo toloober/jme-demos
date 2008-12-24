@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jme 2.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME Physics 2"/>
 	<classpathentry kind="lib" path="lib/scenemonitor_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/sm_properties_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
 	<classpathentry kind="lib" path="lib/FengGUI.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jme 2 commit"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

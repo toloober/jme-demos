@@ -2,13 +2,11 @@ package com.jmedemos.stardust.core;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.URISyntaxException;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.resource.ResourceLocatorTool;
