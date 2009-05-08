@@ -13,6 +13,7 @@ import com.jme.input.controls.controller.ActionChangeController;
 import com.jme.input.util.SyntheticButton;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -28,7 +29,6 @@ import com.jmedemos.stardust.enemy.EnemyFactory;
 import com.jmedemos.stardust.gamestates.controller.InGameListener;
 import com.jmedemos.stardust.hud.Hud;
 import com.jmedemos.stardust.scene.ChaseCam;
-import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PhysicsPlanet;
 import com.jmedemos.stardust.scene.PlayerShip;
@@ -328,9 +328,10 @@ public class InGameState extends PhysicsGameState {
 //            ObjectRemover.get().purge();
 //            rootNode.updateRenderState();
             seconds = Timer.getTimer().getTimeInSeconds();
-        	Enemy enemy = EnemyFactory.get().createEnemy(enemyModel, spaceStation.getNode());
+            Node target = Math.random() < 0.3?spaceStation.getNode():player.getNode();
+        	Enemy enemy = EnemyFactory.get().createEnemy(enemyModel, target);
             enemy.getNode().setLocalTranslation((float)Math.random()*1000, (float)Math.random()*1000, (float)Math.random()*1000);
-            enemy.getNode().addController(new FireController(enemy.getNode(), spaceStation.getNode(),
+            enemy.getNode().addController(new FireController(enemy.getNode(), target,
                     1500, rootNode));
             if (enemy.getNode() == null) {
                 System.out.println("ALERT");

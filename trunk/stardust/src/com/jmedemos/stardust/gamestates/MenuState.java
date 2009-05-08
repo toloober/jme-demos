@@ -71,7 +71,7 @@ public class MenuState extends BasicGameState {
                 disp = new Display(new LWJGLBinding());
                 try {
                     Binding.getInstance().setUseClassLoader(true);
-                    theme = new XMLTheme("com/jmedemos/stardust/data/themes/QtCurve/QtCurve.txt");
+                    theme = new XMLTheme("com/jmedemos/stardust/data/themes/QtCurve/QtCurve.xml");
                 } catch (Exception e1) {
                     e1.printStackTrace();
 //                    Game.getInstance().quit();

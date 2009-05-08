@@ -15,7 +15,6 @@ import com.jmex.effects.LensFlare;
 /**
  * A Sun with lensflare effect.
  */
-@SuppressWarnings("serial")
 public class Sun {
     /**
      * the lightnode to attach the light to.
