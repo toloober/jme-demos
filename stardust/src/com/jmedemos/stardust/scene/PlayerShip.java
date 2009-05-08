@@ -37,7 +37,6 @@ import com.jmex.physics.callback.FrictionCallback;
  * the constructor loads the 3d model and add it to a physics node,
  * and defines controls to steer the ship.
  */
-@SuppressWarnings("serial")
 public class PlayerShip extends PhysicsEntity {
     /** roll speed.*/
     private float rollSpeed = 0.4f;
