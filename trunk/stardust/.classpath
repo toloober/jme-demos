@@ -5,7 +5,11 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jME Physics 2"/>
 	<classpathentry kind="lib" path="lib/scenemonitor_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/sm_properties_jme2.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="jme/lib/lwjgl/native/windows"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/FengGUI.jar" sourcepath="/FengGUI/src"/>
 	<classpathentry kind="lib" path="lib/lwjgl_util.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
