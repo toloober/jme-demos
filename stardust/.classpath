@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/sm_properties_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
 	<classpathentry kind="lib" path="lib/FengGUI.jar" sourcepath="/FengGUI/src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jme2commit"/>
 	<classpathentry kind="lib" path="lib/lwjgl_util.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
