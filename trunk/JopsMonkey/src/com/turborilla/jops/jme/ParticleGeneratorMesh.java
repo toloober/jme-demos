@@ -30,12 +30,12 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 
-import org.openmali.FastMath;
 import org.softmed.jops.Generator;
 import org.softmed.jops.GeneratorBehaviour;
 import org.softmed.jops.Particle;
 
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -251,7 +251,7 @@ public class ParticleGeneratorMesh extends TriMesh {
 		final float width = pParticle.width * 0.5f;
 		final float height = pParticle.height * 0.5f;
 
-		final float correctedVAngle = pParticle.angleV - FastMath.PI_HALF;
+		final float correctedVAngle = pParticle.angleV - FastMath.HALF_PI;
 
 		mPosition.set(pParticle.position.getX(), pParticle.position.getY(), pParticle.position.getZ());
 
