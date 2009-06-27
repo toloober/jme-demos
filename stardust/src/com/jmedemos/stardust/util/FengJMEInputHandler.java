@@ -177,6 +177,7 @@ public class FengJMEInputHandler extends InputHandler {
             if (isEnabled() == false) {
                 return;
             }
+            boolean prevDown = down;
             down = pressed;
             lastButton = button;
             if (pressed)
@@ -185,6 +186,10 @@ public class FengJMEInputHandler extends InputHandler {
             else
                 mouseHandled = disp.fireMouseReleasedEvent(x, y,
                         getMouseButton(button), 1);
+            // fire clicked event if press then released
+            if(prevDown && !pressed)
+            	mouseHandled |= disp.fireMouseClickEvent(x, y, getMouseButton(button), 1);
+            // TODO: fire a double-clicked event if two mouse clicks happen in close prox
         }
 
         public void onMove(int xDelta, int yDelta, int newX, int newY) {
