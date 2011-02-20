@@ -8,7 +8,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Capsule;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * A bullet kind of projectile represented by a capsule, which

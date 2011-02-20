@@ -1,17 +1,17 @@
 package com.jmedemos.stardust.scene.actions;
 
-import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
+import java.util.logging.Logger;
+
 import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.scene.EntityManager;
-import com.jmex.physics.PhysicsNode;
-import com.jmex.physics.contact.ContactInfo;
+import com.jmex.jbullet.collision.CollisionListener;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  *  Global physics collision handler. 
  */
-public class CollisionAction extends InputAction {
-    
+public class CollisionAction implements CollisionListener {
+    Logger log = Logger.getLogger(CollisionAction.class.getName());
     /**
      * The action which gets executed when 2 physic nodes collide.
      * InputAvtionEvent.getTriggerData return a contactInfo object
@@ -20,12 +20,13 @@ public class CollisionAction extends InputAction {
      *  
      * @param evt event with contact infos
      */
-    public void performAction(final InputActionEvent evt) {
+	public void collision(com.jmex.jbullet.collision.CollisionEvent event) {
         // the TriggerData of this event Events is of Type ContactInfo
-        final ContactInfo info = ((ContactInfo) evt.getTriggerData());
-        PhysicsNode node1 = (PhysicsNode) info.getNode1();
-        PhysicsNode node2 = (PhysicsNode) info.getNode2();
+        PhysicsNode node1 = (PhysicsNode) event.getNodeA();
+        PhysicsNode node2 = (PhysicsNode) event.getNodeB();
 
+        log.info("Collision between " +node1.getName() + " and " +node2.getName());
+        
         if (node1.isActive() == false && 
             node2.isActive() == false) {
             // nothing to do

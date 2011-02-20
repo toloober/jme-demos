@@ -44,7 +44,7 @@ public abstract class ProjectilePool<P extends Projectile> {
 			projectile = newInstance();
 			pool.add(projectile);
 		}
-		projectile.getNode().setActive(true);
+		projectile.getNode().activate();
 		projectile.setActive(true);
 		EntityManager.get().addEntity(projectile);
 		projectile.setAge(projectile.getLifeTime());

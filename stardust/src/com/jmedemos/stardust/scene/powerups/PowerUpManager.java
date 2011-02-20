@@ -2,8 +2,7 @@ package com.jmedemos.stardust.scene.powerups;
 
 import java.util.logging.Logger;
 
-import com.jmedemos.stardust.scene.EntityManager;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 public class PowerUpManager {
 	private static PowerUpManager instance = null;

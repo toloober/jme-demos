@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jME Physics 2"/>
 	<classpathentry kind="lib" path="lib/scenemonitor_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/sm_properties_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl.jar">
@@ -13,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/FengGUI.jar" sourcepath="/FengGUI/src"/>
 	<classpathentry kind="lib" path="lib/lwjgl_util.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jBullet-jME"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

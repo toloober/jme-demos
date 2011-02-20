@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.Spatial;
 import com.jmedemos.stardust.util.ModelUtil;
-import com.jmex.physics.PhysicsNode;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * Base class for all entities in game.
@@ -18,13 +18,11 @@ public abstract class Entity {
     protected int health = 100;
     protected int damage = 1;
     protected PhysicsNode node;
-    protected PhysicsSpace physicsSpace;
     protected String modelName;
     protected Spatial model;
     
-    public Entity(PhysicsSpace space, String modelName, float scale) {
+    public Entity(String modelName, float scale) {
 		this.modelName = modelName;
-		this.physicsSpace = space;
 		
 		if (modelName != null) {
 	        model = ModelUtil.get().loadModel(modelName);

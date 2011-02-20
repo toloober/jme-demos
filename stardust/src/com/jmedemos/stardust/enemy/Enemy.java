@@ -6,9 +6,8 @@ import com.jmedemos.stardust.effects.ParticleEffectFactory;
 import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmedemos.stardust.scene.TrailManager;
 import com.jmedemos.stardust.sound.SoundUtil;
-import com.jmex.physics.DynamicPhysicsNode;
-import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.callback.FrictionCallback;
+import com.jmex.jbullet.PhysicsSpace;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * Enemies are created by the EnemyFactory.
@@ -16,7 +15,6 @@ import com.jmex.physics.callback.FrictionCallback;
  */
 public class Enemy extends PhysicsEntity {
     private ChaseController chaseController;
-    private FrictionCallback fc; 
     private float defaultSpeed = 300;
     
     /**
@@ -25,7 +23,7 @@ public class Enemy extends PhysicsEntity {
      * @param target target which the enemy chases
      * @param space reference to physics space
      */
-    Enemy(final String modelName, final Node target, final PhysicsSpace space) {
+    Enemy(final String modelName, final PhysicsNode target, final PhysicsSpace space) {
     	super(space, modelName, 5, true);
     	chaseController = new ChaseController(node, target, defaultSpeed, 300, 1500, 0.5f);
     	node.addController(chaseController);
@@ -33,10 +31,6 @@ public class Enemy extends PhysicsEntity {
 
     @Override
     protected void initNode() {
-        // Friction Callback to reduce spinning effect after colliding with another object
-        fc = new FrictionCallback();
-        fc.add((DynamicPhysicsNode)node, 0f, 25.0f);
-        physicsSpace.addToUpdateCallbacks(fc);
         TrailManager.get().createTrail(getNode());
     }
     
@@ -50,12 +44,10 @@ public class Enemy extends PhysicsEntity {
         node.updateWorldVectors();
         ParticleEffectFactory.get().spawnExplosion(node.getWorldTranslation());
         SoundUtil.get().playExplosion(node.getWorldTranslation());
-        node.delete();
+        node.destroy();
         node.detachAllChildren();
         node.removeController(chaseController);
-        physicsSpace.removeFromUpdateCallbacks(fc);
         TrailManager.get().removeTrail(getNode());
-        fc = null;
         chaseController = null;
         node = null;
     }

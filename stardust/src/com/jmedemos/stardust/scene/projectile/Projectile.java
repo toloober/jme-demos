@@ -7,8 +7,7 @@ import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.shape.Sphere;
 import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.PhysicsEntity;
-import com.jmex.physics.DynamicPhysicsNode;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * Base class for projectiles
@@ -70,12 +69,12 @@ public class Projectile extends PhysicsEntity {
      */
     public void fire(final Vector3f direction, final Vector3f startLocation,  final Quaternion rotation) {
     	this.direction = direction.normalize();
-    	node.getLocalTranslation().set(startLocation);
-    	node.getLocalRotation().set(rotation);
+    	node.setLocalTranslation(startLocation.clone());
+    	node.setLocalRotation(rotation.clone());
     	    	
         node.setCullHint(CullHint.Dynamic);
-    	node.updateGeometricState(0, false);
-    	((DynamicPhysicsNode)node).clearDynamics();
+    	node.updateGeometricState(0, true);
+    	node.clearForces();
     }
 
     /**
@@ -84,7 +83,7 @@ public class Projectile extends PhysicsEntity {
      */
     public void die() {
     	EntityManager.get().remove(this);
-    	this.node.delete();
+    	this.node.destroy();
     	if (node.getControllerCount() > 0)
     	    this.node.removeController(0);
         this.active = false;
@@ -114,6 +113,10 @@ public class Projectile extends PhysicsEntity {
         return speed;
     }
 
+    public final float getCurrentSpeed() {
+        return getNode().getLinearVelocity().dot(getNode().getLocalRotation().getRotationColumn(2));
+    }
+    
     /**
      * @param speed new speed.
      */

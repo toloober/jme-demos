@@ -3,9 +3,8 @@ package com.jmedemos.stardust.enemy;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import com.jme.scene.Node;
-import com.jmedemos.stardust.scene.EntityManager;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /** TODO replaced with entity manager */
 public class EnemyFactory {
@@ -30,7 +29,7 @@ public class EnemyFactory {
 		return instance;
 	}
 	
-	public Enemy createEnemy(String modelName, Node target) {
+	public Enemy createEnemy(String modelName, PhysicsNode target) {
 		Enemy enemy = new Enemy(modelName, target, space);
 		enemy.setSpeed(enemy.getSpeed()*rand.nextFloat()*2);
 		enemy.setAgility(enemy.getAgility()*rand.nextFloat()*3);

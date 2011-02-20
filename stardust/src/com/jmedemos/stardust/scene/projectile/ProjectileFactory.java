@@ -6,7 +6,7 @@ import com.jme.scene.Node;
 import com.jmedemos.stardust.core.Game;
 import com.jmedemos.stardust.scene.MissileCamera;
 import com.jmedemos.stardust.scene.PlayerShip;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * factory class to create different projectils.
