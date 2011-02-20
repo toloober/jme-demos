@@ -5,10 +5,9 @@ import java.util.logging.Logger;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
-import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.sound.SoundUtil;
-import com.jmex.physics.DynamicPhysicsNode;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * The Asteroid creates different kind of asteroids.
@@ -50,8 +49,8 @@ public class AsteroidFactory {
 
         Asteroid asteroid = new Asteroid(modelName, scale, this.physicsSpace);
 
-        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
-        physNode.getLocalTranslation().set(startPos);
+        PhysicsNode physNode = asteroid.getNode();
+        physNode.setLocalTranslation(startPos.clone());
 
         rootNode.attachChild(physNode);
         physNode.updateRenderState();
@@ -73,16 +72,14 @@ public class AsteroidFactory {
 
         Asteroid asteroid = new Asteroid(modelName, scale, physicsSpace);
 
-        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
-        physNode.getLocalTranslation().set(startPos);
-        physNode.addTorque(rotation);
+        PhysicsNode physNode = asteroid.getNode();
+        physNode.setLocalTranslation(startPos.clone());
+        physNode.applyTorque(rotation);
 
         if (asteroid != null) {
             rootNode.attachChild(physNode);
             rootNode.attachChild(asteroid.getParticleGeom());
             physNode.updateRenderState();
-        } else {
-            log.severe("Unbekannter Asteroid:" + modelName);
         }
         
         return asteroid;
@@ -105,12 +102,12 @@ public class AsteroidFactory {
         Asteroid asteroid = new Asteroid(modelName, scale, physicsSpace);
 
         // static sound of the asteroid (noise) 
-        SoundUtil.get().addFx("/data/sounds/asteroid.wav", (DynamicPhysicsNode)asteroid.getNode());
+        SoundUtil.get().addFx("/data/sounds/asteroid.wav", asteroid.getNode());
 
-        DynamicPhysicsNode physNode = (DynamicPhysicsNode)asteroid.getNode();
-        physNode.getLocalTranslation().set(startPos);
+        PhysicsNode physNode = asteroid.getNode();
+        physNode.setLocalTranslation(startPos.clone());
         physNode.updateGeometricState(0, true);
-        physNode.addTorque(rotation.mult(100));
+        physNode.applyTorque(rotation.mult(100));
         // create the asteroid trail
         physNode.attachChild(ParticleEffectFactory.get().getAsteroidTrail(asteroid.getNode()));
         physNode.addController(new AsteroidMover(asteroid, targetPos, speed));

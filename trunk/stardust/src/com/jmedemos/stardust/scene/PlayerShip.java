@@ -1,6 +1,8 @@
 package com.jmedemos.stardust.scene;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
 import com.jme.input.KeyInput;
 import com.jme.input.controls.GameControl;
@@ -28,9 +30,7 @@ import com.jmedemos.stardust.scene.actions.ShipMissileAction;
 import com.jmedemos.stardust.scene.actions.ShipWeaponAction;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmedemos.stardust.util.PhysicsThrustController;
-import com.jmex.physics.DynamicPhysicsNode;
-import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.callback.FrictionCallback;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * represents a player.
@@ -78,7 +78,7 @@ public class PlayerShip extends PhysicsEntity {
         damage = 5;
 
         // set weapon positions
-        // TODO this is dependant on the loaded model !! (X-Wing == 4 Weapons)
+        // this is dependant on the loaded model !! (X-Wing == 4 Weapons)
         node.updateWorldBound();
         BoundingBox box = (BoundingBox) node.getWorldBound();
         upperRightWeapon = new Node("upperRightWeapon");
@@ -90,7 +90,7 @@ public class PlayerShip extends PhysicsEntity {
         node.attachChild(upperLeftWeapon);
         node.attachChild(lowerRightWeapon);
         node.attachChild(lowerLeftWeapon);
-
+        
         upperRightWeapon.setLocalTranslation(-box.xExtent, box.yExtent,
                 box.zExtent*3);
         upperLeftWeapon.setLocalTranslation(box.xExtent, box.yExtent,
@@ -99,11 +99,6 @@ public class PlayerShip extends PhysicsEntity {
                 box.zExtent*3);
         lowerRightWeapon.setLocalTranslation(-box.xExtent, -box.yExtent,
                 box.zExtent*3);
-
-        // Friction Callback to reduce spinning effect after colliding with another object
-        FrictionCallback fc = new FrictionCallback();
-        fc.add((DynamicPhysicsNode)node, 0f, 25.0f);
-        physicsSpace.addToUpdateCallbacks(fc);
 
         setupCrosshair();
 
@@ -114,6 +109,12 @@ public class PlayerShip extends PhysicsEntity {
         
         // refresh renderstates
         node.updateRenderState();
+        
+        log.info("Player created: ");
+        log.info("mass " +node.getMass());
+        log.info("friction " +node.getFriction());
+        
+        
     }
     
     /**
@@ -158,7 +159,6 @@ public class PlayerShip extends PhysicsEntity {
 
     @Override
     public void die() {
-//        super.die();
         node.updateWorldVectors();
         ParticleEffectFactory.get().spawnExplosion(node.getWorldTranslation());
         SoundUtil.get().playExplosion(node.getWorldTranslation());
@@ -210,9 +210,11 @@ public class PlayerShip extends PhysicsEntity {
         node.addController(ControlManager.get().createYawControl(node, getRollSpeed()));
         node.addController(ControlManager.get().createPitchControl(node, getRollSpeed()));
 
-        physicsThrustController = new PhysicsThrustController((DynamicPhysicsNode)node, Axis.Z, forward, backward, 1,
+        physicsThrustController = new PhysicsThrustController(node, Axis.Z, forward, backward, 1,
         		100, 500, 500);
         node.addController(physicsThrustController);
+        
+        
     }
 
     public final float getRollSpeed() {

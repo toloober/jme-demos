@@ -15,7 +15,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.core.Game;
-import com.jmex.physics.DynamicPhysicsNode;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 public class MissileCamera {
     /**
@@ -159,7 +159,7 @@ public class MissileCamera {
     public void render(final float tpf) {
         boolean parentStatus = false;
         if (missileCamNode.getParent()!= null) {
-            parentStatus = ((DynamicPhysicsNode)missileCamNode.getParent()).isActive();
+            parentStatus = ((PhysicsNode)missileCamNode.getParent()).isActive();
         }
         if ( parentStatus != isActive) {
             setActive(parentStatus);

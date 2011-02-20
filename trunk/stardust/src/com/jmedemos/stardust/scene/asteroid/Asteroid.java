@@ -10,8 +10,7 @@ import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmex.effects.particles.ParticleMesh;
-import com.jmex.physics.PhysicsSpace;
-import com.jmex.physics.material.Material;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * Basic Asteroid. Loads a asteroid model.
@@ -43,7 +42,7 @@ public class Asteroid extends PhysicsEntity {
     
     @Override
     protected void initNode() {
-    	node.setMaterial(Material.GRANITE);
+//    	node.setMaterial(Material.GRANITE);
     }
     
     /**
@@ -68,7 +67,7 @@ public class Asteroid extends PhysicsEntity {
         ParticleEffectFactory.get().spawnExplosion(node.getWorldTranslation().clone());
         SoundUtil.get().playExplosion(node.getWorldTranslation().clone());
         node.setCullHint(CullHint.Always);
-        node.delete();
+        node.destroy();
     }
     
     /**

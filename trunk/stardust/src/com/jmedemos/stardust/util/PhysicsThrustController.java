@@ -3,7 +3,7 @@ package com.jmedemos.stardust.util;
 import com.jme.input.controls.GameControl;
 import com.jme.input.controls.controller.Axis;
 import com.jme.math.Vector3f;
-import com.jmex.physics.DynamicPhysicsNode;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * @author Matthew D. Hicks
@@ -11,7 +11,7 @@ import com.jmex.physics.DynamicPhysicsNode;
 public class PhysicsThrustController extends ThrottleController {
 	private static final long serialVersionUID = 1L;
 
-	private DynamicPhysicsNode node;
+	private PhysicsNode node;
 	private Axis axis;
 	private float stepSpeed;
 	private float maxForwardSpeed;
@@ -21,7 +21,7 @@ public class PhysicsThrustController extends ThrottleController {
 	private Vector3f storeDesiredSpeed;
 	private Vector3f storeSpeed;
 
-	public PhysicsThrustController(DynamicPhysicsNode node, Axis axis, GameControl controlForward, GameControl controlReverse, float step, float stepSpeed, float maxForwardSpeed, float maxReverseSpeed) {
+	public PhysicsThrustController(PhysicsNode node, Axis axis, GameControl controlForward, GameControl controlReverse, float step, float stepSpeed, float maxForwardSpeed, float maxReverseSpeed) {
 		super(controlForward, controlReverse, step);
 		this.node = node;
 		this.axis = axis;
@@ -48,7 +48,8 @@ public class PhysicsThrustController extends ThrottleController {
 
 	@Override
 	public float getSpeed() {
-		return node.getLinearVelocity(storeSpeed).dot(node.getLocalRotation().getRotationColumn(axis.getRotationColumn()));
+		node.getLinearVelocity(storeSpeed);
+		return storeSpeed.dot(node.getLocalRotation().getRotationColumn(axis.getRotationColumn()));
 	}
 
 	@Override

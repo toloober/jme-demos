@@ -10,10 +10,8 @@ import com.jme.input.controls.GameControl;
 import com.jme.input.controls.GameControlManager;
 import com.jme.input.controls.binding.KeyboardBinding;
 import com.jme.input.controls.controller.ActionChangeController;
-import com.jme.input.util.SyntheticButton;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.scene.Skybox;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -45,7 +43,7 @@ import com.jmedemos.stardust.scene.projectile.ProjectileFactory;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmex.audio.AudioSystem;
 import com.jmex.game.state.load.TransitionGameState;
-import com.jmex.physics.util.states.PhysicsGameState;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * The InGame GameState.
@@ -160,7 +158,7 @@ public class InGameState extends PhysicsGameState {
         SoundUtil.get().addFx("shoot.wav", player.getNode());
         
         HealthPowerUp health = PowerUpManager.get().createHealthPowerUp();
-        health.getNode().getLocalTranslation().z = 1000;
+        health.getNode().setLocalTranslation(health.getNode().getLocalTranslation().add(0, 0, 1000));
         rootNode.attachChild(health.getNode());
         
         trans.increment();
@@ -250,22 +248,19 @@ public class InGameState extends PhysicsGameState {
     /** Init physics. Disable gravitation, 
      * create a ignoreColission ContactCallback.
      * This is needed for the projectiles which are fired from the Ship.
-     * The Callback ignores collissions between the projectile and our ship.
+     * The Callback ignores collisions between the projectile and our ship.
      * TODO ugly
      */
     private void initPhysics() {
-        getPhysicsSpace().setDirectionalGravity(new Vector3f(0, 0, 0));
+        getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));
         getPhysicsSpace().setAccuracy(1/60f);
-        SyntheticButton collisionHandler = getPhysicsSpace().getCollisionEventHandler();
-        input = new InputHandler();
-        input.addAction(new CollisionAction(), collisionHandler.getDeviceName(), 
-                collisionHandler.getIndex(), InputHandler.AXIS_NONE, false);
+        getPhysicsSpace().addCollisionListener(new CollisionAction());
     }
 
     /**
      * Set the background color to Black.
      * Hide the mouse cursor.
-     * @param active GameState aktiv Yes/no
+     * @param active GameState active Yes/no
      */
     @Override
     public final void setActive(final boolean active) {
@@ -328,7 +323,7 @@ public class InGameState extends PhysicsGameState {
 //            ObjectRemover.get().purge();
 //            rootNode.updateRenderState();
             seconds = Timer.getTimer().getTimeInSeconds();
-            Node target = Math.random() < 0.3?spaceStation.getNode():player.getNode();
+            PhysicsNode target = Math.random() < 0.3?spaceStation.getNode():player.getNode();
         	Enemy enemy = EnemyFactory.get().createEnemy(enemyModel, target);
             enemy.getNode().setLocalTranslation((float)Math.random()*1000, (float)Math.random()*1000, (float)Math.random()*1000);
             enemy.getNode().addController(new FireController(enemy.getNode(), target,

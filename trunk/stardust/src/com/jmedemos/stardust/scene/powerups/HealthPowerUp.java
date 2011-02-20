@@ -8,7 +8,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.scene.PhysicsEntity;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * A powerup deals Negatve Damage to the other Entity on collision.

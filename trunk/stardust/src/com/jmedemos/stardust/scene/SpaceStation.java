@@ -6,7 +6,7 @@ import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 public class SpaceStation extends PhysicsEntity {
 
@@ -37,10 +37,13 @@ public class SpaceStation extends PhysicsEntity {
         }
 	    @Override
 	    public void update(float time) {
+	    	this.setActive(false);
 	        angle += speed*time;
 	        if (angle >= 360) 
 	            angle = 0;
 	        me.getLocalRotation().fromAngleAxis(angle, Vector3f.UNIT_Y);
+	        me.setLocalRotation(me.getLocalRotation());
+	        this.setActive(true);
 	    }
 	}
 }

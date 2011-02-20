@@ -64,14 +64,9 @@ public class IntroState extends BasicGameState {
 
         // set the intro text.
         introText = new ArrayList<String>();
-        introText.add("Stardust - a Game by Christoph Luder and Kurt Mueller");
-        introText.add("Initially made as a Semseter work in MAS-IT @ FHNW (Switzerland)");
-        introText.add("created with: jMonkeyEngine");
-        introText.add("Coding: Christoph 'Core-Dump' Luder");
-        introText.add("Coding: Ronald Van Rijn");
-        introText.add("Music: Kurt 'tuete' Mueller");
-        introText.add("visit: www.stardust.ch");
-
+        introText.add("Stardust - a Demo-Game for JME 2");
+        introText.add("Physics: jbullet-jme");
+ 
         DisplaySystem disp = DisplaySystem.getDisplaySystem();
         
         // the logo should be 80% of the width

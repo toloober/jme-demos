@@ -27,12 +27,15 @@ public class ProjectileMover extends Controller {
      * @param time time since last update
      */
     public final void update(final float time) {
+    	this.setActive(false);
         projectile.setAge(projectile.getAge() - time);
         if (projectile.getAge() < 0) {
             projectile.die();
             return;
         }
-        projectile.getNode().getLocalTranslation().addLocal(
-        		projectile.getDirection().mult(time * projectile.getSpeed()));
+        projectile.getNode().setLocalTranslation(
+        		projectile.getNode().getLocalTranslation().add(
+        		projectile.getDirection().mult(time * projectile.getSpeed())));
+        this.setActive(true);
     }
 }

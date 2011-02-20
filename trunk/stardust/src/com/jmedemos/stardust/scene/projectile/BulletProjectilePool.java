@@ -1,6 +1,6 @@
 package com.jmedemos.stardust.scene.projectile;
 
-import com.jmex.physics.PhysicsSpace;
+import com.jmex.jbullet.PhysicsSpace;
 
 /**
  * A ProjectilePool for BulletProjectiles.

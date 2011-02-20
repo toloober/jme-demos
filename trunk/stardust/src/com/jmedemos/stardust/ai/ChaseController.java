@@ -5,6 +5,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
  * This controller moves a node towards a target node with a given
@@ -14,7 +15,7 @@ import com.jme.scene.Node;
  */
 public class ChaseController extends Controller {
     private static final long serialVersionUID = 1L;
-    private Node me = null;
+    private PhysicsNode me = null;
     private Node target = null;
     private AIMode mode = null;
     private float speed = 0;
@@ -23,7 +24,7 @@ public class ChaseController extends Controller {
     private float fleeRange;
     private float attackRange;
     
-    public ChaseController(final Node me, final Node target, float speed,
+    public ChaseController(final PhysicsNode me, final Node target, float speed,
     						float fleeRange, float attackRange, float agility) {
         this.me = me;
         this.target = target;
@@ -39,9 +40,12 @@ public class ChaseController extends Controller {
      * TODO switch to physics based moving ?
      */
     public void update(float time) {
+    	this.setActive(false);
         if (target != null) {
-            Quaternion oldRot = new Quaternion(me.getLocalRotation());
+            Quaternion oldRot = new Quaternion(me.getLocalRotation()).clone();
+
             me.updateWorldVectors();
+            
             me.lookAt(target.getLocalTranslation(), Vector3f.UNIT_Y);
             
             // if we get too near, flee
@@ -59,20 +63,23 @@ public class ChaseController extends Controller {
             if (mode == AIMode.EVADE) {
                 // move away from the target
                 Quaternion newRot = me.getLocalRotation().inverse();
-                me.getLocalRotation().set(oldRot);
+                me.setLocalRotation(oldRot);
                 me.getLocalRotation().slerp(newRot, agility*time*evadeBoost);
-                me.getLocalTranslation().addLocal(
-                        me.getLocalRotation().getRotationColumn(2).mult(speed*time*evadeBoost));
+                me.setLocalRotation(me.getLocalRotation()); //update physics
+                me.setLocalTranslation(me.getLocalTranslation().add(
+                		me.getLocalRotation().getRotationColumn(2).mult(speed*time*evadeBoost)));
             } else {
                 // move towards the target
                 Quaternion newRot = new Quaternion(me.getLocalRotation());
                 me.getLocalRotation().set(oldRot);
 
                 me.getLocalRotation().slerp(newRot, agility*time);
-                me.getLocalTranslation().addLocal(
-                        me.getLocalRotation().getRotationColumn(2).mult(speed*time));
+                me.setLocalRotation(me.getLocalRotation()); //update physics
+                me.setLocalTranslation(me.getLocalTranslation().add(
+                		me.getLocalRotation().getRotationColumn(2).mult(speed*time)));
             }
         }
+        this.setActive(true);
     }
     
     public void setTarget(final Node target) {
