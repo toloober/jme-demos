@@ -98,7 +98,7 @@ public class PhysicsThrustController extends ThrottleController {
 			}
 		}
 		node.setLinearVelocity(storeCurrentSpeed);
-		log.info("setting LinearVelocity to: " +storeCurrentSpeed);
+//		log.info("setting LinearVelocity to: " +storeCurrentSpeed);
 	}
 
 	public float getMaxForwardSpeed() {

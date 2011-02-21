@@ -25,6 +25,7 @@ public class HomingDevice extends Controller {
      */
     @Override
     public void update(float time) {
+    	this.setActive(false);
         object.setAge(object.getAge()-time);
         if (object.getLifeTime() < 0) {
             target = null;
@@ -36,16 +37,14 @@ public class HomingDevice extends Controller {
         
         // TODO workaround 
         object.getNode().updateWorldVectors();
-        this.setActive(false);
         object.getNode().lookAt(target.getLocalTranslation(), Vector3f.UNIT_Y);
-        this.setActive(true);
         
 //        float currentSpeed = object.getNode().getLinearVelocity().dot(object.getNode().getLocalRotation().getRotationColumn(2));
-        float thrust = object.getCurrentSpeed()*2;
+        float thrust = object.getSpeed();
         if (Math.round(thrust) > 0) {
         	log.info("applying: " +thrust +" to missile");
-        	object.getNode().clearForces();
             object.getNode().applyCentralForce(new Vector3f(object.getNode().getLocalRotation().getRotationColumn(2).mult(thrust * time)));
         }
+        this.setActive(true);
     }
 }
