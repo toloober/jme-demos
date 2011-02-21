@@ -35,14 +35,13 @@ public class HomingDevice extends Controller {
         
         target.updateWorldVectors();
         
-        // TODO workaround 
         object.getNode().updateWorldVectors();
         object.getNode().lookAt(target.getLocalTranslation(), Vector3f.UNIT_Y);
         
 //        float currentSpeed = object.getNode().getLinearVelocity().dot(object.getNode().getLocalRotation().getRotationColumn(2));
         float thrust = object.getSpeed();
         if (Math.round(thrust) > 0) {
-        	log.info("applying: " +thrust +" to missile");
+//        	log.info("applying: " +thrust +" to missile");
             object.getNode().applyCentralForce(new Vector3f(object.getNode().getLocalRotation().getRotationColumn(2).mult(thrust * time)));
         }
         this.setActive(true);

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.scene.EntityManager;
+import com.jmex.jbullet.collision.CollisionEvent;
 import com.jmex.jbullet.collision.CollisionListener;
 import com.jmex.jbullet.nodes.PhysicsNode;
 
@@ -20,13 +21,11 @@ public class CollisionAction implements CollisionListener {
      *  
      * @param evt event with contact infos
      */
-	public void collision(com.jmex.jbullet.collision.CollisionEvent event) {
+	public void collision(CollisionEvent event) {
         // the TriggerData of this event Events is of Type ContactInfo
         PhysicsNode node1 = (PhysicsNode) event.getNodeA();
         PhysicsNode node2 = (PhysicsNode) event.getNodeB();
 
-        log.info("Collision between " +node1.getName() + " and " +node2.getName());
-        
         if (node1.isActive() == false && 
             node2.isActive() == false) {
             // nothing to do

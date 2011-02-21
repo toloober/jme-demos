@@ -1,8 +1,6 @@
 package com.jmedemos.stardust.scene;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.bounding.BoundingSphere;
-import com.jme.bounding.BoundingVolume;
 import com.jme.image.Texture;
 import com.jme.input.KeyInput;
 import com.jme.input.controls.GameControl;
@@ -40,7 +38,7 @@ import com.jmex.jbullet.PhysicsSpace;
 public class PlayerShip extends PhysicsEntity {
     /** roll speed.*/
     private float rollSpeed = 0.4f;
-   /** min. time between shots in ms. */
+    /** min. time between shots in ms. */
     private int fireRate = 100;
     /** Physics throttle controller. */
     private PhysicsThrustController physicsThrustController = null;
@@ -110,13 +108,12 @@ public class PlayerShip extends PhysicsEntity {
         // refresh renderstates
         node.updateRenderState();
         
-        node.setFriction(5);
+        node.setFriction(0);
+        node.setDamping(0.0f, 0.3f);
         
         log.info("Player created: ");
         log.info("mass " +node.getMass());
         log.info("friction " +node.getFriction());
-        
-        
     }
     
     /**

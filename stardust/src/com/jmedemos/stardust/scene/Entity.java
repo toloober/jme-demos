@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.Spatial;
 import com.jmedemos.stardust.util.ModelUtil;
-import com.jmex.jbullet.PhysicsSpace;
 import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
@@ -20,8 +19,17 @@ public abstract class Entity {
     protected PhysicsNode node;
     protected String modelName;
     protected Spatial model;
+    protected boolean dead = false;
     
-    public Entity(String modelName, float scale) {
+    public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
+
+	public Entity(String modelName, float scale) {
 		this.modelName = modelName;
 		
 		if (modelName != null) {
@@ -34,7 +42,6 @@ public abstract class Entity {
 		initModel();
 	}
     
-    
     /** the node with the graphical representation */
     public PhysicsNode getNode() {
     	return node;
@@ -46,13 +53,12 @@ public abstract class Entity {
     /** collision with another entity, reduce our health */
     public void doCollision(Entity e) {
         if (e.getNode() == null) {
-            System.out.println();
+            log.info("e.getNode() == null");
         }
         if (this.getNode() == null) {
-            System.out.println();
+            log.info("this.getNode() == null");
         }
-//        System.out.println("Entity doCollision: collision between " +this.getNode().getName() + " and " +e.getNode().getName());
-//        System.out.flush();
+        
         health -= e.getDamage();
         if (health <= 0) {
             die();
@@ -70,9 +76,12 @@ public abstract class Entity {
     }
     
     public void die() {
+    	dead = true;
+    	log.info(this.getNode() +" has died :(");
         EntityManager.get().remove(this);
+        if (node.getControllerCount() > 0)
+    	    this.node.removeController(0);
         getNode().removeFromParent();
-        getNode().detachAllChildren();
     }
     
     /** how much damage we deal to the other entities */

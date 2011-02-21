@@ -34,7 +34,7 @@ public abstract class ProjectilePool<P extends Projectile> {
 	public P get() {
 		P projectile = null;
 		for (P p: pool) {
-			if (!p.isActive()) {
+			if (p.isDead()) {
 			    log.finer("recycling projectile");
 				projectile = p;
 			}
@@ -45,7 +45,7 @@ public abstract class ProjectilePool<P extends Projectile> {
 			pool.add(projectile);
 		}
 		projectile.getNode().activate();
-		projectile.setActive(true);
+		projectile.setDead(false);
 		EntityManager.get().addEntity(projectile);
 		projectile.setAge(projectile.getLifeTime());
 		return projectile;

@@ -7,6 +7,7 @@ import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmedemos.stardust.scene.TrailManager;
 import com.jmedemos.stardust.sound.SoundUtil;
 import com.jmex.jbullet.PhysicsSpace;
+import com.jmex.jbullet.collision.ActivationState;
 import com.jmex.jbullet.nodes.PhysicsNode;
 
 /**
@@ -27,6 +28,8 @@ public class Enemy extends PhysicsEntity {
     	super(space, modelName, 5, true);
     	chaseController = new ChaseController(node, target, defaultSpeed, 300, 1500, 0.5f);
     	node.addController(chaseController);
+    	node.setDamping(0, 0.1f);
+    	node.setActivationState(ActivationState.DISABLE_DEACTIVATION);
     }
 
     @Override
