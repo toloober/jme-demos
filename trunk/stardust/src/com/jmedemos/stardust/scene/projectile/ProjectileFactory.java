@@ -113,8 +113,8 @@ public class ProjectileFactory {
         
         // the homing missile is propelled by force and needs high
         // speed values to compensate the friction callback
-        p.setSpeed(200000);
-        p.getNode().setFriction(10);
+        p.setSpeed(20000);
+        p.getNode().setFriction(1);
         
         p.setTarget(player.getTargetDevice().getCurrentTarget());
         p.getNode().attachChild(missileCam.getCameraNode());

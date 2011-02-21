@@ -218,8 +218,8 @@ public class SoundUtil {
     /**
      * stop the music queue.
      */
-    public void stopMusic() {
-    	AudioSystem.getSystem().getMusicQueue().stop();
+    public void stopMusic(int idx) {
+        AudioSystem.getSystem().getMusicQueue().getTrack(BG_SOUND_INGAME).stop();
     }
     
     /**

@@ -29,9 +29,6 @@ public class EntityManager {
         if (e.getNode() == null) {
             System.err.println("Node is null");
         }
-        if (e == null) {
-            System.err.println("entty is null");
-        }
         entites.put(e.getNode(), e);
     }
     

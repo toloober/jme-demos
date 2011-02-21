@@ -20,6 +20,7 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.jmedemos.stardust.sound.SoundUtil;
+import com.jmex.audio.AudioSystem;
 import com.jmex.effects.transients.Fader;
 import com.jmex.game.state.BasicGameState;
 import com.jmex.game.state.GameStateManager;
@@ -66,6 +67,7 @@ public class IntroState extends BasicGameState {
         introText = new ArrayList<String>();
         introText.add("Stardust - a Demo-Game for JME 2");
         introText.add("Physics: jbullet-jme");
+        introText.add("Menu GUI: FengGUI");
  
         DisplaySystem disp = DisplaySystem.getDisplaySystem();
         
@@ -139,7 +141,7 @@ public class IntroState extends BasicGameState {
         super.setActive(active);
         if (active == false) {
             // stop sound
-            SoundUtil.get().stopMusic();
+            SoundUtil.get().stopMusic(SoundUtil.BG_SOUND_INTRO);
         } else {
         	SoundUtil.get().playMusic(SoundUtil.BG_SOUND_INTRO);
             text.print(introText.get(0));
@@ -163,6 +165,9 @@ public class IntroState extends BasicGameState {
             }
             lastChange = Timer.getTimer().getTimeInSeconds();
             introIdx++;
+            if (introIdx > introText.size()) {
+            	introIdx = 0;
+            }
         }
     }
 }

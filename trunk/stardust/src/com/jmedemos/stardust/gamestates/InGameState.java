@@ -253,7 +253,7 @@ public class InGameState extends PhysicsGameState {
      */
     private void initPhysics() {
         getPhysicsSpace().setGravity(new Vector3f(0, 0, 0));
-        getPhysicsSpace().setAccuracy(1/60f);
+        physicsSpace.setAccuracy(1f/60f);
         getPhysicsSpace().addCollisionListener(new CollisionAction());
     }
 

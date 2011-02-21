@@ -7,6 +7,7 @@ import com.jme.scene.Node;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 import com.jmedemos.stardust.effects.ParticleEffectFactory;
+import com.jmedemos.stardust.scene.Entity;
 import com.jmedemos.stardust.util.ModelUtil;
 import com.jmex.jbullet.PhysicsSpace;
 
@@ -29,6 +30,14 @@ public class MissileProjectile extends Projectile {
         setLifeTime(15);
     }
 
+    /**
+     * Missiles die always when collided.
+     */
+    @Override
+    public void doCollision(Entity e) {
+    	die();
+    }
+    
     @Override
     protected void initModel() {
         model = ModelUtil.get().loadModel("missile.obj");

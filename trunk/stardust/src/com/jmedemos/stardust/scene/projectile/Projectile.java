@@ -5,7 +5,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial.CullHint;
 import com.jme.scene.shape.Sphere;
-import com.jmedemos.stardust.scene.EntityManager;
 import com.jmedemos.stardust.scene.PhysicsEntity;
 import com.jmex.jbullet.PhysicsSpace;
 
@@ -39,11 +38,6 @@ public class Projectile extends PhysicsEntity {
     private Vector3f direction = null;
 
     /**
-     * Indicates whether this Projectile is active.
-     */
-    private boolean active;
-
-    /**
      * @param physicsSpace reference to physicsspace.
      */
     public Projectile(final PhysicsSpace physicsSpace) {
@@ -75,18 +69,6 @@ public class Projectile extends PhysicsEntity {
         node.setCullHint(CullHint.Dynamic);
     	node.updateGeometricState(0, true);
     	node.clearForces();
-    }
-
-    /**
-     * destroys the projectile and removes it from the parent Node.
-     * @param controller controller which initiated the removal.
-     */
-    public void die() {
-    	EntityManager.get().remove(this);
-    	this.node.destroy();
-    	if (node.getControllerCount() > 0)
-    	    this.node.removeController(0);
-        this.active = false;
     }
     
     /**
@@ -131,18 +113,6 @@ public class Projectile extends PhysicsEntity {
     public final Vector3f getDirection() {
         return direction;
     }
-
-    public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	/**
-     * Indicates whether this Projectile is active.
-     * @return whether this Projectile is active
-     */
-	public boolean isActive() {
-		return active;
-	}
 
     public float getAge() {
         return age;
