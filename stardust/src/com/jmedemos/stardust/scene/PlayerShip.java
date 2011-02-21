@@ -110,6 +110,8 @@ public class PlayerShip extends PhysicsEntity {
         // refresh renderstates
         node.updateRenderState();
         
+        node.setFriction(5);
+        
         log.info("Player created: ");
         log.info("mass " +node.getMass());
         log.info("friction " +node.getFriction());
@@ -210,7 +212,7 @@ public class PlayerShip extends PhysicsEntity {
         node.addController(ControlManager.get().createPitchControl(node, getRollSpeed()));
 
         physicsThrustController = new PhysicsThrustController(node, Axis.Z, forward, backward, 1,
-        		100, 500, 500);
+        		100, 2000, 500);
         node.addController(physicsThrustController);
         
         

@@ -27,7 +27,6 @@ public class MissileProjectile extends Projectile {
         damage = 40;
         
         setLifeTime(15);
-        setSpeed(0.2f);
     }
 
     @Override
