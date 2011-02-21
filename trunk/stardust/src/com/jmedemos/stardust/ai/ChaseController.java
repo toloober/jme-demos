@@ -42,7 +42,7 @@ public class ChaseController extends Controller {
     public void update(float time) {
     	this.setActive(false);
         if (target != null) {
-            Quaternion oldRot = new Quaternion(me.getLocalRotation()).clone();
+            Quaternion oldRot = me.getLocalRotation().clone();
 
             me.updateWorldVectors();
             
@@ -63,7 +63,7 @@ public class ChaseController extends Controller {
             if (mode == AIMode.EVADE) {
                 // move away from the target
                 Quaternion newRot = me.getLocalRotation().inverse();
-                me.setLocalRotation(oldRot);
+                me.setLocalRotation(oldRot.clone());
                 me.getLocalRotation().slerp(newRot, agility*time*evadeBoost);
                 me.setLocalRotation(me.getLocalRotation()); //update physics
                 me.setLocalTranslation(me.getLocalTranslation().add(
@@ -71,7 +71,7 @@ public class ChaseController extends Controller {
             } else {
                 // move towards the target
                 Quaternion newRot = new Quaternion(me.getLocalRotation());
-                me.getLocalRotation().set(oldRot);
+                me.setLocalRotation(oldRot.clone());
 
                 me.getLocalRotation().slerp(newRot, agility*time);
                 me.setLocalRotation(me.getLocalRotation()); //update physics

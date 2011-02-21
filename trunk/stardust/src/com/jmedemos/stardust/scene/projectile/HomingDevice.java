@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 import com.jme.math.Vector3f;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jmedemos.stardust.scene.Entity;
+import com.jmedemos.stardust.scene.EntityManager;
 
 public class HomingDevice extends Controller {
 
@@ -31,6 +33,11 @@ public class HomingDevice extends Controller {
             target = null;
             object.die();
             return;
+        }
+        
+        Entity e = EntityManager.get().getEntity(target);
+        if (e == null || e.isDead()) {
+        	object.die();
         }
         
         target.updateWorldVectors();
