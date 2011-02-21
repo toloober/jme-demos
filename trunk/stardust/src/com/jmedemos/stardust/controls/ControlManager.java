@@ -9,13 +9,15 @@ import com.jme.input.controls.binding.MouseOffsetBinding;
 import com.jme.input.controls.controller.Axis;
 import com.jme.input.controls.controller.RotationController;
 import com.jme.scene.Node;
+import com.jmedemos.stardust.util.PhysicsRotationController;
+import com.jmex.jbullet.nodes.PhysicsNode;
 
 public class ControlManager {
     private static ControlManager instance = null;
     private GameControlManager gcm;
-    private RotationController pitchControl = null;
-    private RotationController yawControl = null;
-    private RotationController rollControl = null;
+    private PhysicsRotationController pitchControl = null;
+    private PhysicsRotationController yawControl = null;
+    private PhysicsRotationController rollControl = null;
     
     private ControlManager() {
         gcm = new GameControlManager();
@@ -32,7 +34,7 @@ public class ControlManager {
         return gcm;
     }
     
-    public RotationController createRollControl(Node node, float speed) {
+    public PhysicsRotationController createRollControl(PhysicsNode node, float speed) {
         GameControl rollLeft = gcm.addControl("Roll Left");
         rollLeft.addBinding(new KeyboardBinding(KeyInput.KEY_A));
         rollLeft.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_X, true));
@@ -41,11 +43,11 @@ public class ControlManager {
         rollRight.addBinding(new KeyboardBinding(KeyInput.KEY_D));
         rollRight.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_X, false));
         
-        rollControl = new RotationController(node, rollRight,  rollLeft, speed, Axis.Z);
+        rollControl = new PhysicsRotationController(node, rollRight,  rollLeft, speed, Axis.Z);
         return rollControl;
     }
     
-    public RotationController createYawControl(Node node, float speed) {
+    public PhysicsRotationController createYawControl(PhysicsNode node, float speed) {
         GameControl rotateLeft = gcm.addControl("Rotate Left");
         rotateLeft.addBinding(new KeyboardBinding(KeyInput.KEY_Q));
         rotateLeft.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_X, true));
@@ -54,12 +56,12 @@ public class ControlManager {
         rotateRight.addBinding(new KeyboardBinding(KeyInput.KEY_E));
         rotateRight.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_X, false));
         
-        yawControl = new RotationController(node, rotateLeft,
+        yawControl = new PhysicsRotationController(node, rotateLeft,
                 rotateRight, speed, Axis.Y);
         return yawControl;
     }
     
-    public RotationController createPitchControl(Node node, float speed) {
+    public PhysicsRotationController createPitchControl(PhysicsNode node, float speed) {
         GameControl up = gcm.addControl("Pitch Up");
         up.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_Y, false));
         up.addBinding(new KeyboardBinding(KeyInput.KEY_R));
@@ -68,7 +70,7 @@ public class ControlManager {
         down.addBinding(new MouseOffsetBinding(MouseAxisBinding.AXIS_Y, true));
         down.addBinding(new KeyboardBinding(KeyInput.KEY_F));
         
-        pitchControl = new RotationController(node, up, down, speed, Axis.X);
+        pitchControl = new PhysicsRotationController(node, up, down, speed, Axis.X);
         return pitchControl;
     }
     

@@ -10,7 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/FengGUI.jar" sourcepath="/FengGUI/src"/>
-	<classpathentry kind="lib" path="lib/lwjgl_util.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jBullet-jME"/>
 	<classpathentry kind="output" path="bin"/>
