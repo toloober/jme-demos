@@ -1,5 +1,7 @@
 package com.jmedemos.stardust.util;
 
+import java.util.logging.Logger;
+
 import com.jme.input.controls.GameControl;
 import com.jme.input.controls.controller.Axis;
 import com.jme.math.Vector3f;
@@ -10,7 +12,7 @@ import com.jmex.jbullet.nodes.PhysicsNode;
  */
 public class PhysicsThrustController extends ThrottleController {
 	private static final long serialVersionUID = 1L;
-
+	private Logger log = Logger.getLogger(PhysicsThrustController.class.getName());
 	private PhysicsNode node;
 	private Axis axis;
 	private float stepSpeed;
@@ -96,6 +98,7 @@ public class PhysicsThrustController extends ThrottleController {
 			}
 		}
 		node.setLinearVelocity(storeCurrentSpeed);
+		log.info("setting LinearVelocity to: " +storeCurrentSpeed);
 	}
 
 	public float getMaxForwardSpeed() {

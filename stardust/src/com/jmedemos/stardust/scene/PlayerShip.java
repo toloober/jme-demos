@@ -205,7 +205,6 @@ public class PlayerShip extends PhysicsEntity {
                 fireWeapon, fireRate, new ShipWeaponAction(this));
         node.addController(fireWeaponController);
 
-       
         node.addController(ControlManager.get().createRollControl(node, getRollSpeed()));
         node.addController(ControlManager.get().createYawControl(node, getRollSpeed()));
         node.addController(ControlManager.get().createPitchControl(node, getRollSpeed()));
